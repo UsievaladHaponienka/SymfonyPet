@@ -11,9 +11,10 @@
     <h1>Hello {{ controller_name }}! ✅</h1>
 
     This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/usevalad/Documents/01Projects/SymfonyPet/src/Controller/HomepageController.php'|file_link(0) }}">src/Controller/HomepageController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/usevalad/Documents/01Projects/SymfonyPet/templates/homepage/index.html.twig'|file_link(0) }}">templates/homepage/index.html.twig</a></code></li>
-    </ul>
+    {% if name %}
+    <p>You name parameter is {{ name }} </p>
+    {% else %}
+    <p>{{ 'You didn\'t pass any parameter' }}</p>
+    {% endif %}
 </div>
 {% endblock %}
