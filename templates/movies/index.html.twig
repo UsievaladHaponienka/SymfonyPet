@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<div>
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+    {% if name %}
+    <p>You name parameter is {{ name }} </p>
+    {% else %}
+    <p>{{ 'You didn\'t pass any parameter' }}</p>
+    {% endif %}
+</div>
+{% endblock %}
