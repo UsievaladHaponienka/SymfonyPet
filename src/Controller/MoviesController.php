@@ -36,6 +36,7 @@ class MoviesController extends AbstractController
         $movie = new Movie();
         $form = $this->createForm(MovieFormType::class, $movie);
 
+        //TODO: Debug this method
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             //TODO: Debug this method
@@ -63,7 +64,53 @@ class MoviesController extends AbstractController
             return $this->redirectToRoute('movies.index');
         }
 
-        return $this->render('movies/create.html.twig',[
+        return $this->render('movies/create.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('movies/edit/{id}', name: 'movie.edit')]
+    public function edit($id, Request $request): Response
+    {
+        $movie = $this->repository->find($id);
+        $form = $this->createForm(MovieFormType::class, $movie);
+
+        $form->handleRequest($request);
+
+        /** @var UploadedFile $imagePath */
+        $imagePath = $form->get('imagePath')->getData();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($imagePath) {
+                if ($movie->getImagePath() !== null &&
+                    file_exists(
+                        $this->getParameter('kernel.project_dir') . '/public/' . $movie->getImagePath()
+                    )) {
+                    $newFileName = uniqid() . '.' . $imagePath->guessExtension();
+
+                    try {
+                        $imagePath->move(
+                            $this->getParameter('kernel.project_dir') . '/public/uploads',
+                            $newFileName
+                        );
+                    } catch (FileException $e) {
+                        return new Response($e->getMessage());
+                    }
+
+                    $movie->setImagePath('/uploads/' . $newFileName);
+                }
+            }
+
+            $movie->setTitle($form->get('title')->getData());
+            $movie->setReleaseYear($form->get('releaseYear')->getData());
+            $movie->setDescription($form->get('description')->getData());
+            $this->repository->save($movie, true);
+
+            return $this->redirectToRoute('movies.index');
+        }
+
+        return $this->render('movies/edit.html.twig', [
+            'movie' => $movie,
             'form' => $form->createView()
         ]);
     }
