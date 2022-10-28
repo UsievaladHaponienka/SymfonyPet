@@ -1,13 +1,9 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-<div>
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    {% if name %}
-    <p>You name parameter is {{ name }} </p>
-    {% else %}
-    <p>{{ 'You didn\'t pass any parameter' }}</p>
-    {% endif %}
-</div>
+    <img src="{{  asset('build/images/image1.90a37fd8.jpg') }}">
+    <div>
+        {% for movie in movies %}
+            <li>{{ movie.title }}</li>
+        {% endfor %}
+    </div>
 {% endblock %}
