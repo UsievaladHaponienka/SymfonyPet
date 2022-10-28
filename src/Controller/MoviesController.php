@@ -101,11 +101,12 @@ class MoviesController extends AbstractController
                 }
             }
 
-            $movie->setTitle($form->get('title')->getData());
-            $movie->setReleaseYear($form->get('releaseYear')->getData());
-            $movie->setDescription($form->get('description')->getData());
-            $this->repository->save($movie, true);
+            $movie
+                ->setTitle($form->get('title')->getData())
+                ->setReleaseYear($form->get('releaseYear')->getData())
+                ->setDescription($form->get('description')->getData());
 
+            $this->repository->save($movie, true);
             return $this->redirectToRoute('movies.index');
         }
 
@@ -113,6 +114,15 @@ class MoviesController extends AbstractController
             'movie' => $movie,
             'form' => $form->createView()
         ]);
+    }
+
+    #[Route('movies/delete/{id}', name: 'movie.delete', methods: ['GET','DELETE'])]
+    public function delete($id): Response
+    {
+        $movie = $this->repository->find($id);
+        $this->repository->remove($movie, true);
+
+        return $this->redirectToRoute('movies.index');
     }
 
     #[Route('movies/{id}', name: 'movies.show', methods: ['GET', 'HEAD'])]
