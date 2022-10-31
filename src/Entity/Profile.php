@@ -38,15 +38,11 @@ class Profile
     #[ORM\OneToMany(mappedBy: 'profile_id', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
 
-    #[ORM\ManyToMany(targetEntity: FriendshipRequest::class, mappedBy: 'requestor_id')]
-    private Collection $friendshipRequests;
-
     public function __construct()
     {
         $this->albums = new ArrayCollection();
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
-        $this->friendshipRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -187,33 +183,6 @@ class Profile
             if ($comment->getProfileId() === $this) {
                 $comment->setProfileId(null);
             }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, FriendshipRequest>
-     */
-    public function getFriendshipRequests(): Collection
-    {
-        return $this->friendshipRequests;
-    }
-
-    public function addFriendshipRequest(FriendshipRequest $friendshipRequest): self
-    {
-        if (!$this->friendshipRequests->contains($friendshipRequest)) {
-            $this->friendshipRequests->add($friendshipRequest);
-            $friendshipRequest->addRequestorId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFriendshipRequest(FriendshipRequest $friendshipRequest): self
-    {
-        if ($this->friendshipRequests->removeElement($friendshipRequest)) {
-            $friendshipRequest->removeRequestorId($this);
         }
 
         return $this;
