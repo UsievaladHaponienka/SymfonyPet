@@ -30,6 +30,10 @@
                 <input type="hidden" name="_csrf_token"
                        value="{{ csrf_token('authenticate') }}"
                 >
+                <p class="block text-gray-500 font-bold md:text-left mb-1 mt-4 md:mb-0 pr-4">
+                    {{ 'New to website? ' }}
+                    <a class="text-lime-700" href="{{ path('app_register') }}">{{ 'Click here to register  '}}</a>
+                </p>
 
                 <button class="bg-lime-500 hover:bg-lime-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded" type="submit">
                     Sign in
