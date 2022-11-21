@@ -20,7 +20,7 @@ class Profile
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user_id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $username = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -37,6 +37,9 @@ class Profile
 
     #[ORM\OneToMany(mappedBy: 'profile_id', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $username1 = null;
 
     public function __construct()
     {

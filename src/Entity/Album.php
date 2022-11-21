@@ -10,6 +10,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
 class Album
 {
+    public const USER_TYPE = 'user';
+    public const GROUP_TYPE = 'group';
+
+    public const DEFAULT_ALBUM_TITLE = 'My Photo';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
