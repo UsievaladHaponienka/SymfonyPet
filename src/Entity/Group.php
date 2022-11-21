@@ -136,7 +136,7 @@ class Group
     {
         if (!$this->albums->contains($album)) {
             $this->albums->add($album);
-            $album->setGroupId($this);
+            $album->setGroup($this);
         }
 
         return $this;
@@ -146,8 +146,8 @@ class Group
     {
         if ($this->albums->removeElement($album)) {
             // set the owning side to null (unless already changed)
-            if ($album->getGroupId() === $this) {
-                $album->setGroupId(null);
+            if ($album->getGroup() === $this) {
+                $album->setGroup(null);
             }
         }
 
@@ -166,7 +166,7 @@ class Group
     {
         if (!$this->posts->contains($post)) {
             $this->posts->add($post);
-            $post->setGroupId($this);
+            $post->setGroup($this);
         }
 
         return $this;
@@ -176,8 +176,8 @@ class Group
     {
         if ($this->posts->removeElement($post)) {
             // set the owning side to null (unless already changed)
-            if ($post->getGroupId() === $this) {
-                $post->setGroupId(null);
+            if ($post->getGroup() === $this) {
+                $post->setGroup(null);
             }
         }
 

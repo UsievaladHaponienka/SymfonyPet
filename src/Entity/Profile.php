@@ -18,7 +18,7 @@ class Profile
 
     #[ORM\OneToOne(inversedBy: 'profile', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user_id = null;
+    private ?User $user = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $username = null;
@@ -50,14 +50,14 @@ class Profile
         return $this->id;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
-        return $this->user_id;
+        return $this->user;
     }
 
-    public function setUserId(User $user_id): self
+    public function setUser(User $user): self
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
 
         return $this;
     }
@@ -110,7 +110,7 @@ class Profile
     {
         if (!$this->albums->contains($album)) {
             $this->albums->add($album);
-            $album->setProfileId($this);
+            $album->setProfile($this);
         }
 
         return $this;
@@ -120,8 +120,8 @@ class Profile
     {
         if ($this->albums->removeElement($album)) {
             // set the owning side to null (unless already changed)
-            if ($album->getProfileId() === $this) {
-                $album->setProfileId(null);
+            if ($album->getProfile() === $this) {
+                $album->setProfile(null);
             }
         }
 
@@ -140,7 +140,7 @@ class Profile
     {
         if (!$this->posts->contains($post)) {
             $this->posts->add($post);
-            $post->setProfileId($this);
+            $post->setProfile($this);
         }
 
         return $this;
@@ -150,8 +150,8 @@ class Profile
     {
         if ($this->posts->removeElement($post)) {
             // set the owning side to null (unless already changed)
-            if ($post->getProfileId() === $this) {
-                $post->setProfileId(null);
+            if ($post->getProfile() === $this) {
+                $post->setProfile(null);
             }
         }
 
@@ -170,7 +170,7 @@ class Profile
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
-            $comment->setProfileId($this);
+            $comment->setProfile($this);
         }
 
         return $this;
@@ -180,8 +180,8 @@ class Profile
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getProfileId() === $this) {
-                $comment->setProfileId(null);
+            if ($comment->getProfile() === $this) {
+                $comment->setProfile(null);
             }
         }
 

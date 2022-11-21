@@ -10,9 +10,11 @@
 
 {% block body %}
 <div class="grid grid-cols-12 gap-4">
+    {% if(user) %}
     <div class="col-span-2 col-start-2">
         {% include 'components/profile/navigation.html.twig' with {'profile': profile, 'user': user} %}
     </div>
+    {% endif %}
     <div class="col-span-8 bg-lime-200 rounded">
         <div class="grid grid-cols-4 my-2 mx-4">
             <div class="col-span-1">
@@ -28,7 +30,7 @@
                         <div class="text-2xl ml-6">
                             {{ 'No username' }}
                         </div>
-                        {% if (user.id == profile.userId.id) %}
+                        {% if (user.id == profile.user.id) %}
                             <a class="text-xl ml-6 text-lime-700"
                                href="{{ path('app_profile_edit') }}">{{ 'You can add username here' }}</a>
                         {% endif %}

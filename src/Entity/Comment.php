@@ -16,11 +16,11 @@ class Comment
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Post $post_id = null;
+    private ?Post $post = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Profile $profile_id = null;
+    private ?Profile $profile = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $content = null;
@@ -33,26 +33,26 @@ class Comment
         return $this->id;
     }
 
-    public function getPostId(): ?Post
+    public function getPost(): ?Post
     {
-        return $this->post_id;
+        return $this->post;
     }
 
-    public function setPostId(?Post $post_id): self
+    public function setPost(?Post $post): self
     {
-        $this->post_id = $post_id;
+        $this->post = $post;
 
         return $this;
     }
 
-    public function getProfileId(): ?Profile
+    public function getProfile(): ?Profile
     {
-        return $this->profile_id;
+        return $this->profile;
     }
 
-    public function setProfileId(?Profile $profile_id): self
+    public function setProfile(?Profile $profile): self
     {
-        $this->profile_id = $profile_id;
+        $this->profile = $profile;
 
         return $this;
     }

@@ -20,10 +20,10 @@ class Post
     private ?string $type = null;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
-    private ?Profile $profile_id = null;
+    private ?Profile $profile = null;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
-    private ?Group $group_id = null;
+    private ?Group $group = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $content = null;
@@ -63,26 +63,26 @@ class Post
         return $this;
     }
 
-    public function getProfileId(): ?Profile
+    public function getProfile(): ?Profile
     {
-        return $this->profile_id;
+        return $this->profile;
     }
 
-    public function setProfileId(?Profile $profile_id): self
+    public function setProfile(?Profile $profile): self
     {
-        $this->profile_id = $profile_id;
+        $this->profile = $profile;
 
         return $this;
     }
 
-    public function getGroupId(): ?Group
+    public function getGroup(): ?Group
     {
-        return $this->group_id;
+        return $this->group;
     }
 
-    public function setGroupId(?Group $group_id): self
+    public function setGroup(?Group $group): self
     {
-        $this->group_id = $group_id;
+        $this->group = $group;
 
         return $this;
     }
@@ -135,7 +135,7 @@ class Post
     {
         if (!$this->likes->contains($like)) {
             $this->likes->add($like);
-            $like->setPostId($this);
+            $like->setPost($this);
         }
 
         return $this;
@@ -145,8 +145,8 @@ class Post
     {
         if ($this->likes->removeElement($like)) {
             // set the owning side to null (unless already changed)
-            if ($like->getPostId() === $this) {
-                $like->setPostId(null);
+            if ($like->getPost() === $this) {
+                $like->setPost(null);
             }
         }
 
@@ -165,7 +165,7 @@ class Post
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
-            $comment->setPostId($this);
+            $comment->setPost($this);
         }
 
         return $this;
@@ -175,8 +175,8 @@ class Post
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getPostId() === $this) {
-                $comment->setPostId(null);
+            if ($comment->getPost() === $this) {
+                $comment->setPost(null);
             }
         }
 

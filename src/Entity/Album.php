@@ -27,10 +27,10 @@ class Album
     private ?string $type = null;
 
     #[ORM\ManyToOne(inversedBy: 'albums')]
-    private ?Profile $profile_id = null;
+    private ?Profile $profile = null;
 
     #[ORM\ManyToOne(inversedBy: 'albums')]
-    private ?Group $group_id = null;
+    private ?Group $group = null;
 
     #[ORM\OneToMany(mappedBy: 'album_id', targetEntity: Photo::class)]
     private Collection $photos;
@@ -69,26 +69,26 @@ class Album
         return $this;
     }
 
-    public function getProfileId(): ?Profile
+    public function getProfile(): ?Profile
     {
-        return $this->profile_id;
+        return $this->profile;
     }
 
-    public function setProfileId(?Profile $profile_id): self
+    public function setProfile(?Profile $profile): self
     {
-        $this->profile_id = $profile_id;
+        $this->profile = $profile;
 
         return $this;
     }
 
-    public function getGroupId(): ?Group
+    public function getGroup(): ?Group
     {
-        return $this->group_id;
+        return $this->group;
     }
 
-    public function setGroupId(?Group $group_id): self
+    public function setGroup(?Group $group): self
     {
-        $this->group_id = $group_id;
+        $this->group = $group;
 
         return $this;
     }
@@ -105,7 +105,7 @@ class Album
     {
         if (!$this->photos->contains($photo)) {
             $this->photos->add($photo);
-            $photo->setAlbumId($this);
+            $photo->setAlbum($this);
         }
 
         return $this;
@@ -115,8 +115,8 @@ class Album
     {
         if ($this->photos->removeElement($photo)) {
             // set the owning side to null (unless already changed)
-            if ($photo->getAlbumId() === $this) {
-                $photo->setAlbumId(null);
+            if ($photo->getAlbum() === $this) {
+                $photo->setAlbum(null);
             }
         }
 

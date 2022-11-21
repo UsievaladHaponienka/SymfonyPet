@@ -15,7 +15,7 @@ class Photo
 
     #[ORM\ManyToOne(inversedBy: 'photos')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Album $album_id = null;
+    private ?Album $album = null;
 
     #[ORM\Column(length: 255)]
     private ?string $image_url = null;
@@ -28,14 +28,14 @@ class Photo
         return $this->id;
     }
 
-    public function getAlbumId(): ?Album
+    public function getAlbum(): ?Album
     {
-        return $this->album_id;
+        return $this->album;
     }
 
-    public function setAlbumId(?Album $album_id): self
+    public function setAlbum(?Album $album): self
     {
-        $this->album_id = $album_id;
+        $this->album = $album;
 
         return $this;
     }

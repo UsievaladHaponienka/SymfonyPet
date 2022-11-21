@@ -30,7 +30,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Profile $profile = null;
 
     public function getId(): ?int
@@ -111,8 +111,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setProfile(Profile $profile): self
     {
         // set the owning side of the relation if necessary
-        if ($profile->getUserId() !== $this) {
-            $profile->setUserId($this);
+        if ($profile->getUser() !== $this) {
+            $profile->setUser($this);
         }
 
         $this->profile = $profile;

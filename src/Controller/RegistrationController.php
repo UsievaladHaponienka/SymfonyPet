@@ -44,12 +44,12 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
 
             $profile = new Profile();
-            $profile->setUserId($user);
+            $profile->setUser($user);
             $entityManager->persist($profile);
 
             $defaultUserAlbum = new Album();
             $defaultUserAlbum->setType(Album::USER_TYPE);
-            $defaultUserAlbum->setProfileId($profile);
+            $defaultUserAlbum->setProfile($profile);
             $defaultUserAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
             $entityManager->persist($defaultUserAlbum);
 
