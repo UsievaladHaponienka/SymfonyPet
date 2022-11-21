@@ -6,7 +6,7 @@
 
     <div class="grid grid-cols-12 gap-4">
         <div class="col-span-2 col-start-2">
-            {% include 'components/profile/navigation.html.twig' with {'profile': profile} %}
+            {% include 'components/profile/navigation.html.twig' with {'profile': profile, 'user': user} %}
         </div>
         <div class="col-span-8 bg-lime-200 rounded">
             <div class="flex flex-col items-center py-6">

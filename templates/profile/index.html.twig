@@ -9,27 +9,39 @@
 {% endblock %}
 
 {% block body %}
-    <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-2 col-start-2">
-            {% include 'components/profile/navigation.html.twig' with {'profile': profile, 'user': user} %}
-        </div>
-        <div class="col-span-8 bg-lime-200 rounded">
-            <div class="grid grid-cols-4 my-2 mx-4">
-                <div class="col-span-1">
-                    <img src="{{ profile.profileImageUrl }}" alt="{{ 'No profile image' }}">
-                </div>
-                <div class="col-span-3">
-                    <div class="grid grid-rows">
-                        {% if(profile.username) %}
-                            <div>{{ profile.username }}</div>
-                        {% else %}
-                            <div>
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-2 col-start-2">
+        {% include 'components/profile/navigation.html.twig' with {'profile': profile, 'user': user} %}
+    </div>
+    <div class="col-span-8 bg-lime-200 rounded">
+        <div class="grid grid-cols-4 my-2 mx-4">
+            <div class="col-span-1">
+                <img src="{{ profile.profileImageUrl }}" alt="{{ 'No profile image' }}">
+            </div>
+            <div class="col-span-3">
+                <div class="grid grid-rows">
+                    {% if(profile.username) %}
+                        <div class="text-2xl ml-6">
+                            {{ profile.username }}
+                        </div>
+                    {% else %}
+                        <div class="text-2xl ml-6">
+                            {{ 'No username' }}
+                        </div>
+                        {% if (user.id == profile.userId.id) %}
+                            <a class="text-xl ml-6 text-lime-700"
+                               href="{{ path('app_profile_edit') }}">{{ 'You can add username here' }}</a>
+                        {% endif %}
+                    {% endif %}
 
-                            </div>
+                    <div class="text-xl ml-6 mt-4">
+                        {% if(profile.description) %}
+                            {{ profile.description }}
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-{% endblock %}
+</div>
+    {% endblock %}
