@@ -20,8 +20,7 @@ class AlbumController extends AbstractController
     public function __construct(
         AlbumRepository   $albumRepository,
         ProfileRepository $profileRepository
-    )
-    {
+    ){
         $this->albumRepository = $albumRepository;
         $this->profileRepository = $profileRepository;
     }
@@ -35,12 +34,24 @@ class AlbumController extends AbstractController
             $albums = $this->albumRepository->findBy(['profile' => $profileId]);
 
             return $this->render('album/index.html.twig', [
-                'user' => $this->getUser(),
                 'profile' => $profile,
                 'albums' => $albums
             ]);
         }
 
         //return 404
+    }
+
+    #[Route('profile/{profileId}/album/{albumId}', name: 'album_show')]
+    public function show(int $profileId, int $albumId): Response
+    {
+        $album = $this->albumRepository->find($albumId);
+        $profile = $this->profileRepository->find($profileId);
+
+        return $this->render('album/show.html.twig', [
+            'album' => $album,
+            'profile' => $profile
+        ]);
+
     }
 }

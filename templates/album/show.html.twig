@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Albums{% endblock %}
+{% block title %}{{ album.title }}{% endblock %}
 
 {% block body %}
     <div class="grid grid-cols-12 gap-4">
@@ -10,28 +10,36 @@
             </div>
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded">
+            <div>
+                <div class="ml-6 mt-6">
+                    <a href="{{ path('album_index', {'profileId': profile.id}) }}">Back</a>
+                </div>
+                <div class="text-2xl text-center mt-6">
+                    {{ album.title }}
+                </div>
+            </div>
+
+            <div class="text-center mt-6">
+                {{ album.description }}
+            </div>
             {% if(app.user.profile.id == profile.id) %}
                 <div class="text-center mt-6">
                     <a href="#">
                         <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
-                            {{ 'Create new album' }}
+                            {{ 'Add photo' }}
                         </button>
                     </a>
                 </div>
 
             {% endif %}
             <div class="grid grid-cols-4">
-                {% for album in albums %}
+                {% for photo in album.photos %}
                     <div class="m-6">
                         <div>
-                            <a href="{{ path('album_show', {'profileId': profile.id, 'albumId': album.id}) }}">
-                                <img src="{{ album.photos.first().imageUrl }}">
-                            </a>
+                            <img src="{{ photo.imageUrl }}">
                         </div>
                         <div class="text-xl text-center">
-                            <a href="{{ path('album_show', {'profileId': profile.id, 'albumId': album.id}) }}">
-                                {{ album.title }}
-                            </a>
+                            {{ photo.description }}
                         </div>
                     </div>
                 {% endfor %}
