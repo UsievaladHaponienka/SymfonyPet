@@ -1,12 +1,12 @@
-<div class="grid grid-rows bg-lime-200 rounded">
+<div class="grid grid-rows bg-indigo-300 rounded">
     <div class="my-2 ml-4">
-        <a href="{{ path('app_profile', {'profileId' : user.profile.id}) }}">{{ 'My Profile'}}</a>
+        <a href="{{ path('app_profile', {'profileId' : app.user.profile.id}) }}">{{ 'My Profile'}}</a>
     </div>
     <div class="my-2 ml-4">
         <a href="#">{{ 'My Friends' }}</a>
     </div>
     <div class="my-2 ml-4">
-        <a href="#">{{ 'My Albums' }}</a>
+        <a href="{{ path('album_index', {'profileId': app.user.profile.id}) }}">{{ 'My Albums' }}</a>
     </div>
     <div class="my-2 ml-4">
         <a href="#">{{ 'My Groups' }}</a>

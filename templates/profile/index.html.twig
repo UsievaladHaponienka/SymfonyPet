@@ -12,10 +12,10 @@
     <div class="grid grid-cols-12 gap-4">
         {% if(user) %}
             <div class="col-span-2 col-start-2">
-                {% include 'components/profile/navigation.html.twig' with {'profile': profile, 'user': user} %}
+                {% include 'components/profile/navigation.html.twig' %}
             </div>
         {% endif %}
-        <div class="col-span-8 bg-lime-200 rounded">
+        <div class="col-span-8 bg-indigo-300 rounded">
             <div class="grid grid-rows">
                 <div class="grid grid-cols-4 my-2 mx-4">
                     <div class="col-span-1">
@@ -34,7 +34,7 @@
                                     {{ 'No username' }}
                                 </div>
                                 {% if (user.id == profile.user.id) %}
-                                    <a class="text-xl ml-6 text-lime-700"
+                                    <a class="text-xl ml-6 text-indigo-500"
                                        href="{{ path('app_profile_edit') }}">{{ 'You can add username here' }}</a>
                                 {% endif %}
                             {% endif %}
@@ -54,7 +54,7 @@
                     </div>
                     <div>
                         {% for post in posts %}
-                            <div class="m-6 bg-lime-100 rounded">
+                            <div class="m-6 bg-indigo-200 rounded">
                                 {% if(post.photos) %}
                                     <div>
                                         {% for photo in post.photos %}

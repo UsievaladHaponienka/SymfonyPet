@@ -56,7 +56,5 @@ class ImageProcessor
         } catch (FileException $e) {
             return new Response($e->getMessage());
         }
-
     }
-
 }

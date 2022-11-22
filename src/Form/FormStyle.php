@@ -37,6 +37,6 @@ trait FormStyle
 
     public function getSubmitButtonClass(): string
     {
-        return 'bg-lime-500 hover:bg-lime-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded';
+        return 'bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded';
     }
 }

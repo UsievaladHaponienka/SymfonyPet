@@ -1,0 +1,23 @@
+<header class="sticky top-0 w-full px-2 py-4 mb-10 bg-indigo-500 sm:px-4">
+    <div class="grid grid-cols-12">
+        {% if (app.user and app.user.profile.username) %}
+        <div class="col-span-1 col-start-2">
+            <div class="text-xl text-indigo-200">
+                {{ app.user.profile.username }}
+            </div>
+        </div>
+        {% endif %}
+        <div class="col-span-1 col-start-11 text-right">
+            {% if(app.user) %}
+                <div class="text-xl text-indigo-200">
+                    <a href="{{ path('app_logout') }}">{{ 'Logout' }}</a>
+                </div>
+            {% else %}
+                <div class="text-xl text-indigo-200">
+                    <a href="{{ path('app_login') }}">{{ 'Login' }}</a> {{ 'or ' }}
+                    <a href="{{ path('app_register') }}">{{ 'Sign Up' }}</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</header>

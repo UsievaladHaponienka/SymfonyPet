@@ -13,7 +13,8 @@
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
-    <body class="bg-lime-100 my-10">
+    <body class="bg-indigo-200">
+    {% include 'components/header.html.twig' %}
         {% block body %}{% endblock %}
     </body>
 </html>
