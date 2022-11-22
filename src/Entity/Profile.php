@@ -29,13 +29,13 @@ class Profile
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\OneToMany(mappedBy: 'profile_id', targetEntity: Album::class)]
+    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Album::class)]
     private Collection $albums;
 
-    #[ORM\OneToMany(mappedBy: 'profile_id', targetEntity: Post::class)]
+    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Post::class)]
     private Collection $posts;
 
-    #[ORM\OneToMany(mappedBy: 'profile_id', targetEntity: Comment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
 
     public function __construct()

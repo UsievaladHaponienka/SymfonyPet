@@ -70,17 +70,24 @@ class ProfileController extends AbstractController
     #[Route('/profile/{profileId}', name: 'app_profile')]
     public function index(int $profileId): Response
     {
-        $profile = $this->profileRepository->find($profileId);
         $user = $this->getUser();
+        $profile = $this->profileRepository->find($profileId);
+        $posts = $profile->getPosts();
         $postForm = $this->createForm(PostFormType::class, null, [
             'action' => $this->generateUrl('post_create'),
             'method' => 'POST'
         ]);
 
+        foreach ($posts->getIterator() as $post) {
+            $a = 1;
+            $b = 2;
+        }
+
         return $this->render('profile/index.html.twig',
             [
                 'user' => $user,
                 'profile' => $profile,
+                'posts' => $posts,
                 'postForm' => $postForm->createView()
             ]);
     }

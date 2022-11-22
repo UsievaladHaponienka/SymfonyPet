@@ -8,8 +8,6 @@ use App\Entity\Post;
 use App\Entity\User;
 use App\Form\PostFormType;
 use App\Repository\AlbumRepository;
-use App\Repository\PhotoRepository;
-use App\Repository\PostRepository;
 use App\Service\ImageProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

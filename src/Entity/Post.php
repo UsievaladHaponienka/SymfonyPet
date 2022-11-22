@@ -44,13 +44,13 @@ class Post
     private Collection $comments;
 
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Photo::class)]
-    private Collection $photo_id;
+    private Collection $photos;
 
     public function __construct()
     {
         $this->likes = new ArrayCollection();
         $this->comments = new ArrayCollection();
-        $this->photo_id = new ArrayCollection();
+        $this->photos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -193,15 +193,15 @@ class Post
     /**
      * @return Collection<int, Photo>
      */
-    public function getPhotoId(): Collection
+    public function getPhotos(): Collection
     {
-        return $this->photo_id;
+        return $this->photos;
     }
 
     public function addPhotoId(Photo $photoId): self
     {
-        if (!$this->photo_id->contains($photoId)) {
-            $this->photo_id->add($photoId);
+        if (!$this->photos->contains($photoId)) {
+            $this->photos->add($photoId);
             $photoId->setPost($this);
         }
 
@@ -210,7 +210,7 @@ class Post
 
     public function removePhotoId(Photo $photoId): self
     {
-        if ($this->photo_id->removeElement($photoId)) {
+        if ($this->photos->removeElement($photoId)) {
             // set the owning side to null (unless already changed)
             if ($photoId->getPost() === $this) {
                 $photoId->setPost(null);

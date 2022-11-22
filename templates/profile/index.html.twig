@@ -17,8 +17,6 @@
         {% endif %}
         <div class="col-span-8 bg-lime-200 rounded">
             <div class="grid grid-rows">
-
-
                 <div class="grid grid-cols-4 my-2 mx-4">
                     <div class="col-span-1">
                         <img src="{{ profile.profileImageUrl }}" alt="{{ 'No profile image' }}">
@@ -47,11 +45,30 @@
                         </div>
                     </div>
                 </div>
-                {% if (user.profile.id == profile.id) %}
-                <div class="m-6">
-                    {{ form_start(postForm) }}
-                    {{ form_end(postForm) }}
-                </div>
+                {% if (user and user.profile.id == profile.id) %}
+                    <div class="m-6">
+                        {{ form_start(postForm) }}
+                        {{ form_end(postForm) }}
+                    </div>
+                    <div>
+                        {% for post in posts %}
+                            <div class="m-6 bg-lime-100 rounded">
+                                {% if(post.photos) %}
+                                    <div>
+                                        {% for photo in post.photos %}
+                                            <img src="{{ photo.imageUrl }}">
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if(post.content) %}
+                                    <div>
+                                        {{ post.content }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
                 {% endif %}
             </div>
         </div>
