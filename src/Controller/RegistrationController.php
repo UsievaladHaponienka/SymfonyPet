@@ -48,11 +48,12 @@ class RegistrationController extends AbstractController
             $entityManager->persist($profile);
 
             $defaultUserAlbum = new Album();
-            $defaultUserAlbum->setType(Album::USER_TYPE);
+            $defaultUserAlbum->setType(Album::USER_DEFAULT_TYPE);
             $defaultUserAlbum->setProfile($profile);
             $defaultUserAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
             $entityManager->persist($defaultUserAlbum);
 
+            //TODO Check if profile is added to album
             $entityManager->flush();
 
             // Log in user after registration

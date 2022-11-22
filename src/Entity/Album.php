@@ -5,15 +5,17 @@ namespace App\Entity;
 use App\Repository\AlbumRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\This;
 
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
 class Album
 {
-    public const USER_TYPE = 'user';
+    public const USER_DEFAULT_TYPE = 'user_posts';
     public const GROUP_TYPE = 'group';
 
-    public const DEFAULT_ALBUM_TITLE = 'My Photo';
+    public const DEFAULT_ALBUM_TITLE = 'Posts photo';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -34,6 +36,9 @@ class Album
 
     #[ORM\OneToMany(mappedBy: 'album_id', targetEntity: Photo::class)]
     private Collection $photos;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
     public function __construct()
     {
@@ -119,6 +124,18 @@ class Album
                 $photo->setAlbum(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }

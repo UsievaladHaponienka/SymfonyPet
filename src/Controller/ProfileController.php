@@ -3,10 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\PostFormType;
 use App\Form\ProfileFormType;
 use App\Repository\ProfileRepository;
+use App\Service\ImageProcessor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,12 +19,18 @@ class ProfileController extends AbstractController
      */
     private ProfileRepository $profileRepository;
 
+    private ImageProcessor $imageProcessor;
+
     /**
      * @param ProfileRepository $profileRepository
+     * @param ImageProcessor $imageProcessor
      */
-    public function __construct(ProfileRepository $profileRepository)
-    {
+    public function __construct(
+        ProfileRepository $profileRepository,
+        ImageProcessor $imageProcessor
+    ) {
         $this->profileRepository = $profileRepository;
+        $this->imageProcessor = $imageProcessor;
     }
 
     #[Route('/profile/edit', name: 'app_profile_edit')]
@@ -35,28 +42,19 @@ class ProfileController extends AbstractController
         $form = $this->createForm(ProfileFormType::class, $profile);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()){
-            if($form->get('username')->getData()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('username')->getData()) {
                 $profile->setUsername($form->get('username')->getData());
             }
 
-            if($form->get('description')->getData()) {
+            if ($form->get('description')->getData()) {
                 $profile->setDescription($form->get('description')->getData());
             }
 
-            //TODO: Resize image
-            $imagePath = $form->get('profile_image_url')->getData();
-            if ($imagePath) {
-                $newFileName = uniqid() . '.' . $imagePath->guessExtension();
-                try {
-                    $imagePath->move(
-                        $this->getParameter('kernel.project_dir') . '/public/images',
-                        $newFileName);
-                } catch (FileException $e) {
-                    return new Response($e->getMessage());
-                }
-
-                $profile->setProfileImageUrl('/images/' . $newFileName);
+            $image = $form->get('profile_image_url')->getData();
+            if ($image) {
+                $newFileName = $this->imageProcessor->saveImage($image, '/public/images/profile');
+                $profile->setProfileImageUrl('/images/profile/' . $newFileName);
             }
 
             $this->profileRepository->save($profile, true);
@@ -74,7 +72,16 @@ class ProfileController extends AbstractController
     {
         $profile = $this->profileRepository->find($profileId);
         $user = $this->getUser();
+        $postForm = $this->createForm(PostFormType::class, null, [
+            'action' => $this->generateUrl('post_create'),
+            'method' => 'POST'
+        ]);
 
-        return $this->render('profile/index.html.twig', compact('user', 'profile'));
+        return $this->render('profile/index.html.twig',
+            [
+                'user' => $user,
+                'profile' => $profile,
+                'postForm' => $postForm->createView()
+            ]);
     }
 }

@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {
+    public const USER_POST_TYPE = 'user';
+    public const GROUP_POST_TYPE = 'group';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -40,10 +43,14 @@ class Post
     #[ORM\OneToMany(mappedBy: 'post_id', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
 
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Photo::class)]
+    private Collection $photo_id;
+
     public function __construct()
     {
         $this->likes = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->photo_id = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -177,6 +184,36 @@ class Post
             // set the owning side to null (unless already changed)
             if ($comment->getPost() === $this) {
                 $comment->setPost(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Photo>
+     */
+    public function getPhotoId(): Collection
+    {
+        return $this->photo_id;
+    }
+
+    public function addPhotoId(Photo $photoId): self
+    {
+        if (!$this->photo_id->contains($photoId)) {
+            $this->photo_id->add($photoId);
+            $photoId->setPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhotoId(Photo $photoId): self
+    {
+        if ($this->photo_id->removeElement($photoId)) {
+            // set the owning side to null (unless already changed)
+            if ($photoId->getPost() === $this) {
+                $photoId->setPost(null);
             }
         }
 

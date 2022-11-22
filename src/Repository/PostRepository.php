@@ -37,6 +37,7 @@ class PostRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+
     }
 
 //    /**
