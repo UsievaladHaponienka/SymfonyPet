@@ -27,8 +27,9 @@ class ProfileController extends AbstractController
      */
     public function __construct(
         ProfileRepository $profileRepository,
-        ImageProcessor $imageProcessor
-    ) {
+        ImageProcessor    $imageProcessor
+    )
+    {
         $this->profileRepository = $profileRepository;
         $this->imageProcessor = $imageProcessor;
     }
@@ -53,7 +54,12 @@ class ProfileController extends AbstractController
 
             $image = $form->get('profile_image_url')->getData();
             if ($image) {
-                $newFileName = $this->imageProcessor->saveImage($image, '/public/images/profile');
+                $newFileName = $this->imageProcessor
+                    ->saveImage(
+                        $image,
+                        ImageProcessor::PROFILE_IMAGE_TYPE,
+                        '/public/images/profile/'
+                    );
                 $profile->setProfileImageUrl('/images/profile/' . $newFileName);
             }
 
@@ -77,11 +83,6 @@ class ProfileController extends AbstractController
             'action' => $this->generateUrl('post_create'),
             'method' => 'POST'
         ]);
-
-        foreach ($posts->getIterator() as $post) {
-            $a = 1;
-            $b = 2;
-        }
 
         return $this->render('profile/index.html.twig',
             [

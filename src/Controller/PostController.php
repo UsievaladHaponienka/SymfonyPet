@@ -59,7 +59,8 @@ class PostController extends AbstractController
             $content = $form->get('content')->getData();
 
             if ($image) {
-                $imagePath = $this->imageProcessor->saveImage($image);
+                $imagePath = $this->imageProcessor
+                    ->saveImage($image, ImageProcessor::POST_IMAGE_TYPE);
 
                 /** @var Album $postsAlbum */
                 $postsAlbum = $this->albumRepository->findOneBy([
