@@ -33,6 +33,7 @@ class Profile
     private Collection $albums;
 
     #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Post::class)]
+    #[ORM\OrderBy(['created_at' => 'DESC'])]
     private Collection $posts;
 
     #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Comment::class, orphanRemoval: true)]
