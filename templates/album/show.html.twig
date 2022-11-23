@@ -10,13 +10,18 @@
             </div>
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded">
-            <div>
-                <div class="ml-6 mt-6">
-                    <a href="{{ path('album_index', {'profileId': profile.id}) }}">Back</a>
+            <div class="mx-6 mt-6 grid grid-cols-12">
+                <div class="text-left col-span-1 inline">
+                    {% include('components/buttons/back-button.html.twig')
+                        with {'button_url': path('album_index', {'profileId': profile.id})}%}
                 </div>
-                <div class="text-2xl text-center mt-6">
-                    {{ album.title }}
+                <div class="text-right col-span-1 col-start-12 inline">
+                    {% include('components/buttons/delete-button.html.twig')
+                        with {'button_url': path('album_confirm_delete', {'albumId': album.id})}%}
                 </div>
+            </div>
+            <div class="text-2xl text-center mt-6">
+                {{ album.title }}
             </div>
             <div class="text-center mt-6">
                 {{ album.description }}

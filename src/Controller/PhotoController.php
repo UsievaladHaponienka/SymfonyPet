@@ -35,7 +35,7 @@ class PhotoController extends AbstractController
     {
         $photo = $this->photoRepository->find($photoId);
         if ($photo) {
-            return $this->render('photo/index.html.twig',[
+            return $this->render('photo/index.html.twig', [
                 'photo' => $photo
             ]);
         }
@@ -86,5 +86,22 @@ class PhotoController extends AbstractController
         }
 
         // return 404
+    }
+
+    #[Route('photo/delete/{photoId}', name: 'photo_delete')]
+    public function delete(int $photoId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $photo = $this->photoRepository->find($photoId);
+
+        if ($photo && $user->getId() == $photo->getAlbum()->getProfile()->getUser()->getId()) {
+            $albumId = $photo->getAlbum()->getId();
+            $this->photoRepository->remove($photo, true);
+
+            return $this->redirectToRoute('album_show', ['albumId' => $albumId]);
+        }
+
+        //return 404 (or 503?)
     }
 }

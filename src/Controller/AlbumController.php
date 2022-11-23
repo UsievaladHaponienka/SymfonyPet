@@ -46,24 +46,6 @@ class AlbumController extends AbstractController
         //return 404
     }
 
-    //TODO: Check if profile id is actually needed
-    #[Route('album/{albumId}', name: 'album_show')]
-    public function show(int $albumId): Response
-    {
-        $album = $this->albumRepository->find($albumId);
-
-        if ($album) {
-            $profile = $album->getProfile();
-
-            return $this->render('album/show.html.twig', [
-                'album' => $album,
-                'profile' => $profile
-            ]);
-        }
-
-        //return 404
-    }
-
     #[Route('album/create', name: 'album_create')]
     public function create(Request $request): Response
     {
@@ -104,6 +86,7 @@ class AlbumController extends AbstractController
         $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
+        //TODO: Check how to handle this check condition using Symfony (like Laravel middleware)
         if($album && $album->getProfile()->getUser()->getId() == $user->getId()) {
             $form = $this->createForm(AlbumFormType::class, $album);
 
@@ -130,5 +113,57 @@ class AlbumController extends AbstractController
         }
 
         // return 404
+    }
+
+    //TODO: Check if profile id is actually needed
+    #[Route('album/{albumId}', name: 'album_show')]
+    public function show(int $albumId): Response
+    {
+        $album = $this->albumRepository->find($albumId);
+
+        if ($album) {
+            $profile = $album->getProfile();
+
+            return $this->render('album/show.html.twig', [
+                'album' => $album,
+                'profile' => $profile
+            ]);
+        }
+
+        //return 404
+    }
+
+    #[Route('album/confirm-delete/{albumId}', name: 'album_confirm_delete')]
+    public function confirmDelete(int $albumId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $album = $this->albumRepository->find($albumId);
+
+        if($album && $album->getProfile()->getUser()->getId() == $user->getId()) {
+            return $this->render('album/confirm-delete.html.twig',[
+                'album' => $album
+            ]);
+        }
+
+        //return 404 or 503
+    }
+
+    #[Route('album/delete/{albumId}', name: 'album_delete')]
+    public function delete(int $albumId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $album = $this->albumRepository->find($albumId);
+
+        if($album && $album->getProfile()->getUser()->getId() == $user->getId()) {
+            $this->albumRepository->remove($album, true);
+
+            return $this->redirectToRoute('album_index', [
+                'profileId' => $user->getProfile()->getId()
+            ]);
+        }
+
+        //return 404 or 503
     }
 }
