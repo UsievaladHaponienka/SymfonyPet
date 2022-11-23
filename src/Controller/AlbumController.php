@@ -46,17 +46,22 @@ class AlbumController extends AbstractController
         //return 404
     }
 
-    #[Route('profile/{profileId}/album/{albumId}', name: 'album_show')]
-    public function show(int $profileId, int $albumId): Response
+    //TODO: Check if profile id is actually needed
+    #[Route('album/{albumId}', name: 'album_show')]
+    public function show(int $albumId): Response
     {
         $album = $this->albumRepository->find($albumId);
-        $profile = $this->profileRepository->find($profileId);
 
-        return $this->render('album/show.html.twig', [
-            'album' => $album,
-            'profile' => $profile
-        ]);
+        if ($album) {
+            $profile = $album->getProfile();
 
+            return $this->render('album/show.html.twig', [
+                'album' => $album,
+                'profile' => $profile
+            ]);
+        }
+
+        //return 404
     }
 
     #[Route('album/create', name: 'album_create')]
@@ -83,7 +88,6 @@ class AlbumController extends AbstractController
             $this->albumRepository->save($album, true);
 
             return $this->redirectToRoute('album_show', [
-                'profileId' => $profile->getId(),
                 'albumId' => $album->getId()
             ]);
         }
@@ -91,5 +95,40 @@ class AlbumController extends AbstractController
         return $this->render('album/create.html.twig',[
            'albumForm' => $form->createView()
         ]);
+    }
+
+    #[Route('album/edit/{albumId}', name: 'album_edit')]
+    public function edit(Request $request, int $albumId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $album = $this->albumRepository->find($albumId);
+
+        if($album->getProfile()->getUser()->getId() == $user->getId()) {
+            $form = $this->createForm(AlbumFormType::class, $album);
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                if ($form->get('title')->getData() != $album->getTitle()) {
+                    $album->setTitle($form->get('title')->getData());
+                }
+                if ($form->get('description')->getData() != $album->getDescription()) {
+                    $album->setDescription($form->get('description')->getData());
+                }
+                $this->albumRepository->save($album, true);
+
+                return $this->redirectToRoute('album_show', [
+                    'albumId' => $album->getId()
+                ]);
+            }
+
+            return $this->render('album/edit.html.twig',[
+                'album' => $album,
+                'albumForm' => $form->createView()
+            ]);
+        }
+
+        // return 404
     }
 }

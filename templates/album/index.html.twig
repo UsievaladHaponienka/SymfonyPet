@@ -23,7 +23,7 @@
                 {% for album in albums %}
                     <div class="m-6">
                         <div>
-                            <a href="{{ path('album_show', {'profileId': profile.id, 'albumId': album.id}) }}">
+                            <a href="{{ path('album_show', {'albumId': album.id}) }}">
                                 {% if(album.photos.count) %}
                                     <img src="{{ album.photos.first().imageUrl }}">
                                 {% else %}
@@ -32,7 +32,7 @@
                             </a>
                         </div>
                         <div class="text-xl text-center">
-                            <a href="{{ path('album_show', {'profileId': profile.id, 'albumId': album.id}) }}">
+                            <a href="{{ path('album_show', {'albumId': album.id}) }}">
                                 {{ album.title }}
                             </a>
                         </div>

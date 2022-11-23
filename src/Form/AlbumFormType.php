@@ -27,7 +27,7 @@ class AlbumFormType extends AbstractType
                 'attr' => ['class' => $this->getTextInputClass()],
                 'label_attr' => ['class' => $this->getLabelClass()]
             ])->add('add_new_post', SubmitType::class, [
-                'label' => 'Create new album',
+                'label' => 'Submit',
                 'attr' => ['class' => $this->getSubmitButtonClass()]
             ]);
     }
