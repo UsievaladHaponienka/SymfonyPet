@@ -32,7 +32,7 @@ class ProfileController extends AbstractController
         $this->imageProcessor = $imageProcessor;
     }
 
-    #[Route('/profile/edit', name: 'app_profile_edit')]
+    #[Route('/profile/edit', name: 'profile_edit')]
     public function edit(Request $request): Response
     {
         /** @var User $user */
@@ -77,7 +77,6 @@ class ProfileController extends AbstractController
     #[Route('/profile/{profileId}', name: 'profile_index')]
     public function index(int $profileId): Response
     {
-        $user = $this->getUser();
         $profile = $this->profileRepository->find($profileId);
 
         $post = new Post();
@@ -88,7 +87,6 @@ class ProfileController extends AbstractController
 
         return $this->render('profile/index.html.twig',
             [
-                'user' => $user,
                 'profile' => $profile,
                 'postForm' => $postForm->createView()
             ]);

@@ -8,6 +8,8 @@ use App\Entity\Post;
 use App\Entity\User;
 use App\Form\PostFormType;
 use App\Repository\AlbumRepository;
+use App\Repository\PhotoRepository;
+use App\Repository\PostRepository;
 use App\Service\ImageProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,19 +25,25 @@ class PostController extends AbstractController
 
     private EntityManagerInterface $entityManager;
 
+    private PostRepository $postRepository;
+    private PhotoRepository $photoRepository;
+
     /**
      * @param AlbumRepository $albumRepository
      * @param ImageProcessor $imageProcessor
-     * @param EntityManagerInterface $entityManager
+     * @param PostRepository $postRepository
+     * @param PhotoRepository $photoRepository
      */
     public function __construct(
         AlbumRepository $albumRepository,
         ImageProcessor  $imageProcessor,
-        EntityManagerInterface $entityManager
+        PostRepository $postRepository,
+        PhotoRepository $photoRepository
     ){
         $this->albumRepository = $albumRepository;
         $this->imageProcessor = $imageProcessor;
-        $this->entityManager = $entityManager;
+        $this->postRepository = $postRepository;
+        $this->photoRepository = $photoRepository;
     }
 
     //TODO: Make it possible to create post in group
@@ -83,17 +91,43 @@ class PostController extends AbstractController
 
             if ($content || $image) {
                 $post->setCreatedAt(new \DateTimeImmutable());
-                $this->entityManager->persist($post);
                 if (isset($photo)) {
                     $photo->setCreatedAt(new \DateTimeImmutable());
-                    $this->entityManager->persist($photo);
+                    $this->photoRepository->save($photo);
                 }
 
-                $this->entityManager->flush();
+                $this->postRepository->save($post, true);
+
                 return $this->redirectToRoute('profile_index', ['profileId' => $profile->getId()]);
             }
         }
         //TODO: Process exception
          throw new \Exception('Post must contain either image or content');
+    }
+
+    #[Route('/post/delete/{postId}', name: 'post_delete')]
+    public function delete(int $postId): Response
+    {
+        $post = $this->postRepository->find($postId);
+
+        if($post && $this->isActionAllowed($post)) {
+            $profileId = $post->getProfile()->getId();
+            $this->postRepository->remove($post, true);
+
+            return $this->redirectToRoute('profile_index', [
+                'profileId' => $profileId
+            ]);
+        }
+
+        throw $this->createNotFoundException();
+
+    }
+
+    protected function isActionAllowed(Post $post): bool
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        return $user->getId() == $post->getProfile()->getUser()->getId();
     }
 }

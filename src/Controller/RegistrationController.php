@@ -41,16 +41,18 @@ class RegistrationController extends AbstractController
                 )
             );
 
+            $profile = new Profile();
+            $defaultUserAlbum = new Album();
+
+            $defaultUserAlbum->setType(Album::USER_DEFAULT_TYPE);
+            $defaultUserAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
+
+            $user->setProfile($profile);
             $entityManager->persist($user);
 
-            $profile = new Profile();
-            $profile->setUser($user);
+            $defaultUserAlbum->setProfile($profile);
             $entityManager->persist($profile);
 
-            $defaultUserAlbum = new Album();
-            $defaultUserAlbum->setType(Album::USER_DEFAULT_TYPE);
-            $defaultUserAlbum->setProfile($profile);
-            $defaultUserAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
             $entityManager->persist($defaultUserAlbum);
 
             //TODO Check if profile is added to album

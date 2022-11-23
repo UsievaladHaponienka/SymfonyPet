@@ -37,13 +37,13 @@ class Post
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\OneToMany(mappedBy: 'post_id', targetEntity: Like::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Like::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $likes;
 
-    #[ORM\OneToMany(mappedBy: 'post_id', targetEntity: Comment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Comment::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $comments;
 
-    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Photo::class)]
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Photo::class, cascade: ['remove'],)]
     private Collection $photos;
 
     public function __construct()

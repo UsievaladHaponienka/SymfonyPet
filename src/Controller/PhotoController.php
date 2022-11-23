@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Album;
 use App\Entity\Photo;
+use App\Entity\User;
 use App\Form\PhotoFormType;
 use App\Repository\AlbumRepository;
 use App\Repository\PhotoRepository;
@@ -47,7 +48,7 @@ class PhotoController extends AbstractController
     {
         $album = $this->albumRepository->find($albumId);
 
-        if ($album && $this->isAllowed($album)) {
+        if ($album && $this->isActionAllowed($album)) {
             $photo = new Photo();
             $form = $this->createForm(PhotoFormType::class, $photo);
 
@@ -90,7 +91,7 @@ class PhotoController extends AbstractController
     {
         $photo = $this->photoRepository->find($photoId);
 
-        if ($photo && $this->isAllowed($photo->getAlbum())) {
+        if ($photo && $this->isActionAllowed($photo->getAlbum())) {
             $albumId = $photo->getAlbum()->getId();
             $this->photoRepository->remove($photo, true);
 
@@ -100,8 +101,9 @@ class PhotoController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    protected function isAllowed(Album $album): bool
+    protected function isActionAllowed(Album $album): bool
     {
+        /** @var User $user */
         $user = $this->getUser();
 
         return $album->getProfile()->getUser()->getId() == $user->getId();
