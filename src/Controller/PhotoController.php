@@ -30,6 +30,19 @@ class PhotoController extends AbstractController
         $this->photoRepository = $photoRepository;
     }
 
+    #[Route('photo/{photoId}', name: 'photo_index')]
+    public function index(int $photoId): Response
+    {
+        $photo = $this->photoRepository->find($photoId);
+        if ($photo) {
+            return $this->render('photo/index.html.twig',[
+                'photo' => $photo
+            ]);
+        }
+
+        // return 404
+    }
+
     #[Route('album/{albumId}/photo/create', name: 'photo_create')]
     public function create(Request $request, int $albumId): Response
     {

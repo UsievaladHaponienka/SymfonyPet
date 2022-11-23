@@ -39,9 +39,11 @@
             <div class="grid grid-cols-4">
                 {% for photo in album.photos %}
                     <div class="m-6">
-                        <div>
-                            <img src="{{ photo.imageUrl }}">
-                        </div>
+                        <a href="{{ path('photo_index', {'photoId': photo.id}) }}">
+                            <div>
+                                <img src="{{ photo.imageUrl }}">
+                            </div>
+                        </a>
                         <div class="text-xl text-center">
                             {{ photo.description }}
                         </div>
