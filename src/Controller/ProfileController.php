@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Post;
 use App\Entity\User;
 use App\Form\PostFormType;
 use App\Form\ProfileFormType;
@@ -14,9 +15,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProfileController extends AbstractController
 {
-    /**
-     * @var ProfileRepository
-     */
     private ProfileRepository $profileRepository;
 
     private ImageProcessor $imageProcessor;
@@ -40,6 +38,7 @@ class ProfileController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         $profile = $user->getProfile();
+
         $form = $this->createForm(ProfileFormType::class, $profile);
         $form->handleRequest($request);
 
@@ -54,16 +53,18 @@ class ProfileController extends AbstractController
 
             $image = $form->get('profile_image_url')->getData();
             if ($image) {
-                $newFileName = $this->imageProcessor
-                    ->saveImage(
-                        $image,
-                        ImageProcessor::PROFILE_IMAGE_TYPE,
-                        '/public/images/profile/'
-                    );
+                $newFileName = $this->imageProcessor->saveImage(
+                    $image,
+                    ImageProcessor::PROFILE_IMAGE_TYPE,
+                    '/public/images/profile/'
+                );
                 $profile->setProfileImageUrl('/images/profile/' . $newFileName);
             }
 
             $this->profileRepository->save($profile, true);
+            return $this->redirectToRoute('profile_index', [
+                'profileId' => $profile->getId()
+            ]);
         }
 
         return $this->render('profile/edit.html.twig', [
@@ -73,13 +74,14 @@ class ProfileController extends AbstractController
         ]);
     }
 
-    #[Route('/profile/{profileId}', name: 'app_profile')]
+    #[Route('/profile/{profileId}', name: 'profile_index')]
     public function index(int $profileId): Response
     {
         $user = $this->getUser();
         $profile = $this->profileRepository->find($profileId);
-        $posts = $profile->getPosts();
-        $postForm = $this->createForm(PostFormType::class, null, [
+
+        $post = new Post();
+        $postForm = $this->createForm(PostFormType::class, $post, [
             'action' => $this->generateUrl('post_create'),
             'method' => 'POST'
         ]);
@@ -88,7 +90,6 @@ class ProfileController extends AbstractController
             [
                 'user' => $user,
                 'profile' => $profile,
-                'posts' => $posts,
                 'postForm' => $postForm->createView()
             ]);
     }

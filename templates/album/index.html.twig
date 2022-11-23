@@ -20,7 +20,7 @@
                 </div>
             {% endif %}
             <div class="grid grid-cols-4">
-                {% for album in albums %}
+                {% for album in profile.albums %}
                     <div class="m-6">
                         <div>
                             <a href="{{ path('album_show', {'albumId': album.id}) }}">

@@ -50,7 +50,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         /** @var User $user */
         $user = $token->getUser();
         return new RedirectResponse($this->urlGenerator->generate(
-            'app_profile', ['profileId' => $user->getProfile()->getId()])
+            'profile_index', ['profileId' => $user->getProfile()->getId()])
         );
     }
 

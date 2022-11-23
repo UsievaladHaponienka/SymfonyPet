@@ -15,7 +15,7 @@ class HomepageController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         if ($user) {
-            return $this->redirectToRoute('app_profile', [
+            return $this->redirectToRoute('profile_index', [
                 'profileId' => $user->getProfile()->getId()
             ]);
         }

@@ -40,7 +40,7 @@ class PostController extends AbstractController
 
     //TODO: Make it possible to create post in group
     #[Route('/post/create', name: 'post_create', methods: 'POST')]
-    public function create(Request $request)
+    public function create(Request $request): Response
     {
         $form = $this->createForm(PostFormType::class);
         $form->handleRequest($request);
@@ -90,18 +90,10 @@ class PostController extends AbstractController
                 }
 
                 $this->entityManager->flush();
-                return $this->redirectToRoute('app_profile', ['profileId' => $profile->getId()]);
+                return $this->redirectToRoute('profile_index', ['profileId' => $profile->getId()]);
             }
         }
         //TODO: Process exception
          throw new \Exception('Post must contain either image or content');
-    }
-
-    #[Route('/post', name: 'app_post')]
-    public function index(): Response
-    {
-        return $this->render('post/index.html.twig', [
-            'controller_name' => 'PostController',
-        ]);
     }
 }

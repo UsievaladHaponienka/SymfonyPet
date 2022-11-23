@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Album;
 use App\Entity\Photo;
-use App\Entity\User;
 use App\Form\PhotoFormType;
 use App\Repository\AlbumRepository;
 use App\Repository\PhotoRepository;
@@ -23,8 +23,7 @@ class PhotoController extends AbstractController
         ImageProcessor  $imageProcessor,
         AlbumRepository $albumRepository,
         PhotoRepository $photoRepository
-    )
-    {
+    ){
         $this->imageProcessor = $imageProcessor;
         $this->albumRepository = $albumRepository;
         $this->photoRepository = $photoRepository;
@@ -40,17 +39,15 @@ class PhotoController extends AbstractController
             ]);
         }
 
-        // return 404
+        throw $this->createNotFoundException();
     }
 
     #[Route('album/{albumId}/photo/create', name: 'photo_create')]
     public function create(Request $request, int $albumId): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        if ($album && $album->getProfile()->getUser()->getId() == $user->getId()) {
+        if ($album && $this->isAllowed($album)) {
             $photo = new Photo();
             $form = $this->createForm(PhotoFormType::class, $photo);
 
@@ -85,23 +82,28 @@ class PhotoController extends AbstractController
             ]);
         }
 
-        // return 404
+        throw $this->createNotFoundException();
     }
 
     #[Route('photo/delete/{photoId}', name: 'photo_delete')]
     public function delete(int $photoId): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
         $photo = $this->photoRepository->find($photoId);
 
-        if ($photo && $user->getId() == $photo->getAlbum()->getProfile()->getUser()->getId()) {
+        if ($photo && $this->isAllowed($photo->getAlbum())) {
             $albumId = $photo->getAlbum()->getId();
             $this->photoRepository->remove($photo, true);
 
             return $this->redirectToRoute('album_show', ['albumId' => $albumId]);
         }
 
-        //return 404 (or 503?)
+        throw $this->createNotFoundException();
+    }
+
+    protected function isAllowed(Album $album): bool
+    {
+        $user = $this->getUser();
+
+        return $album->getProfile()->getUser()->getId() == $user->getId();
     }
 }
