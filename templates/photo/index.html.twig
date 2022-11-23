@@ -20,13 +20,6 @@
             <div class="m-6">
                 <div class="my-4">
                     {{ photo.description }}
-                    {% if (app.user.id == photo.album.profile.user.id) %}
-                        <a href="#">
-                            <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
-                                {{ 'Edit photo' }}
-                            </button>
-                        </a>
-                    {% endif %}
                 </div>
                 <img src="{{ photo.imageUrl }}">
             </div>

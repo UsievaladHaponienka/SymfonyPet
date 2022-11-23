@@ -2,18 +2,24 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomepageController extends AbstractController
 {
-    #[Route('/homepage/{name}', name: 'app_homepage', defaults: ['name' => null], methods: ['GET', 'HEAD'])]
-    public function index($name): Response
+    #[Route('/', name: 'homepage', methods: ['GET', 'HEAD'])]
+    public function index(): Response
     {
-        return $this->render('homepage/index.html.twig', [
-            'controller_name' => 'HomepageController',
-            'name' => $name,
-        ]);
+        /** @var User $user */
+        $user = $this->getUser();
+        if ($user) {
+            return $this->redirectToRoute('app_profile', [
+                'profileId' => $user->getProfile()->getId()
+            ]);
+        }
+
+        return $this->redirectToRoute('app_login');
     }
 }
