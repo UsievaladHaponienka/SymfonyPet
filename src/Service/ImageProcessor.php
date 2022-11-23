@@ -13,12 +13,16 @@ class ImageProcessor
 {
     public const PROFILE_IMAGE_TYPE = 'profile';
     public const POST_IMAGE_TYPE = 'post';
+    public const PHOTO_IMAGE_TYPE = 'photo';
 
     private const MAX_PROFILE_PIC_WIDTH = 200;
     private const MAX_PROFILE_PIC_HEIGHT = 200;
 
     private const MAX_POST_PIC_WIDTH = 1200;
     private const MAX_POST_PIC_HEIGHT = 1200;
+
+    private const MAX_PHOTO_WIDTH = 1200;
+    private const MAX_PHOTO_HEIGHT = 1200;
 
     private KernelInterface $kernel;
     private Imagine $imagine;
@@ -39,9 +43,13 @@ class ImageProcessor
                     $width = self::MAX_PROFILE_PIC_WIDTH;
                     $height = self::MAX_PROFILE_PIC_HEIGHT;
                     break;
-                default:
+                case self::POST_IMAGE_TYPE:
                     $width = self::MAX_POST_PIC_WIDTH;
                     $height = self::MAX_POST_PIC_HEIGHT;
+                    break;
+                default:
+                    $width = self::MAX_PHOTO_WIDTH;
+                    $height = self::MAX_PHOTO_HEIGHT;
                     break;
             }
 
@@ -50,7 +58,6 @@ class ImageProcessor
                 ->open($this->kernel->getProjectDir() . $storagePath . $newFileName)
                 ->resize(new Box($width, $height))
                 ->save();
-
 
             return $newFileName;
         } catch (FileException $e) {

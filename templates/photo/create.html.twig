@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Create new album{% endblock %}
+{% block title %}Add photo{% endblock %}
 
 {% block body %}
     <div class="grid grid-cols-12 gap-4">
@@ -21,9 +21,9 @@
             <div class="text-center mt-6">
             </div>
             <div class="m-6">
-                {{ form_start(albumForm) }}
-                <h1 class="text-2xl text-center">Edit album</h1>
-                {{ form_end(albumForm) }}
+                {{ form_start(photoForm) }}
+                <h1 class="text-2xl text-center">Add new photo</h1>
+                {{ form_end(photoForm) }}
             </div>
         </div>
     </div>

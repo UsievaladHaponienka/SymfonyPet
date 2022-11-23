@@ -104,7 +104,7 @@ class AlbumController extends AbstractController
         $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        if($album->getProfile()->getUser()->getId() == $user->getId()) {
+        if($album && $album->getProfile()->getUser()->getId() == $user->getId()) {
             $form = $this->createForm(AlbumFormType::class, $album);
 
             $form->handleRequest($request);
