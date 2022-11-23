@@ -12,20 +12,23 @@
         <div class="col-span-8 bg-indigo-300 rounded">
             {% if(app.user.profile.id == profile.id) %}
                 <div class="text-center mt-6">
-                    <a href="#">
+                    <a href="{{ path('album_create') }}">
                         <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
                             {{ 'Create new album' }}
                         </button>
                     </a>
                 </div>
-
             {% endif %}
             <div class="grid grid-cols-4">
                 {% for album in albums %}
                     <div class="m-6">
                         <div>
                             <a href="{{ path('album_show', {'profileId': profile.id, 'albumId': album.id}) }}">
-                                <img src="{{ album.photos.first().imageUrl }}">
+                                {% if(album.photos.count) %}
+                                    <img src="{{ album.photos.first().imageUrl }}">
+                                {% else %}
+                                    <img src="https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=">
+                                {% endif %}
                             </a>
                         </div>
                         <div class="text-xl text-center">

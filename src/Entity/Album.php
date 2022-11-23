@@ -13,6 +13,8 @@ use phpDocumentor\Reflection\Types\This;
 class Album
 {
     public const USER_DEFAULT_TYPE = 'user_posts';
+    public const USER_CUSTOM_TYPE = 'user_custom';
+
     public const GROUP_TYPE = 'group';
 
     public const DEFAULT_ALBUM_TITLE = 'Posts photo';

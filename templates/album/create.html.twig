@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create new album{% endblock %}
+
+{% block body %}
+    <div class="grid grid-cols-12 gap-4">
+        {% if(app.user) %}
+            <div class="col-span-2 col-start-2">
+                {% include 'components/profile/navigation.html.twig' %}
+            </div>
+        {% endif %}
+        <div class="col-span-8 bg-indigo-300 rounded">
+            <div class="text-center mt-6">
+            </div>
+            <div class="m-6">
+                {{ form_start(albumForm) }}
+                <h1 class="text-2xl text-center">Create new album</h1>
+                {{ form_end(albumForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
