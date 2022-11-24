@@ -335,14 +335,22 @@ class Profile
         return (bool) $friendships->count();
     }
 
+    //TODO: Don't like this method, it probably should be refactored
     public function isFriendshipRequested(int $requesteeId): bool
     {
-        $requests = $this->getRequestsMadeByProfile()->filter(
+        $requestsBy = $this->getRequestsMadeByProfile()->filter(
             function ($request) use ($requesteeId) {
                 return $request->getRequestee()->getId() == $requesteeId;
             }
         );
 
-        return (bool) $requests->count();
+        $requesterId = $this->getUser()->getProfile()->getId();
+        $requestsTo = $this->getRequestsMadeToProfile()->filter(
+            function ($request) use ($requesterId) {
+                return $request->getRequestee()->getId() == $requesterId;
+            }
+        );
+
+        return (bool) ($requestsBy->count() + $requestsTo->count());
     }
 }
