@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Groups{% endblock %}
+
+{% block body %}
+    <div class="grid grid-cols-12 gap-4">
+        {% if(app.user) %}
+            <div class="col-span-2 col-start-2">
+                {% include 'components/profile/navigation.html.twig' %}
+            </div>
+        {% endif %}
+        <div class="col-span-8 bg-indigo-300 rounded ">
+            <div class="grid grid-rows">
+                {% for group in groups %}
+                    <div class="grid grid-cols-2">
+
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -39,11 +39,15 @@ class Profile
     #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
 
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'profile')]
+    private Collection $groups;
+
     public function __construct()
     {
         $this->albums = new ArrayCollection();
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -184,6 +188,33 @@ class Profile
             if ($comment->getProfile() === $this) {
                 $comment->setProfile(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Group>
+     */
+    public function getGroups(): Collection
+    {
+        return $this->groups;
+    }
+
+    public function addGroup(Group $group): self
+    {
+        if (!$this->groups->contains($group)) {
+            $this->groups->add($group);
+            $group->addProfile($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroup(Group $group): self
+    {
+        if ($this->groups->removeElement($group)) {
+            $group->removeProfile($this);
         }
 
         return $this;

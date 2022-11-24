@@ -15,7 +15,7 @@
                 {% include 'components/profile/navigation.html.twig' %}
             </div>
         {% endif %}
-        <div class="col-span-8 bg-indigo-300 rounded">
+        <div class="col-span-8 bg-indigo-300 rounded ">
             <div class="grid grid-rows">
                 <div class="grid grid-cols-4 my-2 mx-4">
                     <div class="col-span-1">
@@ -45,6 +45,14 @@
                                 {% endif %}
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="m-4">
+                        <a href="{{ path('album_index', {'profileId': profile.id}) }}">Albums</a>
+                    </div>
+                    <div class="m-4">
+                        <a href="{{ path('group_index', {'profileId': profile.id}) }}">Groups</a>
                     </div>
                 </div>
                 {% if (app.user and app.user.profile.id == profile.id) %}

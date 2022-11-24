@@ -41,10 +41,14 @@ class Group
     #[ORM\OneToMany(mappedBy: 'group_id', targetEntity: Post::class)]
     private Collection $posts;
 
+    #[ORM\ManyToMany(targetEntity: Profile::class, inversedBy: 'groups')]
+    private Collection $profile;
+
     public function __construct()
     {
         $this->albums = new ArrayCollection();
         $this->posts = new ArrayCollection();
+        $this->profile = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -180,6 +184,30 @@ class Group
                 $post->setGroup(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Profile>
+     */
+    public function getProfile(): Collection
+    {
+        return $this->profile;
+    }
+
+    public function addProfile(Profile $profile): self
+    {
+        if (!$this->profile->contains($profile)) {
+            $this->profile->add($profile);
+        }
+
+        return $this;
+    }
+
+    public function removeProfile(Profile $profile): self
+    {
+        $this->profile->removeElement($profile);
 
         return $this;
     }
