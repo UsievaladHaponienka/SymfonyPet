@@ -48,6 +48,9 @@ class Profile
     #[ORM\OneToMany(mappedBy: 'requestee', targetEntity: FriendshipRequest::class)]
     private Collection $requestee;
 
+    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Friendship::class)]
+    private Collection $friendships;
+
     public function __construct()
     {
         $this->albums = new ArrayCollection();
@@ -56,6 +59,7 @@ class Profile
         $this->groups = new ArrayCollection();
         $this->requester = new ArrayCollection();
         $this->requestee = new ArrayCollection();
+        $this->friendships = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -282,6 +286,36 @@ class Profile
             // set the owning side to null (unless already changed)
             if ($requestee->getRequestee() === $this) {
                 $requestee->setRequestee(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Friendship>
+     */
+    public function getFriendships(): Collection
+    {
+        return $this->friendships;
+    }
+
+    public function addFriendship(Friendship $friendship): self
+    {
+        if (!$this->friendships->contains($friendship)) {
+            $this->friendships->add($friendship);
+            $friendship->setProfile($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFriendship(Friendship $friendship): self
+    {
+        if ($this->friendships->removeElement($friendship)) {
+            // set the owning side to null (unless already changed)
+            if ($friendship->getProfile() === $this) {
+                $friendship->setProfile(null);
             }
         }
 
