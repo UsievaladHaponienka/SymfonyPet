@@ -30,6 +30,11 @@
                                     <p>{{ friendship.friend.username }}</p>
                                 </a>
                             </div>
+                            <div class="col-span-4 items-center">
+                                {% include('components/buttons/remove-friend-button.html.twig') with {
+                                    'button_url': path('friendship_delete', {'friendshipId': friendship.id})
+                                } %}
+                            </div>
                         </div>
                         {% endfor %}
                     </div>

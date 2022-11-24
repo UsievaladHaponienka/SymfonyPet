@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Repository\FriendshipRepository;
+use App\Repository\FriendshipRequestRepository;
 use App\Repository\ProfileRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -320,5 +322,27 @@ class Profile
         }
 
         return $this;
+    }
+
+    public function isFriend(int $friendId): bool
+    {
+        $friendships = $this->getFriendships()->filter(
+            function ($friendship) use ($friendId) {
+                return $friendship->getFriend()->getId() == $friendId;
+            }
+        );
+
+        return (bool) $friendships->count();
+    }
+
+    public function isFriendshipRequested(int $requesteeId): bool
+    {
+        $requests = $this->getRequestsMadeByProfile()->filter(
+            function ($request) use ($requesteeId) {
+                return $request->getRequestee()->getId() == $requesteeId;
+            }
+        );
+
+        return (bool) $requests->count();
     }
 }

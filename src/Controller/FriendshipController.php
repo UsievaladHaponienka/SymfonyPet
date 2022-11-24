@@ -19,10 +19,10 @@ class FriendshipController extends AbstractController
     private FriendshipRepository $friendshipRepository;
 
     public function __construct(
-        ProfileRepository $profileRepository,
+        ProfileRepository           $profileRepository,
         FriendshipRequestRepository $friendshipRequestRepository,
-        FriendshipRepository $friendshipRepository,
-    ){
+        FriendshipRepository        $friendshipRepository,
+    ) {
         $this->profileRepository = $profileRepository;
         $this->friendshipRequestRepository = $friendshipRequestRepository;
         $this->friendshipRepository = $friendshipRepository;
@@ -58,7 +58,7 @@ class FriendshipController extends AbstractController
         $request = $this->friendshipRequestRepository->find($requestId);
 
         if ($request && ($user->getProfile()->getId() == $request->getRequestee()->getId() ||
-            $user->getProfile()->getId() == $request->getRequester()->getId())) {
+                $user->getProfile()->getId() == $request->getRequester()->getId())) {
             $this->friendshipRequestRepository->remove($request, true);
 
             return $this->redirectToRoute('friends_index', ['profileId' => $user->getProfile()->getId()]);
@@ -72,7 +72,7 @@ class FriendshipController extends AbstractController
     {
         $profile = $this->profileRepository->find($profileId);
 
-        if($profile) {
+        if ($profile) {
             $friends = []; //Friend list here
 
             return $this->render('friendship/index.html.twig', [
@@ -90,7 +90,6 @@ class FriendshipController extends AbstractController
         $user = $this->getUser();
         $profile = $user->getProfile();
 
-        //Requester
         $friendProfile = $this->profileRepository->find($profileId);
 
         if ($profile && $friendProfile) {
@@ -110,12 +109,36 @@ class FriendshipController extends AbstractController
             $request = $this->friendshipRequestRepository->findOneBy([
                 'requester' => $friendProfile->getId(),
                 'requestee' => $profile->getId()
-                ]);
+            ]);
 
             $this->friendshipRequestRepository->remove($request, true);
 
             return $this->redirectToRoute('friends_index', ['profileId' => $profile->getId()]);
-
         }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('friendship/delete/{friendshipId}', name: 'friendship_delete')]
+    public function deleteFriendship(int $friendshipId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $firstFriendshipObject = $this->friendshipRepository->find($friendshipId);
+
+        if($firstFriendshipObject->getProfile()->getId() == $user->getProfile()->getId()) {
+
+            $this->friendshipRepository->remove($firstFriendshipObject);
+
+            $secondFriendshipObject = $this->friendshipRepository->findOneBy([
+                'profile' => $firstFriendshipObject->getFriend()->getId(),
+                'friend' => $user->getProfile()->getId()
+            ]);
+                $this->friendshipRepository->remove($secondFriendshipObject, true);
+
+                return $this->redirectToRoute('friends_index', ['profileId' => $user->getProfile()->getId()]);
+        }
+
+        throw $this->createNotFoundException();
     }
 }
