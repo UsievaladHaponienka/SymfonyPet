@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'Friends' }}
+{% endblock %}
+
+{% block body %}
+    <div class="grid grid-cols-12 gap-4">
+        {% if(app.user) %}
+            <div class="col-span-2 col-start-2">
+                {% include 'components/profile/navigation.html.twig' %}
+            </div>
+        {% endif %}
+        <div class="col-span-8 bg-indigo-300 rounded ">
+            <div class="grid grid-cols-3 gap-4">
+                <div class="col-span-1">
+                    <div class=" text-center m-4 text-xl">
+                        {{ 'My Friends' }}
+                    </div>
+                    <div>
+                        <!-- Friend list here-->
+                    </div>
+                </div>
+                <div class="col-span-1">
+                    <div class=" text-center m-4 text-xl">
+                        {{ 'Requests made by me' }}
+                    </div>
+                    <div>
+                        {% for request in requestsMadeByMe %}
+                            {{ request.requestee.username }}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-span-1">
+                    <div class=" text-center m-4 text-xl">
+                        {{ 'Requests made to me' }}
+                    </div>
+                    <div>
+                        {% for request in requestsMadeToMe %}
+                            {{ request.requester.username }}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

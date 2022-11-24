@@ -42,12 +42,20 @@ class Profile
     #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'profile')]
     private Collection $groups;
 
+    #[ORM\OneToMany(mappedBy: 'requester', targetEntity: FriendshipRequest::class)]
+    private Collection $requester;
+
+    #[ORM\OneToMany(mappedBy: 'requestee', targetEntity: FriendshipRequest::class)]
+    private Collection $requestee;
+
     public function __construct()
     {
         $this->albums = new ArrayCollection();
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->requester = new ArrayCollection();
+        $this->requestee = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -215,6 +223,66 @@ class Profile
     {
         if ($this->groups->removeElement($group)) {
             $group->removeProfile($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FriendshipRequest>
+     */
+    public function getRequestsMadeByProfile(): Collection
+    {
+        return $this->requester;
+    }
+
+    public function addRequester(FriendshipRequest $requester): self
+    {
+        if (!$this->requester->contains($requester)) {
+            $this->requester->add($requester);
+            $requester->setRequester($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRequester(FriendshipRequest $requester): self
+    {
+        if ($this->requester->removeElement($requester)) {
+            // set the owning side to null (unless already changed)
+            if ($requester->getRequester() === $this) {
+                $requester->setRequester(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, FriendshipRequest>
+     */
+    public function getRequestsMadeToProfile(): Collection
+    {
+        return $this->requestee;
+    }
+
+    public function addRequestee(FriendshipRequest $requestee): self
+    {
+        if (!$this->requestee->contains($requestee)) {
+            $this->requestee->add($requestee);
+            $requestee->setRequestee($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRequestee(FriendshipRequest $requestee): self
+    {
+        if ($this->requestee->removeElement($requestee)) {
+            // set the owning side to null (unless already changed)
+            if ($requestee->getRequestee() === $this) {
+                $requestee->setRequestee(null);
+            }
         }
 
         return $this;
