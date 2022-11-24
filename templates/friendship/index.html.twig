@@ -26,8 +26,24 @@
                         {{ 'Requests made by me' }}
                     </div>
                     <div>
-                        {% for request in requestsMadeByMe %}
-                            {{ request.requestee.username }}
+                        {% for request in profile.requestsMadeByProfile %}
+                        <div class="grid grid-cols-4">
+                            <div class="col-span-1">
+                                <a href="{{ path('profile_index', {'profileId': request.requestee.id}) }}">
+                                    <img src="{{ request.requestee.profileImageUrl }}">
+                                </a>
+                            </div>
+                            <div class="col-span-3 text-center">
+                                <a href="{{ path('profile_index', {'profileId': request.requestee.id}) }}">
+                                    <p>{{ request.requestee.username }}</p>
+                                </a>
+                            </div>
+                            <div class="col-span-4 items-center">
+                                {% include('components/buttons/cancel-friendship-request.html.twig') with {
+                                    'button_url': path('friendship_request_delete', {'requestId': request.id})
+                                } %}
+                            </div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -36,8 +52,29 @@
                         {{ 'Requests made to me' }}
                     </div>
                     <div>
-                        {% for request in requestsMadeToMe %}
-                            {{ request.requester.username }}
+                        {% for request in profile.requestsMadeToProfile %}
+                        <div class="grid grid-cols-4">
+                            <div class="col-span-1">
+                                <a href="{{ path('profile_index', {'profileId': request.requester.id}) }}">
+                                    <img src="{{ request.requester.profileImageUrl }}">
+                                </a>
+                            </div>
+                            <div class="col-span-3 text-center">
+                                <a href="{{ path('profile_index', {'profileId': request.requester.id}) }}">
+                                    <p>{{ request.requester.username }}</p>
+                                </a>
+                            </div>
+                            <div class="col-span-2 items-center">
+                                {% include('components/buttons/accept-friendship-request.html.twig') with {
+                                    'button_url': '#'}
+                                %}
+                            </div>
+                            <div class="col-span-2 items-center">
+                                {% include('components/buttons/decline-friendship-request.html.twig') with {
+                                    'button_url': path('friendship_request_delete', {'requestId': request.id})
+                                } %}
+                            </div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>

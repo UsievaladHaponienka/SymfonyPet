@@ -45,6 +45,21 @@ class FriendshipController extends AbstractController
         throw $this->createNotFoundException();
     }
 
+    #[Route('friendship-request/delete/{requestId}', name: 'friendship_request_delete')]
+    public function deleteRequest(int $requestId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $request = $this->friendshipRequestRepository->find($requestId);
+
+        if ($request && ($user->getProfile()->getId() == $request->getRequestee()->getId() ||
+            $user->getProfile()->getId() == $request->getRequester()->getId())) {
+            $this->friendshipRequestRepository->remove($request, true);
+
+            return $this->redirectToRoute('friends_index', ['profileId' => $user->getProfile()->getId()]);
+        }
+    }
+
     #[Route('friends/{profileId}', name: 'friends_index')]
     public function index(int $profileId): Response
     {
@@ -52,13 +67,9 @@ class FriendshipController extends AbstractController
 
         if($profile) {
             $friends = []; //Friend list here
-            $requestsMadeByMe = $profile->getRequestsMadeByProfile();
-            $requestsMadeToMe = $profile->getRequestsMadeToProfile();
 
-            return $this->render('friendship/index.html.twig',[
-                'friends' => $friends,
-                'requestsMadeByMe' => $requestsMadeByMe,
-                'requestsMadeToMe' => $requestsMadeToMe
+            return $this->render('friendship/index.html.twig', [
+                'profile' => $profile
             ]);
         }
 
