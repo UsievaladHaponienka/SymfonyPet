@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\User;
 use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
 use App\Repository\PostRepository;
@@ -45,5 +46,29 @@ class CommentController extends AbstractController
         }
 
         throw $this->createNotFoundException();
+    }
+
+    #[Route('comment/delete/{commentId}', name: 'comment_delete')]
+    public function delete(int $commentId): Response
+    {
+        $comment = $this->commentRepository->find($commentId);
+
+        if($comment && $this->isActionAllowed($comment)) {
+            $profileToRedirect = $comment->getPost()->getProfile()->getId();
+            $this->commentRepository->remove($comment, true);
+
+            //TODO: process redirects
+            return $this->redirectToRoute('profile_index', ['profileId' => $profileToRedirect]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    protected function isActionAllowed(Comment $comment): bool
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        return $user->getProfile()->getId() == $comment->getProfile()->getId();
+
     }
 }

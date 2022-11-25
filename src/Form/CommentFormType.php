@@ -17,6 +17,7 @@ class CommentFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            //TODO: change label
             ->add('content', TextareaType::class, [
                 'required' => true,
                 'attr' => ['class' => $this->getTextInputClass()],
