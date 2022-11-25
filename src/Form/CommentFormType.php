@@ -21,13 +21,8 @@ class CommentFormType extends AbstractType
                 'required' => true,
                 'attr' => ['class' => $this->getTextInputClass()],
                 'label_attr' => ['class' => $this->getLabelClass()]
-            ])
-            ->add('image_url', FileType::class, [
-                'required' => true,
-                'attr' => ['class' => $this->getFileInputClass()],
-                'label_attr' => ['class' => $this->getLabelClass()]
             ])->add('add_new_post', SubmitType::class, [
-                'label' => 'Submit',
+                'label' => 'Send Comment',
                 'attr' => ['class' => $this->getSubmitButtonClass()]
             ]);
     }
