@@ -79,30 +79,36 @@
                 {% endif %}
                 <div>
                     {% for post in profile.posts %}
-                        <div class="m-6 bg-indigo-200 rounded">
+                        <div class="m-4 bg-indigo-200 rounded">
                             {% if(post.photos) %}
                                 <div>
                                     {% for photo in post.photos %}
-                                        <img class="m-6 max-w-2xl max-h-2xl" src="{{ photo.imageUrl }}">
+                                        <img class="m-4 max-w-2xl max-h-2xl" src="{{ photo.imageUrl }}">
                                     {% endfor %}
                                 </div>
                             {% endif %}
                             {% if(post.content) %}
-                                <div>
+                                <div class="mt-4 mx-4">
                                     {{ post.content }}
                                 </div>
                             {% endif %}
                             {% if (app.user and app.user.profile.id == profile.id) %}
-                                <div class="mx-6 mt-6 text-right">
+                                <div class="mt-4 mx-4">
                                     {% include('components/buttons/delete-button.html.twig')
                                         with {'button_url': path('post_delete', {'postId': post.id})} %}
                                 </div>
                             {% endif %}
+                            {% if post.comments %}
+
+                                <div class="mt-4 mx-4">
+                                    {{ 'Comments:' }}
+                                </div>
+                                {{ component('post_comment', {'postId': post.id}) }}
+                            {% endif %}
+
                         </div>
                     {% endfor %}
                 </div>
-
-
             </div>
         </div>
     </div>

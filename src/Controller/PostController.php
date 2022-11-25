@@ -11,7 +11,6 @@ use App\Repository\AlbumRepository;
 use App\Repository\PhotoRepository;
 use App\Repository\PostRepository;
 use App\Service\ImageProcessor;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,9 +22,8 @@ class PostController extends AbstractController
 
     private ImageProcessor $imageProcessor;
 
-    private EntityManagerInterface $entityManager;
-
     private PostRepository $postRepository;
+
     private PhotoRepository $photoRepository;
 
     /**
