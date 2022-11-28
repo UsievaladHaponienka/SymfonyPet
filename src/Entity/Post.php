@@ -14,6 +14,9 @@ class Post
     public const USER_POST_TYPE = 'user';
     public const GROUP_POST_TYPE = 'group';
 
+    public const USER_POST_FORM_NAME = 'user_post_form';
+    public const GROUP_POST_FORM_NAME = 'group_post_form';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

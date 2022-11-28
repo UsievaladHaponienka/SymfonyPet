@@ -8,6 +8,8 @@ use App\Form\PostFormType;
 use App\Form\ProfileFormType;
 use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -81,7 +83,7 @@ class ProfileController extends AbstractController
 
         $post = new Post();
         $postForm = $this->createForm(PostFormType::class, $post, [
-            'action' => $this->generateUrl('post_create'),
+            'action' => $this->generateUrl('post_create_user', ['profileId' => $profileId]),
             'method' => 'POST'
         ]);
 

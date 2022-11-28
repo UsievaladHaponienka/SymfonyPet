@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Group;
+use App\Entity\Post;
 use App\Entity\User;
 use App\Form\GroupFormType;
+use App\Form\PostFormType;
 use App\Repository\GroupRepository;
 use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
@@ -83,5 +85,28 @@ class GroupController extends AbstractController
         return $this->render('group/create.html.twig',[
             'groupForm' => $form->createView()
         ]);
+    }
+
+    #[Route('group/{groupId}', name: 'group_show')]
+    public function show(int $groupId): Response
+    {
+        $group = $this->groupRepository->find($groupId);
+
+        if($group){
+            //TODO handle exceptions
+            $postForm = $this->createForm(
+                PostFormType::class,
+                null, [
+                'action' => $this->generateUrl('post_create_group', ['groupId' => $groupId]),
+                'method' => 'POST',
+            ]);
+
+            return $this->render('group/show.html.twig',[
+                'group' => $group,
+                'postForm' => $postForm->createView()
+            ]);
+        }
+
+        throw $this->createNotFoundException();
     }
 }

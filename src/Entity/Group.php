@@ -32,10 +32,10 @@ class Group
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\OneToMany(mappedBy: 'group_id', targetEntity: Album::class)]
+    #[ORM\OneToMany(mappedBy: 'group', targetEntity: Album::class)]
     private Collection $albums;
 
-    #[ORM\OneToMany(mappedBy: 'group_id', targetEntity: Post::class)]
+    #[ORM\OneToMany(mappedBy: 'group', targetEntity: Post::class)]
     private Collection $posts;
 
     #[ORM\ManyToMany(targetEntity: Profile::class, inversedBy: 'groups')]

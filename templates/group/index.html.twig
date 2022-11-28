@@ -23,10 +23,14 @@
                 {% for group in profile.groups %}
                     <div class="grid grid-rows">
                         <div>
-                            <img src="{{ group.groupImageUrl }}">
+                            <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                <img src="{{ group.groupImageUrl }}">
+                            </a>
                         </div>
                         <div class="text-center">
-                            {{ group.title }}
+                            <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                {{ group.title }}
+                            </a>
                         </div>
                     </div>
                 {% endfor %}

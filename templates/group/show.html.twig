@@ -21,64 +21,33 @@
                     <div class="col-span-1 flex justify-center">
                         <div>
                             <div>
-                                <img src="{{ profile.profileImageUrl }}" alt="{{ 'No profile image' }}">
+                                <img src="{{ group.groupImageUrl }}" alt="{{ 'No profile image' }}">
                             </div>
-                            {% if app.user.profile.isFriend(profile.id) %}
-                                <div class="text-center bg-indigo-200 m-4 rounded">
-                                    {{ 'You are friends' }}
-                                </div>
-                            {% elseif app.user.profile.isFriendshipRequested(profile.id) %}
-                                <div class="text-center bg-indigo-200 m-4 rounded">
-                                    {{ 'Friendship request sent' }}
-                                </div>
-                            {% elseif (app.user.profile.id != profile.id) %}
-                                {% include('/components/buttons/request-friendship.html.twig')
-                                    with {'button_url': path('friendship_request_create',
-                                    {'profileId': profile.id})} %}
-                            {% endif %}
+                            <!-- Join group here-->
                         </div>
                     </div>
                     <div class="col-span-3">
                         <div class="grid grid-rows">
-                            {% if(profile.username) %}
-                                <div class="text-2xl ml-6">
-                                    {{ profile.username }}
-                                </div>
-                            {% else %}
-                                <div class="text-2xl ml-6">
-                                    {{ 'No username' }}
-                                </div>
-                                {% if (app.user and app.user.profile.id == profile.id) %}
-                                    <a class="text-xl ml-6 text-indigo-500"
-                                       href="{{ path('profile_edit') }}">{{ 'You can add username here' }}</a>
-                                {% endif %}
-                            {% endif %}
-
+                            <div class="text-2xl ml-6">
+                                {{ group.title }}
+                            </div>
                             <div class="text-xl ml-6 mt-4">
-                                {% if(profile.description) %}
-                                    {{ profile.description }}
+                                {% if(group.description) %}
+                                    {{ group.description }}
                                 {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-4 gap-4">
-                    <div class="m-4">
-                        <a href="{{ path('album_index', {'profileId': profile.id}) }}">Albums</a>
-                    </div>
-                    <div class="m-4">
-                        <a href="{{ path('group_index', {'profileId': profile.id}) }}">Groups</a>
-                    </div>
-                </div>
-                {% if (app.user and app.user.profile.id == profile.id) %}
+                {% if (app.user and app.user.profile.id == group.admin.id) %}
                     <div class="m-6">
                         {{ form_start(postForm) }}
                         {{ form_end(postForm) }}
                     </div>
                 {% endif %}
                 <div>
-                    {% for post in profile.posts %}
+                    {% for post in group.posts %}
                         <div class="m-4 bg-indigo-200 rounded">
                             {% if(post.photos) %}
                                 <div>
@@ -92,7 +61,7 @@
                                     {{ post.content }}
                                 </div>
                             {% endif %}
-                            {% if (app.user and app.user.profile.id == profile.id) %}
+                            {% if (app.user and app.user.profile.id == group.admin.id) %}
                                 <div class="mt-4 mx-4">
                                     {% include('components/buttons/delete-button.html.twig')
                                         with {'button_url': path('post_delete', {'postId': post.id})} %}

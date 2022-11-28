@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Album;
+use App\Entity\Group;
 use App\Entity\Photo;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Form\PostFormType;
 use App\Repository\AlbumRepository;
+use App\Repository\GroupRepository;
 use App\Repository\PhotoRepository;
 use App\Repository\PostRepository;
 use App\Service\ImageProcessor;
@@ -26,6 +28,8 @@ class PostController extends AbstractController
 
     private PhotoRepository $photoRepository;
 
+    private GroupRepository $groupRepository;
+
     /**
      * @param AlbumRepository $albumRepository
      * @param ImageProcessor $imageProcessor
@@ -35,18 +39,47 @@ class PostController extends AbstractController
     public function __construct(
         AlbumRepository $albumRepository,
         ImageProcessor  $imageProcessor,
-        PostRepository $postRepository,
-        PhotoRepository $photoRepository
-    ){
+        PostRepository  $postRepository,
+        PhotoRepository $photoRepository,
+        GroupRepository $groupRepository
+    )
+    {
         $this->albumRepository = $albumRepository;
         $this->imageProcessor = $imageProcessor;
         $this->postRepository = $postRepository;
         $this->photoRepository = $photoRepository;
+        $this->groupRepository = $groupRepository;
     }
 
-    //TODO: Make it possible to create post in group
-    #[Route('/post/create', name: 'post_create', methods: 'POST')]
-    public function create(Request $request): Response
+    #[Route('/post/create-for-user/{profileId}', name: 'post_create_user', methods: 'POST')]
+    public function createUserPost(Request $request, int $profileId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if ($user->getProfile()->getId() == $profileId) {
+            $postType = Post::USER_POST_TYPE;
+            return $this->create($request, $postType);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('/post/create-for-group/{groupId}', name: 'post_create_group', methods: 'POST')]
+    public function createGroupPost(Request $request, int $groupId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $group = $this->groupRepository->find($groupId);
+
+        if ($group && $user->getProfile()->getId() == $group->getAdmin()->getId()) {
+            $postType = Post::GROUP_POST_TYPE;
+            return $this->create($request, $postType, $group);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    protected function create(Request $request, string $postType, $group = null): Response
     {
         $form = $this->createForm(PostFormType::class);
         $form->handleRequest($request);
@@ -57,9 +90,14 @@ class PostController extends AbstractController
             $profile = $user->getProfile();
 
             $post = new Post();
-            $post->setProfile($profile);
-            //TODO: Type can also be group, handle it
-            $post->setType(Post::USER_POST_TYPE);
+
+            if ($postType == Post::USER_POST_TYPE) {
+                $post->setType(Post::USER_POST_TYPE);
+                $post->setProfile($user->getProfile());
+            } else {
+                $post->setType(Post::GROUP_POST_TYPE);
+                $post->setGroup($group);
+            }
 
             $image = $form->get('photo')->getData();
             $content = $form->get('content')->getData();
@@ -96,11 +134,17 @@ class PostController extends AbstractController
 
                 $this->postRepository->save($post, true);
 
-                return $this->redirectToRoute('profile_index', ['profileId' => $profile->getId()]);
+                if ($postType == Post::USER_POST_TYPE) {
+                    $redirect = $this->redirectToRoute('profile_index', ['profileId' => $profile->getId()]);
+                } else {
+                    $redirect = $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
+                }
+
+                return $redirect;
             }
         }
         //TODO: Process exception
-         throw new \Exception('Post must contain either image or content');
+        throw new \Exception('Post must contain either image or content');
     }
 
     #[Route('/post/delete/{postId}', name: 'post_delete')]
@@ -108,7 +152,7 @@ class PostController extends AbstractController
     {
         $post = $this->postRepository->find($postId);
 
-        if($post && $this->isActionAllowed($post)) {
+        if ($post && $this->isActionAllowed($post)) {
             $profileId = $post->getProfile()->getId();
             $this->postRepository->remove($post, true);
 
