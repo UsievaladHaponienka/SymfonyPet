@@ -32,7 +32,7 @@ class CommentFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Comment::class,
-            'attr' => ['class' => $this->getFormClass()] //Add CSS class to form
+            'attr' => ['class' => $this->getFormClass() . ' border border-indigo-300 border-1'] //Add CSS class to form
         ]);
     }
 }
