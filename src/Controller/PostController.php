@@ -6,6 +6,7 @@ use App\Entity\Album;
 use App\Entity\Group;
 use App\Entity\Photo;
 use App\Entity\Post;
+use App\Entity\Profile;
 use App\Entity\User;
 use App\Form\PostFormType;
 use App\Repository\AlbumRepository;
@@ -87,7 +88,6 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var User $user */
             $user = $this->getUser();
-            $profile = $user->getProfile();
 
             $post = new Post();
 
@@ -109,7 +109,7 @@ class PostController extends AbstractController
                 /** @var Album $postsAlbum */
                 $postsAlbum = $this->albumRepository->findOneBy([
                     'type' => Album::USER_DEFAULT_TYPE,
-                    'profile' => $profile->getId()
+                    'profile' => $user->getProfile()->getId()
                 ]);
                 $photo = new Photo();
 
@@ -134,13 +134,7 @@ class PostController extends AbstractController
 
                 $this->postRepository->save($post, true);
 
-                if ($postType == Post::USER_POST_TYPE) {
-                    $redirect = $this->redirectToRoute('profile_index', ['profileId' => $profile->getId()]);
-                } else {
-                    $redirect = $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
-                }
-
-                return $redirect;
+                return $this->getRedirect($group);
             }
         }
         //TODO: Process exception
@@ -153,12 +147,10 @@ class PostController extends AbstractController
         $post = $this->postRepository->find($postId);
 
         if ($post && $this->isActionAllowed($post)) {
-            $profileId = $post->getProfile()->getId();
+            $group = $post->getGroup();
             $this->postRepository->remove($post, true);
 
-            return $this->redirectToRoute('profile_index', [
-                'profileId' => $profileId
-            ]);
+            return $this->getRedirect($group);
         }
 
         throw $this->createNotFoundException();
@@ -170,6 +162,21 @@ class PostController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        return $user->getId() == $post->getProfile()->getUser()->getId();
+        if ($post->getType() == Post::USER_POST_TYPE) {
+            return $user->getProfile()->getId() == $post->getProfile()->getId();
+        } else {
+            return $user->getProfile()->getId() == $post->getGroup()->getAdmin()->getId();
+        }
+    }
+
+    protected function getRedirect(Group $group = null): Response
+    {
+        if ($group) {
+            return $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
+        } else {
+            /** @var User $user */
+            $user = $this->getUser();
+            return $this->redirectToRoute('profile_index', ['profileId' => $user->getProfile()->getId()]);
+        }
     }
 }
