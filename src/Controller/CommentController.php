@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\Group;
 use App\Entity\User;
 use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
@@ -42,7 +43,7 @@ class CommentController extends AbstractController
                 $this->commentRepository->save($comment, true);
             }
 
-            return $this->redirectToRoute('profile_index', ['profileId' => $post->getProfile()->getId()]);
+            return $this->getRedirect($post->getGroup());
         }
 
         throw $this->createNotFoundException();
@@ -54,14 +55,24 @@ class CommentController extends AbstractController
         $comment = $this->commentRepository->find($commentId);
 
         if($comment && $this->isActionAllowed($comment)) {
-            $profileToRedirect = $comment->getPost()->getProfile()->getId();
+            $post = $comment->getPost();
             $this->commentRepository->remove($comment, true);
 
-            //TODO: process redirects
-            return $this->redirectToRoute('profile_index', ['profileId' => $profileToRedirect]);
+            return $this->getRedirect($post->getGroup());
         }
 
         throw $this->createNotFoundException();
+    }
+
+    protected function getRedirect(Group $group = null): Response
+    {
+        if ($group) {
+            return $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
+        } else {
+            /** @var User $user */
+            $user = $this->getUser();
+            return $this->redirectToRoute('profile_index', ['profileId' => $user->getProfile()->getId()]);
+        }
     }
 
     protected function isActionAllowed(Comment $comment): bool

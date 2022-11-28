@@ -6,7 +6,6 @@ use App\Entity\Album;
 use App\Entity\Group;
 use App\Entity\Photo;
 use App\Entity\Post;
-use App\Entity\Profile;
 use App\Entity\User;
 use App\Form\PostFormType;
 use App\Repository\AlbumRepository;
@@ -36,6 +35,7 @@ class PostController extends AbstractController
      * @param ImageProcessor $imageProcessor
      * @param PostRepository $postRepository
      * @param PhotoRepository $photoRepository
+     * @param GroupRepository $groupRepository
      */
     public function __construct(
         AlbumRepository $albumRepository,
@@ -165,6 +165,7 @@ class PostController extends AbstractController
         }
     }
 
+    //TODO: code duplication with Comment controller (and Likes controller in future)
     protected function getRedirect(Group $group = null): Response
     {
         if ($group) {

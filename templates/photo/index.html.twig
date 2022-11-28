@@ -17,8 +17,10 @@
                             with {'button_url': path('album_show', {'albumId': photo.album.id})}%}
                     </div>
                     <div class="text-right col-span-1 col-start-12 inline">
-                        {% include('components/buttons/delete-button.html.twig')
-                            with {'button_url': path('photo_delete', {'photoId': photo.id})}%}
+                        {% include('components/buttons/button-red.html.twig') with {
+                            'url': path('photo_delete', {'photoId': photo.id}),
+                            'title': 'Delete'
+                        } %}
                     </div>
                 </div>
             </div>

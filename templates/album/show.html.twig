@@ -17,8 +17,10 @@
                 </div>
                 {% if(app.user.profile.id == profile.id and album.type != constant('USER_DEFAULT_TYPE', album)) %}
                     <div class="text-right col-span-1 col-start-12 inline">
-                        {% include('components/buttons/delete-button.html.twig')
-                            with {'button_url': path('album_confirm_delete', {'albumId': album.id})} %}
+                        {% include('components/buttons/button-red.html.twig') with {
+                            'url': path('album_confirm_delete', {'albumId': album.id}),
+                            'title': 'Delete'
+                        } %}
                     </div>
                 {% endif %}
             </div>

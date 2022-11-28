@@ -16,8 +16,10 @@
 
         {% if (app.user and post.canBeDeleted(app.user)) %}
             <div class="mt-4 mx-4">
-                {% include('components/buttons/delete-button.html.twig')
-                    with {'button_url': path('post_delete', {'postId': post.id})} %}
+                {% include('components/buttons/button-red.html.twig')with {
+                    'url': path('post_delete', {'postId': post.id}),
+                    'title': 'Delete'
+                } %}
             </div>
         {% endif %}
         {% if post.comments %}
@@ -41,9 +43,10 @@
                             </div>
                             {% if app.user.profile.id == comment.profile.id %}
                                 <div class="col-span-1">
-                                    {% include('components/buttons/delete-comment.html.twig') with
-                                        {'button_url': path('comment_delete', {
-                                            'commentId': comment.id})} %}
+                                    {% include('components/buttons/button-red.html.twig') with {
+                                        'url': path('comment_delete', {'commentId': comment.id}),
+                                        'title': 'Delete'
+                                    }%}
                                 </div>
                             {% endif %}
                         </div>
