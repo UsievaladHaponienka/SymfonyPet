@@ -78,62 +78,7 @@
                     </div>
                 {% endif %}
                 <div>
-                    {% for post in profile.posts %}
-                        <div class="m-4 bg-indigo-200 rounded">
-                            {% if(post.photos) %}
-                                <div>
-                                    {% for photo in post.photos %}
-                                        <img class="m-4 max-w-2xl max-h-2xl" src="{{ photo.imageUrl }}">
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% if(post.content) %}
-                                <div class="mt-4 mx-4">
-                                    {{ post.content }}
-                                </div>
-                            {% endif %}
-                            {% if (app.user and app.user.profile.id == profile.id) %}
-                                <div class="mt-4 mx-4">
-                                    {% include('components/buttons/delete-button.html.twig')
-                                        with {'button_url': path('post_delete', {'postId': post.id})} %}
-                                </div>
-                            {% endif %}
-                            {% if post.comments %}
-                                <div class="mt-4 mx-4">
-                                    {{ 'Comments:' }}
-                                </div>
-                                <div class="bg-indigo-50 m-6 rounded">
-                                    {% for comment in post.comments %}
-                                        <div class="bg-indigo-200 m-6 rounded">
-                                            <div class="grid grid-cols-8">
-                                                <div class="col-span-1">
-                                                    <div>
-                                                        <img src="{{ comment.profile.profileImageUrl }}">
-                                                    </div>
-                                                    <div>
-                                                        {{ comment.profile.username }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-span-6">
-                                                    {{ comment.content }}
-                                                </div>
-                                                {% if app.user.profile.id == comment.profile.id %}
-                                                    <div class="col-span-1">
-                                                        {% include('components/buttons/delete-comment.html.twig') with
-                                                            {'button_url': path('comment_delete', {
-                                                                'commentId': comment.id})} %}
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                                <div class="m-6">
-                                    {{ component('post_comment', {'postId': post.id}) }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+                    {% include('components/post-list.html.twig') with {'posts': profile.posts} %}
                 </div>
             </div>
         </div>

@@ -222,4 +222,19 @@ class Post
 
         return $this;
     }
+
+    /**
+     * Check if this post can be deleted by current user.
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function canBeDeleted(User $user): bool
+    {
+        if($this->getGroup()) {
+            return $this->getGroup()->getAdmin()->getId() == $user->getProfile()->getId();
+        } else {
+            return $this->getProfile()->getId() == $user->getProfile()->getId();
+        }
+    }
 }
