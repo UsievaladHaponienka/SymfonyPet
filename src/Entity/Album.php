@@ -15,7 +15,8 @@ class Album
     public const USER_DEFAULT_TYPE = 'user_posts';
     public const USER_CUSTOM_TYPE = 'user_custom';
 
-    public const GROUP_TYPE = 'group';
+    public const GROUP_DEFAULT_TYPE = 'group_posts';
+    public const GROUP_CUSTOM_TYPE = 'group_custom';
 
     public const DEFAULT_ALBUM_TITLE = 'Posts photo';
 

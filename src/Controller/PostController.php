@@ -106,11 +106,7 @@ class PostController extends AbstractController
                 $imagePath = $this->imageProcessor
                     ->saveImage($image, ImageProcessor::POST_IMAGE_TYPE);
 
-                /** @var Album $postsAlbum */
-                $postsAlbum = $this->albumRepository->findOneBy([
-                    'type' => Album::USER_DEFAULT_TYPE,
-                    'profile' => $user->getProfile()->getId()
-                ]);
+                $postsAlbum = $this->getPostsAlbum($group);
                 $photo = new Photo();
 
                 $photo->setAlbum($postsAlbum);
@@ -177,6 +173,24 @@ class PostController extends AbstractController
             /** @var User $user */
             $user = $this->getUser();
             return $this->redirectToRoute('profile_index', ['profileId' => $user->getProfile()->getId()]);
+        }
+    }
+
+    protected function getPostsAlbum(Group $group = null): ?Album
+    {
+        if ($group) {
+            return $this->albumRepository->findOneBy([
+                'type' => Album::GROUP_DEFAULT_TYPE,
+                'group' => $group->getId()
+            ]);
+        } else {
+            /** @var User $user */
+            $user = $this->getUser();
+
+            return $this->albumRepository->findOneBy([
+                'type' => Album::USER_DEFAULT_TYPE,
+                'profile' => $user->getProfile()->getId()
+            ]);
         }
     }
 }

@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Album;
 use App\Entity\Group;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Form\GroupFormType;
 use App\Form\PostFormType;
+use App\Repository\AlbumRepository;
 use App\Repository\GroupRepository;
 use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
@@ -21,16 +23,19 @@ class GroupController extends AbstractController
     private GroupRepository $groupRepository;
     private ProfileRepository $profileRepository;
     private ImageProcessor $imageProcessor;
+    private AlbumRepository $albumRepository;
 
     public function __construct(
         GroupRepository $groupRepository,
         ProfileRepository $profileRepository,
+        AlbumRepository $albumRepository,
         ImageProcessor $imageProcessor
     )
     {
         $this->groupRepository = $groupRepository;
         $this->profileRepository = $profileRepository;
         $this->imageProcessor = $imageProcessor;
+        $this->albumRepository = $albumRepository;
     }
 
     #[Route('/groups/{profileId}', name: 'group_index')]
@@ -77,6 +82,10 @@ class GroupController extends AbstractController
                 $group->setGroupImageUrl('/images/group/' . $newFileName);
             }
 
+            $album = $this->getDefaultGroupAlbum();
+            $album->setGroup($group);
+
+            $this->albumRepository->save($album);
             $this->groupRepository->save($group, true);
 
             return $this->redirectToRoute('group_index', ['profileId' => $adminProfile->getId()]);
@@ -108,5 +117,14 @@ class GroupController extends AbstractController
         }
 
         throw $this->createNotFoundException();
+    }
+
+    protected function getDefaultGroupAlbum(): Album
+    {
+        $defaultGroupAlbum = new Album();
+        $defaultGroupAlbum->setType(Album::GROUP_DEFAULT_TYPE);
+        $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
+
+        return $defaultGroupAlbum;
     }
 }
