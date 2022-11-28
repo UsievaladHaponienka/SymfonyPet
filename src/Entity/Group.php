@@ -20,9 +20,6 @@ class Group
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $url = null;
-
     #[ORM\Column(length: 255)]
     private ?string $type = null;
 
@@ -44,6 +41,10 @@ class Group
     #[ORM\ManyToMany(targetEntity: Profile::class, inversedBy: 'groups')]
     private Collection $profile;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Profile $admin = null;
+
     public function __construct()
     {
         $this->albums = new ArrayCollection();
@@ -64,18 +65,6 @@ class Group
     public function setTitle(string $title): self
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
-    }
-
-    public function setUrl(?string $url): self
-    {
-        $this->url = $url;
 
         return $this;
     }
@@ -208,6 +197,18 @@ class Group
     public function removeProfile(Profile $profile): self
     {
         $this->profile->removeElement($profile);
+
+        return $this;
+    }
+
+    public function getAdmin(): ?Profile
+    {
+        return $this->admin;
+    }
+
+    public function setAdmin(?Profile $admin): self
+    {
+        $this->admin = $admin;
 
         return $this;
     }

@@ -10,10 +10,24 @@
             </div>
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
-            <div class="grid grid-rows">
-                {% for group in groups %}
-                    <div class="grid grid-cols-2">
-
+            {% if(app.user.profile.id == profile.id) %}
+                <div class="text-center mt-6">
+                    <a href="{{ path('group_create') }}">
+                        <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
+                            {{ 'Create new group' }}
+                        </button>
+                    </a>
+                </div>
+            {% endif %}
+            <div class="grid grid-cols-3">
+                {% for group in profile.groups %}
+                    <div class="grid grid-rows">
+                        <div>
+                            <img src="{{ group.groupImageUrl }}">
+                        </div>
+                        <div class="text-center">
+                            {{ group.title }}
+                        </div>
                     </div>
                 {% endfor %}
             </div>
