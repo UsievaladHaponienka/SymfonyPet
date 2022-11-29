@@ -26,8 +26,8 @@ class GroupFormType extends AbstractType
             ])
             ->add('type', ChoiceType::class, [
                 'choices' => [
-                    'Public Group' => 'public',
-                    'Private Group' => 'private',
+                    'Public Group' => Group::PUBLIC_GROUP_TYPE,
+                    'Private Group' => Group::PRIVATE_GROUP_TYPE,
                 ],
                 'required' => true,
                 'attr' => ['class' => $this->getTextInputClass()],

@@ -189,6 +189,41 @@ class GroupController extends AbstractController
         throw $this->createNotFoundException();
     }
 
+    #[Route('group/join/{groupId}', name: 'group_join')]
+    public function joinGroup(int $groupId): Response
+    {
+        $group = $this->groupRepository->find($groupId);
+
+        if($group) {
+            /** @var User $user */
+            $user = $this->getUser();
+            $group->addProfile($user->getProfile());
+
+            $this->groupRepository->save($group, true);
+
+            return $this->redirectToRoute('group_show', ['groupId' => $groupId]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('group/leave/{groupId}', name: 'group_leave')]
+    public function leaveGroup(int $groupId): Response
+    {
+        $group = $this->groupRepository->find($groupId);
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if($group && $group->isInGroup($user->getProfile())) {
+            $group->removeProfile($user->getProfile());
+            $this->groupRepository->save($group, true);
+
+            return $this->redirectToRoute('group_show', ['groupId' => $groupId]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
 
     protected function getDefaultGroupAlbum(): Album
     {

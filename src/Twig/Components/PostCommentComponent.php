@@ -10,7 +10,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
-#[AsTwigComponent('post_comment')]
+#[AsTwigComponent('post/post-comment')]
 final class PostCommentComponent
 {
     private FormFactoryInterface $formFactory;

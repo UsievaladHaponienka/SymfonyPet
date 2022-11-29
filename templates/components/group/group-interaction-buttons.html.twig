@@ -1,0 +1,15 @@
+{% if(group.isInGroup(app.user.profile)) %}
+    {% include('components/buttons/button-red.html.twig') with {
+        'url': path('group_leave', {'groupId': group.id}),
+        'title': 'Leave group'
+    } %}
+{% else %}
+    {% if(group.type == constant('PUBLIC_GROUP_TYPE', group)) %}
+        {% include('components/buttons/button-blue.html.twig') with {
+            'url': path('group_join', {'groupId': group.id}),
+            'title': 'Join group'
+        } %}
+    {% else %}
+        <!-- request join -->
+    {% endif %}
+{% endif %}

@@ -12,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: '`group`')]
 class Group
 {
+    public const PUBLIC_GROUP_TYPE = 'public';
+    public const PRIVATE_GROUP_TYPE = 'private';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -211,5 +214,17 @@ class Group
         $this->admin = $admin;
 
         return $this;
+    }
+
+    public function isInGroup(Profile $profile): bool
+    {
+        $groupProfiles = $this
+            ->getProfile()
+            ->filter(function ($element) use ($profile){
+               /** @var Profile $element */
+               return $element->getId() == $profile->getId();
+            });
+
+        return (bool) $groupProfiles->count();
     }
 }
