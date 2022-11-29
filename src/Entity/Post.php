@@ -14,9 +14,6 @@ class Post
     public const USER_POST_TYPE = 'user';
     public const GROUP_POST_TYPE = 'group';
 
-    public const USER_POST_FORM_NAME = 'user_post_form';
-    public const GROUP_POST_FORM_NAME = 'group_post_form';
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -46,14 +43,13 @@ class Post
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Comment::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $comments;
 
-    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Photo::class, cascade: ['remove'],)]
-    private Collection $photos;
+    #[ORM\OneToOne(mappedBy: 'post', cascade: ['persist', 'remove'])]
+    private ?Photo $photo = null;
 
     public function __construct()
     {
         $this->likes = new ArrayCollection();
         $this->comments = new ArrayCollection();
-        $this->photos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -194,36 +190,6 @@ class Post
     }
 
     /**
-     * @return Collection<int, Photo>
-     */
-    public function getPhotos(): Collection
-    {
-        return $this->photos;
-    }
-
-    public function addPhotoId(Photo $photoId): self
-    {
-        if (!$this->photos->contains($photoId)) {
-            $this->photos->add($photoId);
-            $photoId->setPost($this);
-        }
-
-        return $this;
-    }
-
-    public function removePhotoId(Photo $photoId): self
-    {
-        if ($this->photos->removeElement($photoId)) {
-            // set the owning side to null (unless already changed)
-            if ($photoId->getPost() === $this) {
-                $photoId->setPost(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * Check if this post can be deleted by current user.
      *
      * @param User $user
@@ -236,5 +202,27 @@ class Post
         } else {
             return $this->getProfile()->getId() == $user->getProfile()->getId();
         }
+    }
+
+    public function getPhoto(): ?Photo
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?Photo $photo): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($photo === null && $this->photo !== null) {
+            $this->photo->setPost(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($photo !== null && $photo->getPost() !== $this) {
+            $photo->setPost($this);
+        }
+
+        $this->photo = $photo;
+
+        return $this;
     }
 }
