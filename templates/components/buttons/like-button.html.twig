@@ -1,3 +1,12 @@
-<button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
-    <a href="{{ '' }}">{{ 'Like' }}</a>
+<button class="
+{% if((post.isLikedBy(app.user))) %}
+    {{ 'bg-sky-500 hover:bg-sky-400' }}
+{% else %}
+    {{ 'bg-sky-900 hover:bg-sky-800' }}
+{% endif %} focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
+    {% if (post.isLikedBy(app.user)) %}
+        <a href="{{ path('like_remove', {'postId': post.id}) }}">{{ 'Liked (' }}{{ post.likes.count }}{{ ')' }}</a>
+    {% else %}
+        <a href="{{ path('like_add', {'postId': post.id}) }}">{{ 'Like (' }}{{ post.likes.count }}{{ ')' }}</a>
+    {% endif %}
 </button>

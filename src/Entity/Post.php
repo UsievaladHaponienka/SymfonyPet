@@ -189,21 +189,6 @@ class Post
         return $this;
     }
 
-    /**
-     * Check if this post can be deleted by current user.
-     *
-     * @param User $user
-     * @return bool
-     */
-    public function canBeDeleted(User $user): bool
-    {
-        if($this->getGroup()) {
-            return $this->getGroup()->getAdmin()->getId() == $user->getProfile()->getId();
-        } else {
-            return $this->getProfile()->getId() == $user->getProfile()->getId();
-        }
-    }
-
     public function getPhoto(): ?Photo
     {
         return $this->photo;
@@ -224,5 +209,30 @@ class Post
         $this->photo = $photo;
 
         return $this;
+    }
+
+    /**
+     * Check if this post can be deleted by current user.
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function canBeDeleted(User $user): bool
+    {
+        if($this->getGroup()) {
+            return $this->getGroup()->getAdmin()->getId() == $user->getProfile()->getId();
+        } else {
+            return $this->getProfile()->getId() == $user->getProfile()->getId();
+        }
+    }
+
+    public function isLikedBy(User $user): bool
+    {
+        $likes = $this->getLikes()->filter(function ($element) use ($user) {
+            /** @var Like $element */
+            return $element->getProfile()->getId() == $user->getProfile()->getId();
+        });
+
+        return (bool) $likes->count();
     }
 }
