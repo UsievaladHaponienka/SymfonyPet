@@ -157,6 +157,38 @@ class GroupController extends AbstractController
 
         throw $this->createNotFoundException();
     }
+    #[Route('group/confirm-delete/{groupId}', name: 'group_confirm_delete')]
+    public function confirmDelete(int $groupId): Response
+    {
+        $group = $this->groupRepository->find($groupId);
+
+        if ($group && $this->isActionAllowed($group)) {
+            return $this->render('group/confirm-delete.html.twig', [
+                'group' => $group
+            ]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('group/delete/{groupId}', name: 'group_delete')]
+    public function delete(int $groupId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $group = $this->groupRepository->find($groupId);
+
+        if ($group && $this->isActionAllowed($group)) {
+            $this->groupRepository->remove($group, true);
+
+            return $this->redirectToRoute('group_index', [
+                'profileId' => $user->getProfile()->getId()
+            ]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
 
     protected function getDefaultGroupAlbum(): Album
     {

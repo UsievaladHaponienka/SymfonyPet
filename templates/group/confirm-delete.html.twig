@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ group.title }}{% endblock %}
+
+{% block body %}
+    <div class="grid grid-cols-12 gap-4">
+        {% if(app.user) %}
+            <div class="col-span-2 col-start-2">
+                {% include 'components/profile/navigation.html.twig' %}
+            </div>
+        {% endif %}
+        <div class="col-span-8 bg-indigo-300 rounded">
+            <div class="text-2xl text-center mx-6 mt-6">
+                <p>
+                    {{ 'Are you sure you want to delete group "' }}<strong>{{ group.title }}</strong>{{ '"?' }}
+                </p>
+                <p>
+                    {{ 'All posts and photos will be deleted too, and this action can not be reverted.' }}
+                </p>
+                <div class="text-center col-span-1 col-start-12">
+                    {% include('components/buttons/button-red.html.twig') with {
+                        'url': path('group_delete', {'groupId': group.id}),
+                        'title': 'Delete'
+                    } %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
