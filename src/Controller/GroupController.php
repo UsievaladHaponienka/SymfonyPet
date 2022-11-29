@@ -119,6 +119,45 @@ class GroupController extends AbstractController
         throw $this->createNotFoundException();
     }
 
+    #[Route('group/edit/{groupId}', name: 'group_edit')]
+    public function edit(Request $request, int $groupId): Response
+    {
+        $group = $this->groupRepository->find($groupId);
+
+        if($group && $this->isActionAllowed($group)) {
+            $form = $this->createForm(GroupFormType::class, $group);
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+
+                $group->setTitle($form->get('title')->getData());
+                $group->setDescription($form->get('description')->getData());
+                $group->setType($form->get('type')->getData());
+
+                $image = $form->get('group_image_url')->getData();
+                if ($image) {
+                    $newFileName = $this->imageProcessor->saveImage(
+                        $image,
+                        ImageProcessor::PROFILE_IMAGE_TYPE,
+                        '/public/images/group/'
+                    );
+                    $group->setGroupImageUrl('/images/group/' . $newFileName);
+                }
+
+                $this->groupRepository->save($group, true);
+
+                return $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
+            }
+
+            return $this->render('group/edit.html.twig', [
+                'group' => $group,
+                'groupEditForm' => $form->createView()
+            ]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
     protected function getDefaultGroupAlbum(): Album
     {
         $defaultGroupAlbum = new Album();
@@ -126,5 +165,12 @@ class GroupController extends AbstractController
         $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
 
         return $defaultGroupAlbum;
+    }
+
+    protected function isActionAllowed(Group $group): bool
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        return $user->getProfile()->getId() == $group->getAdmin()->getId();
     }
 }

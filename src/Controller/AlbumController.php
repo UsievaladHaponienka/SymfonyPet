@@ -24,7 +24,8 @@ class AlbumController extends AbstractController
     public function __construct(
         AlbumRepository   $albumRepository,
         ProfileRepository $profileRepository
-    ){
+    )
+    {
         $this->albumRepository = $albumRepository;
         $this->profileRepository = $profileRepository;
     }
@@ -74,8 +75,8 @@ class AlbumController extends AbstractController
             ]);
         }
 
-        return $this->render('album/create.html.twig',[
-           'albumForm' => $form->createView()
+        return $this->render('album/create.html.twig', [
+            'albumForm' => $form->createView()
         ]);
     }
 
@@ -85,17 +86,14 @@ class AlbumController extends AbstractController
         $album = $this->albumRepository->find($albumId);
 
         //TODO: Check how to handle this check condition using Symfony (like Laravel middleware)
-        if($album && $this->isActionAllowed($album)) {
+        if ($album && $this->isActionAllowed($album)) {
             $form = $this->createForm(AlbumFormType::class, $album);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                if ($form->get('title')->getData() != $album->getTitle()) {
-                    $album->setTitle($form->get('title')->getData());
-                }
-                if ($form->get('description')->getData() != $album->getDescription()) {
-                    $album->setDescription($form->get('description')->getData());
-                }
+                $album->setTitle($form->get('title')->getData());
+                $album->setDescription($form->get('description')->getData());
+
                 $this->albumRepository->save($album, true);
 
                 return $this->redirectToRoute('album_show', [
@@ -103,7 +101,7 @@ class AlbumController extends AbstractController
                 ]);
             }
 
-            return $this->render('album/edit.html.twig',[
+            return $this->render('album/edit.html.twig', [
                 'album' => $album,
                 'albumForm' => $form->createView()
             ]);
@@ -134,8 +132,8 @@ class AlbumController extends AbstractController
     {
         $album = $this->albumRepository->find($albumId);
 
-        if($album && $this->isActionAllowed($album)) {
-            return $this->render('album/confirm-delete.html.twig',[
+        if ($album && $this->isActionAllowed($album)) {
+            return $this->render('album/confirm-delete.html.twig', [
                 'album' => $album
             ]);
         }
@@ -150,7 +148,7 @@ class AlbumController extends AbstractController
         $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        if($album && $this->isActionAllowed($album)) {
+        if ($album && $this->isActionAllowed($album)) {
             $this->albumRepository->remove($album, true);
 
             return $this->redirectToRoute('album_index', [

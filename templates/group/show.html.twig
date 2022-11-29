@@ -17,8 +17,8 @@
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
             <div class="grid grid-rows">
-                <div class="grid grid-cols-4 my-2 mx-4">
-                    <div class="col-span-1 flex justify-center">
+                <div class="grid grid-cols-8 my-4 ml-4">
+                    <div class="col-span-1 flex item-left justify-left">
                         <div>
                             <div>
                                 <img src="{{ group.groupImageUrl }}" alt="{{ 'No profile image' }}">
@@ -26,16 +26,27 @@
                             <!-- Join group here-->
                         </div>
                     </div>
-                    <div class="col-span-3">
+                    <div class="col-span-6 ml-4">
                         <div class="grid grid-rows">
-                            <div class="text-2xl ml-6">
+                            <div class="text-2xl">
                                 {{ group.title }}
                             </div>
-                            <div class="text-xl ml-6 mt-4">
+                            <div class="text-xl mt-4">
                                 {% if(group.description) %}
                                     {{ group.description }}
                                 {% endif %}
                             </div>
+                        </div>
+                    </div>
+                    <div class="col-span-1">
+                        <div class="mr-4 flex justify-right">
+                            {% include('components/buttons/button-blue.html.twig') with {
+                                'url': path('group_edit', {'groupId': group.id}),
+                                'title': 'Edit group'
+                            } %}
+                        </div>
+                        <div>
+                            2
                         </div>
                     </div>
                 </div>
@@ -48,7 +59,7 @@
 {#                    </div>#}
 {#                </div>#}
                 {% if (app.user and app.user.profile.id == group.admin.id) %}
-                    <div class="m-6">
+                    <div class="m-4">
                         {{ form_start(postForm) }}
                         {{ form_end(postForm) }}
                     </div>

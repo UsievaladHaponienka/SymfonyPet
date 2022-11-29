@@ -35,6 +35,7 @@ class GroupFormType extends AbstractType
             ])
             ->add('group_image_url', FileType::class, [
                 'required' => false,
+                'mapped' => false,
                 'attr' => ['class' => $this->getFileInputClass()],
                 'label_attr' => ['class' => $this->getLabelClass()]
             ])
@@ -44,7 +45,7 @@ class GroupFormType extends AbstractType
                 'label_attr' => ['class' => $this->getLabelClass()]
             ])
             ->add('create_new_group', SubmitType::class, [
-                'label' => 'Create New Group',
+                'label' => 'Submit',
                 'attr' => ['class' => $this->getSubmitButtonClass()]
             ]);
     }

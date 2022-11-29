@@ -18,7 +18,7 @@
         <div class="col-span-8 bg-indigo-300 rounded ">
             <div class="grid grid-rows">
                 <div class="grid grid-cols-4 my-2 mx-4">
-                    <div class="col-span-1 flex justify-center">
+                    <div class="col-span-1 flex justify-left">
                         <div>
                             <div>
                                 <img src="{{ profile.profileImageUrl }}" alt="{{ 'No profile image' }}">
@@ -42,20 +42,20 @@
                     <div class="col-span-3">
                         <div class="grid grid-rows">
                             {% if(profile.username) %}
-                                <div class="text-2xl ml-6">
+                                <div class="text-2xl">
                                     {{ profile.username }}
                                 </div>
                             {% else %}
-                                <div class="text-2xl ml-6">
+                                <div class="text-2xl">
                                     {{ 'No username' }}
                                 </div>
                                 {% if (app.user and app.user.profile.id == profile.id) %}
-                                    <a class="text-xl ml-6 text-indigo-500"
+                                    <a class="text-xl text-indigo-500"
                                        href="{{ path('profile_edit') }}">{{ 'You can add username here' }}</a>
                                 {% endif %}
                             {% endif %}
 
-                            <div class="text-xl ml-6 mt-4">
+                            <div class="text-xl mt-4">
                                 {% if(profile.description) %}
                                     {{ profile.description }}
                                 {% endif %}
@@ -73,7 +73,7 @@
                     </div>
                 </div>
                 {% if (app.user and app.user.profile.id == profile.id) %}
-                    <div class="m-6">
+                    <div class="m-4">
                         {{ form_start(postForm) }}
                         {{ form_end(postForm) }}
                     </div>

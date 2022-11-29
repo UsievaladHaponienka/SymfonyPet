@@ -22,7 +22,7 @@
             <div class="grid grid-cols-3">
                 {% for group in profile.groups %}
                     <div class="grid grid-rows">
-                        <div>
+                        <div class="ml-4 my-4 flex justify-center">
                             <a href="{{ path('group_show', {'groupId': group.id}) }}">
                                 <img src="{{ group.groupImageUrl }}">
                             </a>
