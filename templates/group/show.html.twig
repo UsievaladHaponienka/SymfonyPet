@@ -23,7 +23,11 @@
                             <div>
                                 <img src="{{ group.groupImageUrl }}" alt="{{ 'No profile image' }}">
                             </div>
-                            <!-- Join group here-->
+                            <div class="mt-4">
+                                {% if group.admin.id != app.user.profile.id %}
+                                    {% include('components/group/group-interaction-buttons.html.twig') with {'group': group} %}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                     <div class="col-span-6 ml-4">
@@ -53,11 +57,6 @@
                                 } %}
                             </div>
                         </div>
-                    {% endif %}
-                </div>
-                <div class="ml-4 pb-4">
-                    {% if group.admin.id != app.user.profile.id %}
-                        {% include('components/group/group-interaction-buttons.html.twig') with {'group': group} %}
                     {% endif %}
                 </div>
                 {#                <div class="grid grid-cols-4 gap-4"> #}

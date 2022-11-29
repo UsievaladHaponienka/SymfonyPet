@@ -53,6 +53,12 @@ class Profile
     #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Friendship::class)]
     private Collection $friendships;
 
+    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: GroupRequest::class)]
+    private Collection $groupRequests;
+
+    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: GroupInvites::class)]
+    private Collection $groupInvites;
+
     public function __construct()
     {
         $this->albums = new ArrayCollection();
@@ -62,6 +68,8 @@ class Profile
         $this->requester = new ArrayCollection();
         $this->requestee = new ArrayCollection();
         $this->friendships = new ArrayCollection();
+        $this->groupRequests = new ArrayCollection();
+        $this->groupInvites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -352,5 +360,65 @@ class Profile
         );
 
         return (bool) ($requestsBy->count() + $requestsTo->count());
+    }
+
+    /**
+     * @return Collection<int, GroupRequest>
+     */
+    public function getGroupRequests(): Collection
+    {
+        return $this->groupRequests;
+    }
+
+    public function addGroupRequest(GroupRequest $groupRequest): self
+    {
+        if (!$this->groupRequests->contains($groupRequest)) {
+            $this->groupRequests->add($groupRequest);
+            $groupRequest->setProfile($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupRequest(GroupRequest $groupRequest): self
+    {
+        if ($this->groupRequests->removeElement($groupRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($groupRequest->getProfile() === $this) {
+                $groupRequest->setProfile(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupInvites>
+     */
+    public function getGroupInvites(): Collection
+    {
+        return $this->groupInvites;
+    }
+
+    public function addGroupInvite(GroupInvites $groupInvite): self
+    {
+        if (!$this->groupInvites->contains($groupInvite)) {
+            $this->groupInvites->add($groupInvite);
+            $groupInvite->setProfile($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupInvite(GroupInvites $groupInvite): self
+    {
+        if ($this->groupInvites->removeElement($groupInvite)) {
+            // set the owning side to null (unless already changed)
+            if ($groupInvite->getProfile() === $this) {
+                $groupInvite->setProfile(null);
+            }
+        }
+
+        return $this;
     }
 }

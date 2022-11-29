@@ -48,11 +48,19 @@ class Group
     #[ORM\JoinColumn(nullable: false)]
     private ?Profile $admin = null;
 
+    #[ORM\OneToMany(mappedBy: 'requestedGroup', targetEntity: GroupRequest::class)]
+    private Collection $groupRequests;
+
+    #[ORM\OneToMany(mappedBy: 'inviteGroup', targetEntity: GroupInvites::class)]
+    private Collection $groupInvites;
+
     public function __construct()
     {
         $this->albums = new ArrayCollection();
         $this->posts = new ArrayCollection();
         $this->profile = new ArrayCollection();
+        $this->groupRequests = new ArrayCollection();
+        $this->groupInvites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -204,6 +212,67 @@ class Group
         return $this;
     }
 
+    /**
+     * @return Collection<int, GroupRequest>
+     */
+    public function getGroupRequests(): Collection
+    {
+        return $this->groupRequests;
+    }
+
+    public function addGroupRequest(GroupRequest $groupRequest): self
+    {
+        if (!$this->groupRequests->contains($groupRequest)) {
+            $this->groupRequests->add($groupRequest);
+            $groupRequest->setRequestedGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupRequest(GroupRequest $groupRequest): self
+    {
+        if ($this->groupRequests->removeElement($groupRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($groupRequest->getRequestedGroup() === $this) {
+                $groupRequest->setRequestedGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupInvites>
+     */
+    public function getGroupInvites(): Collection
+    {
+        return $this->groupInvites;
+    }
+
+    public function addGroupInvite(GroupInvites $groupInvite): self
+    {
+        if (!$this->groupInvites->contains($groupInvite)) {
+            $this->groupInvites->add($groupInvite);
+            $groupInvite->setInviteGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupInvite(GroupInvites $groupInvite): self
+    {
+        if ($this->groupInvites->removeElement($groupInvite)) {
+            // set the owning side to null (unless already changed)
+            if ($groupInvite->getInviteGroup() === $this) {
+                $groupInvite->setInviteGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+
     public function getAdmin(): ?Profile
     {
         return $this->admin;
@@ -221,10 +290,22 @@ class Group
         $groupProfiles = $this
             ->getProfile()
             ->filter(function ($element) use ($profile){
-               /** @var Profile $element */
-               return $element->getId() == $profile->getId();
+                /** @var Profile $element */
+                return $element->getId() == $profile->getId();
             });
 
         return (bool) $groupProfiles->count();
+    }
+
+    public function isRequested(User $user): bool
+    {
+        $groupRequests = $this
+            ->getGroupRequests()
+            ->filter(function ($element) use ($user){
+                /** @var GroupRequest $element */
+                return $element->getProfile()->getId() == $user->getProfile()->getId();
+            });
+
+        return (bool) $groupRequests->count();
     }
 }
