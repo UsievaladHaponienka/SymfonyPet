@@ -13,93 +13,101 @@
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
             <div class="grid grid-cols-3 gap-4">
-                <div class="col-span-1">
-                    <div class=" text-center m-4 text-xl">
-                        {{ 'My Friends' }}
-                    </div>
-                    <div class="m-4">
-                        {% for friendship in  profile.friendships %}
-                            <div class="grid grid-cols-4">
-                                <div class="col-span-1">
-                                    <a href="{{ path('profile_index', {'profileId': friendship.friend.id}) }}">
-                                        <img src="{{ friendship.friend.profileImageUrl }}">
-                                    </a>
-                                </div>
-                                <div class="col-span-3 text-center">
-                                    <a href="{{ path('profile_index', {'profileId': friendship.friend.id}) }}">
-                                        <p>{{ friendship.friend.username }}</p>
-                                    </a>
-                                </div>
-                                <div class="col-span-4 items-center">
-                                    {% include('components/buttons/button-red.html.twig') with {
-                                        'url': path('friendship_delete', {'friendshipId': friendship.id}),
-                                        'title': 'Remove'
-                                    } %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+                {% include('components/tabs/tab-button.html.twig') with {
+                    id: 'my-friends', title: 'My Friends', isActive: true } %}
+                {% include('components/tabs/tab-button.html.twig') with {
+                    id: 'incoming-requests', title: 'Incoming Requests', isActive: false } %}
+                {% include('components/tabs/tab-button.html.twig') with {
+                    id: 'outgoing-requests', title: 'Outgoing Requests', isActive: false } %}
+
+
+                <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
+                <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
+                <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
+            </div>
+            <!-- My Friends -->
+            <div class="tab-content" id="my-friends" style="display: block">
+                <div class="grid grid-cols-3 gap-4">
+                    {% for friendship in  profile.friendships %}
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <a href="{{ path('profile_index', {'profileId': friendship.friend.id}) }}">
+                                <img src="{{ friendship.friend.profileImageUrl }}">
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            <a href="{{ path('profile_index', {'profileId': friendship.friend.id}) }}">
+                                {{ friendship.friend.username }}
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {% include('components/buttons/button-red.html.twig') with {
+                                'url': path('friendship_delete', {'friendshipId': friendship.id}),
+                                'title': 'Remove'
+                            } %}
+                        </div>
+                    {% endfor %}
                 </div>
-                <div class="col-span-1">
-                    <div class=" text-center m-4 text-xl">
-                        {{ 'Requests made by me' }}
-                    </div>
-                    <div class="m-4">
-                        {% for request in profile.requestsMadeByProfile %}
-                            <div class="grid grid-cols-4">
-                                <div class="col-span-1">
-                                    <a href="{{ path('profile_index', {'profileId': request.requestee.id}) }}">
-                                        <img src="{{ request.requestee.profileImageUrl }}">
-                                    </a>
-                                </div>
-                                <div class="col-span-3 text-center">
-                                    <a href="{{ path('profile_index', {'profileId': request.requestee.id}) }}">
-                                        <p>{{ request.requestee.username }}</p>
-                                    </a>
-                                </div>
-                                <div class="col-span-4 items-center">
-                                    {% include('components/buttons/button-red.html.twig') with {
-                                        'url': path('friendship_request_delete', {'requestId': request.id}),
-                                        'title': 'Cancel'
-                                    } %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="col-span-1">
-                    <div class=" text-center m-4 text-xl">
-                        {{ 'Requests made to me' }}
-                    </div>
-                    <div class="m-4">
-                        {% for request in profile.requestsMadeToProfile %}
-                            <div class="grid grid-cols-4">
-                                <div class="col-span-1">
-                                    <a href="{{ path('profile_index', {'profileId': request.requester.id}) }}">
-                                        <img src="{{ request.requester.profileImageUrl }}">
-                                    </a>
-                                </div>
-                                <div class="col-span-3 text-center">
-                                    <a href="{{ path('profile_index', {'profileId': request.requester.id}) }}">
-                                        <p>{{ request.requester.username }}</p>
-                                    </a>
-                                </div>
-                                <div class="col-span-2 items-center">
+            </div>
+
+
+            <!-- Incoming requests -->
+            <div class="tab-content" id="incoming-requests" style="display: none">
+                <div class="grid grid-cols-3 gap-4">
+                    {% for request in profile.requestsMadeToProfile %}
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <a href="{{ path('profile_index', {'profileId': request.requester.id}) }}">
+                                <img src="{{ request.requester.profileImageUrl }}">
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            <a href="{{ path('profile_index', {'profileId': request.requester.id}) }}">
+                                {{ request.requester.username }}
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            <div class="grid grid-rows">
+                                <div>
                                     {% include('components/buttons/button-blue.html.twig') with {
                                         'url': path('friendship_create', {'profileId': request.requester.id}),
                                         'title': 'Accept'} %}
                                 </div>
-                                <div class="col-span-2 items-center">
+                                <div>
                                     {% include('components/buttons/button-red.html.twig') with {
                                         'url': path('friendship_request_delete', {'requestId': request.id}),
                                         'title': 'Decline'
                                     } %}
                                 </div>
                             </div>
-                        {% endfor %}
-                    </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <!-- Outgoing Requests -->
+            <div class="tab-content" id="outgoing-requests" style="display: none">
+                <div class="grid grid-cols-3 gap-4">
+                    {% for request in profile.requestsMadeByProfile %}
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <a href="{{ path('profile_index', {'profileId': request.requestee.id}) }}">
+                                <img src="{{ request.requestee.profileImageUrl }}">
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            <a href="{{ path('profile_index', {'profileId': request.requestee.id}) }}">
+                                {{ request.requestee.username }}
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {% include('components/buttons/button-red.html.twig') with {
+                                'url': path('friendship_request_delete', {'requestId': request.id}),
+                                'title': 'Cancel'
+                            } %}
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+    {% include('components/tabs/tab-script.html.twig') %}
 {% endblock %}
