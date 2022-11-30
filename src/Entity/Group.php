@@ -48,10 +48,10 @@ class Group
     #[ORM\JoinColumn(nullable: false)]
     private ?Profile $admin = null;
 
-    #[ORM\OneToMany(mappedBy: 'requestedGroup', targetEntity: GroupRequest::class)]
+    #[ORM\OneToMany(mappedBy: 'requestedGroup', targetEntity: GroupRequest::class, cascade: ['remove'])]
     private Collection $groupRequests;
 
-    #[ORM\OneToMany(mappedBy: 'inviteGroup', targetEntity: GroupInvites::class)]
+    #[ORM\OneToMany(mappedBy: 'inviteGroup', targetEntity: GroupInvites::class, cascade: ['remove'])]
     private Collection $groupInvites;
 
     public function __construct()

@@ -3,21 +3,115 @@
 {% block title %}Edit group: {{ group.title }}{% endblock %}
 
 {% block body %}
-
     <div class="grid grid-cols-12 gap-4">
         {% if(app.user) %}
-        <div class="col-span-2 col-start-2">
-            {% include 'components/profile/navigation.html.twig' %}
-        </div>
+            <div class="col-span-2 col-start-2">
+                {% include 'components/profile/navigation.html.twig' %}
+            </div>
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded">
-            <div class="flex flex-col items-center py-6">
-                <div class="max-w-xl items-center flex">
-                    {{ form_start(groupEditForm) }}
-                    <h1 class="text-2xl text-center">{{ 'Edit group: ' }}{{ group.title }}</h1>
-                    {{ form_end(groupEditForm) }}
+            <div class="ml-4">
+                {% include('components/buttons/back-button.html.twig') with {
+                    url: path('group_show', {'groupId': group.id})
+                } %}
+            </div>
+            <div class="grid grid-cols-4 m-4">
+                {% include('components/tabs/tab-button.html.twig') with {id: 'group-edit', title: 'Edit group', isActive: true } %}
+                {% include('components/tabs/tab-button.html.twig') with {id: 'group-members', title: 'Group Members', isActive: false} %}
+                {% include('components/tabs/tab-button.html.twig') with {id: 'group-requests', title: 'Group Requests', isActive: false} %}
+                {% include('components/tabs/tab-button.html.twig') with {id: 'group-invites', title: 'Group Invites', isActive: false} %}
+            </div>
+            <!-- Group edit -->
+            <div class="tab-content" id="group-edit" style="display: block">
+                <div class="flex flex-col items-center py-6">
+                    <div class="max-w-xl items-center flex">
+                        {{ form_start(groupEditForm) }}
+                        <h1 class="text-2xl text-center">{{ 'Edit group: ' }}{{ group.title }}</h1>
+                        {{ form_end(groupEditForm) }}
+                    </div>
                 </div>
+            </div>
+            <!-- Group members -->
+            <div class="tab-content" id="group-members" style="display: none">
+                <div class="grid grid-cols-6">
+                    <div class="col-span-1 text-xl text-center m-4">{{ 'Profile image' }}</div>
+                    <div class="col-span-2 text-xl text-center m-4">{{ 'Profile Username' }}</div>
+                    <div class="col-span-3 text-xl text-center m-4">{{ 'Actions' }}</div>
+                    {% for profile in group.profile %}
+                        <div class="col-span-1 pl-4 pb-4">
+                            <img src="{{ profile.profileImageUrl }}">
+                        </div>
+                        <div class="col-span-2 pl-4 pb-4 text-center">
+                            {{ profile.username }}
+                        </div>
+                        <div class="col-span-3 pl-4 pb-4 text-center">
+                            {% include('components/buttons/button-red.html.twig') with {
+                                url: '',
+                                title: 'Remove from group'
+                            } %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Group requests -->
+            <div class="tab-content" id="group-requests" style="display: none">
+                <div class="grid grid-cols-6">
+                    <div class="col-span-1 text-xl text-center m-4">{{ 'Profile image' }}</div>
+                    <div class="col-span-2 text-xl text-center m-4">{{ 'Profile Username' }}</div>
+                    <div class="col-span-3 text-xl text-center m-4">{{ 'Actions' }}</div>
+                    {% for request in group.groupRequests %}
+                    <div class="col-span-1 pl-4 pb-4">
+                        <img src="{{ request.profile.profileImageUrl }}">
+                    </div>
+                    <div class="col-span-2 pl-4 pb-4 text-center">
+                        {{ request.profile.username }}
+                    </div>
+                    <div class="col-span-3 pl-4 pb-4">
+                        <div class="grid grid-cols-2">
+                            <div class="text-center">
+                                {% include('components/buttons/button-blue.html.twig') with {
+                                    url: '',
+                                    title: 'Accept'
+                                } %}
+                            </div>
+                            <div class="text-center">
+                                <div class="text-center">
+                                    {% include('components/buttons/button-red.html.twig') with {
+                                        url: '',
+                                        title: 'Decline'
+                                    } %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Group invites -->
+            </div>
+            <div class="tab-content" id="group-invites" style="display: none">
+                WIP
             </div>
         </div>
     </div>
+    <script>
+        function switchTab(tabId) {
+            let i, tabContent, tabLinks;
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+            }
+
+            tabLinks = document.getElementsByClassName("tab-links");
+            for (i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].className = tabLinks[i].className.replace("bg-indigo-500 text-white", "bg-indigo-200 text-gray-700");
+            }
+
+            document.getElementById(tabId).style.display = "block";
+            document.getElementById(tabId + '-button').className =
+                document.getElementById(tabId + '-button').className.replace(
+                    "bg-indigo-200 text-gray-700", "bg-indigo-500 text-white"
+                )
+        }
+    </script>
 {% endblock %}
+

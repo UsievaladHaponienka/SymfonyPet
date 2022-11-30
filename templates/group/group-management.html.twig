@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if(app.user.profile.username) %}
+        {{ app.user.profile.username }}
+{% endblock %}
+
+{% block body %}
+    <div class="grid grid-cols-12 gap-4">
+        {% if(app.user) %}
+            <div class="col-span-2 col-start-2">
+                {% include 'components/profile/navigation.html.twig' %}
+            </div>
+        {% endif %}
+        <div class="col-span-8 bg-indigo-300 rounded ">
+
+        </div>
+    </div>
+{% endblock %}
+
