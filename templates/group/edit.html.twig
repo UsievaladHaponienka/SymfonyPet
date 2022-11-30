@@ -74,14 +74,14 @@
                         <div class="grid grid-rows">
                             <div class="text-center">
                                 {% include('components/buttons/button-blue.html.twig') with {
-                                    url: '',
+                                    url: path('group_request_accept', {'requestId': request.id}),
                                     title: 'Accept'
                                 } %}
                             </div>
                             <div class="text-center">
                                 <div class="text-center">
                                     {% include('components/buttons/button-red.html.twig') with {
-                                        url: '',
+                                        url: path('group_request_decline', {'requestId': request.id}),
                                         title: 'Decline'
                                     } %}
                                 </div>

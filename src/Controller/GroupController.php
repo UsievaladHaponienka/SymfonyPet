@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Album;
 use App\Entity\Group;
 use App\Entity\GroupRequest;
-use App\Entity\Post;
 use App\Entity\User;
 use App\Form\GroupFormType;
 use App\Form\PostFormType;
@@ -60,29 +59,6 @@ class GroupController extends AbstractController
             return $this->render('group/index.html.twig', [
                 'profile' => $profile,
                 'groupForm' => $form->createView()
-            ]);
-        }
-
-        throw $this->createNotFoundException();
-    }
-
-    #[Route('group/{groupId}', name: 'group_show')]
-    public function show(int $groupId): Response
-    {
-        $group = $this->groupRepository->find($groupId);
-
-        if ($group) {
-            //TODO handle exceptions
-            $postForm = $this->createForm(
-                PostFormType::class,
-                null, [
-                'action' => $this->generateUrl('post_create_group', ['groupId' => $groupId]),
-                'method' => 'POST',
-            ]);
-
-            return $this->render('group/show.html.twig', [
-                'group' => $group,
-                'postForm' => $postForm->createView()
             ]);
         }
 
@@ -160,6 +136,29 @@ class GroupController extends AbstractController
         throw $this->createNotFoundException();
     }
 
+    #[Route('group/{groupId}', name: 'group_show')]
+    public function show(int $groupId): Response
+    {
+        $group = $this->groupRepository->find($groupId);
+
+        if ($group) {
+            //TODO handle exceptions
+            $postForm = $this->createForm(
+                PostFormType::class,
+                null, [
+                'action' => $this->generateUrl('post_create_group', ['groupId' => $groupId]),
+                'method' => 'POST',
+            ]);
+
+            return $this->render('group/show.html.twig', [
+                'group' => $group,
+                'postForm' => $postForm->createView()
+            ]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
     #[Route('group/join/{groupId}', name: 'group_join')]
     public function joinGroup(int $groupId): Response
     {
@@ -215,17 +214,73 @@ class GroupController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('group/request/delete/{requestId}', name: 'group_request_remove')]
-    public function removeRequest(int $requestId): Response
+    #[Route('group/request/cancel/{groupId}', name: 'group_request_cancel')]
+    public function cancelJoinRequest(int $groupId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $group = $this->groupRepository->find($groupId);
+
+        if ($group) {
+            $request = $this->groupRequestRepository->findOneBy([
+                'profile' => $user->getProfile(),
+                'requestedGroup' => $group->getId()
+            ]);
+
+            if ($request && $request->getProfile()->getId() == $user->getProfile()->getId()) {
+                $this->groupRequestRepository->remove($request, true);
+
+                //TODO: Resolve redirect
+                return $this->redirectToRoute('group_show', [
+                    'groupId' => $request->getRequestedGroup()->getId()
+                ]);
+            }
+
+            throw $this->createNotFoundException();
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('group/request/decline/{requestId}', name: 'group_request_decline')]
+    public function declineJoinRequest(int $requestId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $request = $this->groupRequestRepository->find($requestId);
 
-        if ($request && ($request->getProfile()->getId() == $user->getProfile()->getId() ||
-                $request->getRequestedGroup()->getAdmin()->getId() == $user->getProfile()->getId())) {
+        if ($request && $request->getRequestedGroup()->getAdmin()->getId() == $user->getProfile()->getId()) {
+            $groupId = $request->getRequestedGroup()->getId();
             $this->groupRequestRepository->remove($request, true);
-            return $this->redirectToRoute('group_show', ['groupId' => $request->getRequestedGroup()->getId()]);
+
+            return $this->redirectToRoute('group_edit', [
+                'groupId' => $groupId
+            ]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('group/request/accept/{requestId}', name: 'group_request_accept')]
+    public function acceptJoinRequest(int $requestId): Response
+    {
+        $request = $this->groupRequestRepository->find($requestId);
+
+        if ($request) {
+            /** @var User $user */
+            $user = $this->getUser();
+            $group = $this->groupRepository->find($request->getRequestedGroup());
+
+            if ($group && $group->getAdmin()->getId() == $user->getProfile()->getId()) {
+                $group->addProfile($request->getProfile());
+                $this->groupRequestRepository->remove($request);
+
+                $this->groupRepository->save($group, true);
+
+                return $this->redirectToRoute('group_edit', ['groupId' => $group->getId()]);
+            }
+
+            throw $this->createNotFoundException();
         }
 
         throw $this->createNotFoundException();
