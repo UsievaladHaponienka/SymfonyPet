@@ -1,0 +1,20 @@
+<script>
+    function switchTab(tabId) {
+        let i, tabContent, tabLinks;
+        tabContent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabContent.length; i++) {
+            tabContent[i].style.display = "none";
+        }
+
+        tabLinks = document.getElementsByClassName("tab-links");
+        for (i = 0; i < tabLinks.length; i++) {
+            tabLinks[i].className = tabLinks[i].className.replace("bg-indigo-500 text-white", "bg-indigo-200 text-gray-700");
+        }
+
+        document.getElementById(tabId).style.display = "block";
+        document.getElementById(tabId + '-button').className =
+            document.getElementById(tabId + '-button').className.replace(
+                "bg-indigo-200 text-gray-700", "bg-indigo-500 text-white"
+            )
+    }
+</script>

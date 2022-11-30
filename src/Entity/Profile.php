@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use function PHPUnit\Framework\returnArgument;
 
 #[ORM\Entity(repositoryClass: ProfileRepository::class)]
 class Profile
@@ -332,36 +333,6 @@ class Profile
         return $this;
     }
 
-    public function isFriend(int $friendId): bool
-    {
-        $friendships = $this->getFriendships()->filter(
-            function ($friendship) use ($friendId) {
-                return $friendship->getFriend()->getId() == $friendId;
-            }
-        );
-
-        return (bool) $friendships->count();
-    }
-
-    //TODO: Don't like this method, it probably should be refactored
-    public function isFriendshipRequested(int $requesteeId): bool
-    {
-        $requestsBy = $this->getRequestsMadeByProfile()->filter(
-            function ($request) use ($requesteeId) {
-                return $request->getRequestee()->getId() == $requesteeId;
-            }
-        );
-
-        $requesterId = $this->getUser()->getProfile()->getId();
-        $requestsTo = $this->getRequestsMadeToProfile()->filter(
-            function ($request) use ($requesterId) {
-                return $request->getRequestee()->getId() == $requesterId;
-            }
-        );
-
-        return (bool) ($requestsBy->count() + $requestsTo->count());
-    }
-
     /**
      * @return Collection<int, GroupRequest>
      */
@@ -420,5 +391,46 @@ class Profile
         }
 
         return $this;
+    }
+
+    public function isFriend(int $friendId): bool
+    {
+        $friendships = $this->getFriendships()->filter(
+            function ($friendship) use ($friendId) {
+                return $friendship->getFriend()->getId() == $friendId;
+            }
+        );
+
+        return (bool)$friendships->count();
+    }
+
+    //TODO: Don't like this method, it probably should be refactored
+    public function isFriendshipRequested(int $requesteeId): bool
+    {
+        $requestsBy = $this->getRequestsMadeByProfile()->filter(
+            function ($request) use ($requesteeId) {
+                return $request->getRequestee()->getId() == $requesteeId;
+            }
+        );
+
+        $requesterId = $this->getUser()->getProfile()->getId();
+        $requestsTo = $this->getRequestsMadeToProfile()->filter(
+            function ($request) use ($requesterId) {
+                return $request->getRequestee()->getId() == $requesterId;
+            }
+        );
+
+        return (bool)($requestsBy->count() + $requestsTo->count());
+    }
+
+    public function getAdministratedGroups(): Collection
+    {
+        return $this
+            ->getGroups()
+            ->filter(function ($group) {
+                /** @var Group $group */
+                return $group->getAdmin()->getId() == $this->getId();
+            });
+
     }
 }
