@@ -70,7 +70,7 @@ class GroupController extends AbstractController
     {
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $this->isActionAllowed($group)) {
+        if ($group && $this->isAdmin($group)) {
             $form = $this->createForm(GroupFormType::class, $group);
             $form->handleRequest($request);
 
@@ -109,7 +109,7 @@ class GroupController extends AbstractController
     {
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $this->isActionAllowed($group)) {
+        if ($group && $this->isAdmin($group)) {
             return $this->render('group/confirm-delete.html.twig', [
                 'group' => $group
             ]);
@@ -125,7 +125,7 @@ class GroupController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $this->isActionAllowed($group)) {
+        if ($group && $this->isAdmin($group)) {
             $this->groupRepository->remove($group, true);
 
             return $this->redirectToRoute('group_index', [
@@ -245,11 +245,9 @@ class GroupController extends AbstractController
     #[Route('group/request/decline/{requestId}', name: 'group_request_decline')]
     public function declineJoinRequest(int $requestId): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
         $request = $this->groupRequestRepository->find($requestId);
 
-        if ($request && $request->getRequestedGroup()->getAdmin()->getId() == $user->getProfile()->getId()) {
+        if ($request && $this->isAdmin($request->getRequestedGroup())) {
             $groupId = $request->getRequestedGroup()->getId();
             $this->groupRequestRepository->remove($request, true);
 
@@ -267,14 +265,34 @@ class GroupController extends AbstractController
         $request = $this->groupRequestRepository->find($requestId);
 
         if ($request) {
-            /** @var User $user */
-            $user = $this->getUser();
             $group = $this->groupRepository->find($request->getRequestedGroup());
 
-            if ($group && $group->getAdmin()->getId() == $user->getProfile()->getId()) {
+            if ($group && $this->isAdmin($group)) {
                 $group->addProfile($request->getProfile());
                 $this->groupRequestRepository->remove($request);
 
+                $this->groupRepository->save($group, true);
+
+                return $this->redirectToRoute('group_edit', ['groupId' => $group->getId()]);
+            }
+
+            //TODO: Maybe refactor, I don't like 2 throws in method. Same for method below
+            throw $this->createNotFoundException();
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('group/remove/{groupId}/{profileId}', name: 'group_remove')]
+    public function removeFromGroup(int $groupId, int $profileId): Response
+    {
+        $group = $this->groupRepository->find($groupId);
+
+        if ($group && $this->isAdmin($group)) {
+            $profile = $this->profileRepository->find($profileId);
+
+            if($profile) {
+                $group->removeProfile($profile);
                 $this->groupRepository->save($group, true);
 
                 return $this->redirectToRoute('group_edit', ['groupId' => $group->getId()]);
@@ -327,7 +345,7 @@ class GroupController extends AbstractController
         return $defaultGroupAlbum;
     }
 
-    protected function isActionAllowed(Group $group): bool
+    protected function isAdmin(Group $group): bool
     {
         /** @var User $user */
         $user = $this->getUser();

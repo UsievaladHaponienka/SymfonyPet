@@ -13,12 +13,13 @@
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
             <div class="grid grid-cols-3 gap-4">
+                <!-- TODO: Maybe tabs as components are not required-->
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'my-friends', title: 'My Friends', isActive: true } %}
+                    id: 'my-friends', tabType: 'friends', title: 'My Friends', isActive: true } %}
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'incoming-requests', title: 'Incoming Requests', isActive: false } %}
+                    id: 'incoming-requests', tabType: 'friends', title: 'Incoming Requests', isActive: false } %}
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'outgoing-requests', title: 'Outgoing Requests', isActive: false } %}
+                    id: 'outgoing-requests', tabType: 'friends', title: 'Outgoing Requests', isActive: false } %}
 
 
                 <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
@@ -109,5 +110,5 @@
             </div>
         </div>
     </div>
-    {% include('components/tabs/tab-script.html.twig') %}
+    {% include('components/tabs/tab-script.html.twig') with {'tabType': 'friends'} %}
 {% endblock %}

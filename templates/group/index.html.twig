@@ -12,13 +12,13 @@
         <div class="col-span-8 bg-indigo-300 rounded ">
             <div class="grid grid-cols-4 m-4">
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'groups', title: 'My Groups', isActive: true } %}
+                    id: 'groups', tabType: 'groups', title: 'My Groups', isActive: true } %}
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'requested-groups', title: 'Requested Groups', isActive: false } %}
+                    id: 'requested-groups', tabType: 'groups', title: 'Requested Groups', isActive: false } %}
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'administrated-groups', title: 'Administrated Groups', isActive: false} %}
+                    id: 'administrated-groups', tabType: 'groups', title: 'Administrated Groups', isActive: false} %}
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'create-group', title: 'Create Group', isActive: false} %}
+                    id: 'create-group', tabType: 'groups', title: 'Create Group', isActive: false} %}
                 {% if(app.user.profile.id == profile.id) %}
             </div>
             <!-- My Groups -->
@@ -123,5 +123,5 @@
             {% endif %}
         </div>
     </div>
-    {% include('components/tabs/tab-script.html.twig') %}
+    {% include('components/tabs/tab-script.html.twig') with {'tabType': 'groups'} %}
 {% endblock %}

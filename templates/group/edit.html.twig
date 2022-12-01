@@ -17,13 +17,13 @@
             </div>
             <div class="grid grid-cols-4 m-4">
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'group-edit', title: 'Edit group', isActive: true } %}
+                    id: 'group-edit', tabType: 'group-edit', title: 'Edit group', isActive: true } %}
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'group-members', title: 'Group Members', isActive: false} %}
+                    id: 'group-members', tabType: 'group-edit', title: 'Group Members', isActive: false} %}
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'group-requests', title: 'Group Requests', isActive: false} %}
+                    id: 'group-requests', tabType: 'group-edit', title: 'Group Requests', isActive: false} %}
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'group-invites', title: 'Group Invites', isActive: false} %}
+                    id: 'group-invites', tabType: 'group-edit', title: 'Group Invites', isActive: false} %}
             </div>
             <!-- Group edit -->
             <div class="tab-content" id="group-edit" style="display: block">
@@ -50,7 +50,7 @@
                         </div>
                         <div class="col-span-1 pb-4 text-center">
                             {% include('components/buttons/button-red.html.twig') with {
-                                url: '',
+                                url: path('group_remove', {'profileId': profile.id, 'groupId': group.id}),
                                 title: 'Remove from group'
                             } %}
                         </div>
@@ -97,6 +97,6 @@
             </div>
         </div>
     </div>
-{% include('components/tabs/tab-script.html.twig') %}
+{% include('components/tabs/tab-script.html.twig') with {'tabType': 'group-edit'} %}
 {% endblock %}
 

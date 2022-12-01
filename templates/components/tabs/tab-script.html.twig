@@ -1,20 +1,38 @@
 <script>
-    function switchTab(tabId) {
+    document.addEventListener("DOMContentLoaded", function (){
+        let tabType = '{{tabType}}';
+        let activeTab = localStorage.getItem('active-tab-' + tabType);
+        if (activeTab) {
+            switchTab(activeTab, tabType);
+        }
+    })
+
+    function switchTab(tabId, tabType) {
         let i, tabContent, tabLinks;
+
+        //Hide all tabs content
         tabContent = document.getElementsByClassName("tab-content");
         for (i = 0; i < tabContent.length; i++) {
             tabContent[i].style.display = "none";
         }
 
+        //Set all tabs inactive
         tabLinks = document.getElementsByClassName("tab-links");
         for (i = 0; i < tabLinks.length; i++) {
-            tabLinks[i].className = tabLinks[i].className.replace("bg-indigo-500 text-white", "bg-indigo-200 text-gray-700");
+            tabLinks[i].className = tabLinks[i].className.replace(
+                "bg-indigo-500 text-white", "bg-indigo-200 text-gray-700"
+            );
         }
 
+        //Show active tab
         document.getElementById(tabId).style.display = "block";
+
+        //Set active tab
         document.getElementById(tabId + '-button').className =
             document.getElementById(tabId + '-button').className.replace(
                 "bg-indigo-200 text-gray-700", "bg-indigo-500 text-white"
-            )
+            );
+
+        localStorage.setItem('active-tab-' + tabType, tabId);
     }
 </script>
