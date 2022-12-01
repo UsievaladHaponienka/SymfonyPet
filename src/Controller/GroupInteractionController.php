@@ -8,11 +8,10 @@ use App\Entity\User;
 use App\Repository\GroupRepository;
 use App\Repository\GroupRequestRepository;
 use App\Repository\ProfileRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class GroupInteractionController extends AbstractController
+class GroupInteractionController extends BaseController
 {
     private GroupRepository $groupRepository;
 
@@ -74,11 +73,11 @@ class GroupInteractionController extends AbstractController
         $group = $this->groupRepository->find($groupId);
 
         if ($group && $group->getType() == Group::PRIVATE_GROUP_TYPE && !$group->isInGroup($user->getProfile())) {
-            $request = new GroupRequest();
-            $request->setProfile($user->getProfile());
-            $request->setRequestedGroup($group);
+            $joinRequest = new GroupRequest();
+            $joinRequest->setProfile($user->getProfile());
+            $joinRequest->setRequestedGroup($group);
 
-            $this->groupRequestRepository->save($request, true);
+            $this->groupRequestRepository->save($joinRequest, true);
 
             return $this->redirectToRoute('group_show', ['groupId' => $groupId]);
         }
@@ -94,17 +93,17 @@ class GroupInteractionController extends AbstractController
         $group = $this->groupRepository->find($groupId);
 
         if ($group) {
-            $request = $this->groupRequestRepository->findOneBy([
+            $joinRequest = $this->groupRequestRepository->findOneBy([
                 'profile' => $user->getProfile(),
                 'requestedGroup' => $group->getId()
             ]);
 
-            if ($request && $request->getProfile()->getId() == $user->getProfile()->getId()) {
-                $this->groupRequestRepository->remove($request, true);
+            if ($joinRequest && $joinRequest->getProfile()->getId() == $user->getProfile()->getId()) {
+                $this->groupRequestRepository->remove($joinRequest, true);
 
                 //TODO: Resolve redirect
                 return $this->redirectToRoute('group_show', [
-                    'groupId' => $request->getRequestedGroup()->getId()
+                    'groupId' => $joinRequest->getRequestedGroup()->getId()
                 ]);
             }
 
@@ -117,11 +116,11 @@ class GroupInteractionController extends AbstractController
     #[Route('group/request/decline/{requestId}', name: 'group_request_decline')]
     public function declineJoinRequest(int $requestId): Response
     {
-        $request = $this->groupRequestRepository->find($requestId);
+        $joinRequest = $this->groupRequestRepository->find($requestId);
 
-        if ($request && $this->isAdmin($request->getRequestedGroup())) {
-            $groupId = $request->getRequestedGroup()->getId();
-            $this->groupRequestRepository->remove($request, true);
+        if ($joinRequest && $this->isAdmin($joinRequest->getRequestedGroup())) {
+            $groupId = $joinRequest->getRequestedGroup()->getId();
+            $this->groupRequestRepository->remove($joinRequest, true);
 
             return $this->redirectToRoute('group_edit', [
                 'groupId' => $groupId
@@ -134,14 +133,14 @@ class GroupInteractionController extends AbstractController
     #[Route('group/request/accept/{requestId}', name: 'group_request_accept')]
     public function acceptJoinRequest(int $requestId): Response
     {
-        $request = $this->groupRequestRepository->find($requestId);
+        $joinRequest = $this->groupRequestRepository->find($requestId);
 
-        if ($request) {
-            $group = $this->groupRepository->find($request->getRequestedGroup());
+        if ($joinRequest) {
+            $group = $this->groupRepository->find($joinRequest->getRequestedGroup());
 
             if ($group && $this->isAdmin($group)) {
-                $group->addProfile($request->getProfile());
-                $this->groupRequestRepository->remove($request);
+                $group->addProfile($joinRequest->getProfile());
+                $this->groupRequestRepository->remove($joinRequest);
 
                 $this->groupRepository->save($group, true);
 

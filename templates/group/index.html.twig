@@ -44,10 +44,12 @@
                                 {{ group.description }}
                             </div>
                             <div class="col-span-1 pb-4 text-center">
+r                                {% if (group.admin.id != profile.id) %}
                                 {% include('components/buttons/button-red.html.twig') with {
-                                    url: '',
+                                    url: path('group_leave', {'groupId': group.id}),
                                     title: 'Leave group'
                                 } %}
+                                {% endif %}
                             </div>
                         {% endfor %}
                     </div>
