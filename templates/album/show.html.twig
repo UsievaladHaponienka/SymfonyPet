@@ -13,7 +13,7 @@
             <div class="mx-6 mt-6 grid grid-cols-12">
                 <div class="text-left col-span-1 inline">
                     {% include('components/buttons/back-button.html.twig')
-                        with {'url': path('album_index', {'profileId': profile.id})} %}
+                        with {'url': path('album_index')} %}
                 </div>
                 {% if(app.user.profile.id == profile.id and album.type != constant('USER_DEFAULT_TYPE', album)) %}
                     <div class="text-right col-span-1 col-start-12 inline">

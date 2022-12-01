@@ -30,13 +30,15 @@ class AlbumController extends AbstractController
         $this->profileRepository = $profileRepository;
     }
 
-    #[Route('profile/{profileId}/albums', name: 'album_index')]
-    public function index(int $profileId): Response
+    #[Route('albums', name: 'album_index')]
+    public function index(): Response
     {
-        $profile = $this->profileRepository->find($profileId);
+        /** @var User $user */
+        $user = $this->getUser();
+        $profile = $user->getProfile();
 
         if ($profile) {
-            $albums = $this->albumRepository->findBy(['profile' => $profileId]);
+            $albums = $this->albumRepository->findBy(['profile' => $profile->getId()]);
 
             return $this->render('album/index.html.twig', [
                 'profile' => $profile,
@@ -151,9 +153,7 @@ class AlbumController extends AbstractController
         if ($album && $this->isActionAllowed($album)) {
             $this->albumRepository->remove($album, true);
 
-            return $this->redirectToRoute('album_index', [
-                'profileId' => $user->getProfile()->getId()
-            ]);
+            return $this->redirectToRoute('album_index');
         }
 
         throw $this->createNotFoundException();
