@@ -3,7 +3,7 @@
         <a href="{{ path('profile_index', {'profileId' : app.user.profile.id}) }}">{{ 'My Profile'}}</a>
     </div>
     <div class="my-2 ml-4">
-        <a href="#">{{ 'My Feed'}}</a>
+        <a href="{{ path('feed_index') }}">{{ 'My Feed'}}</a>
     </div>
     <div class="my-2 ml-4">
         <a href="{{ path('friends_index', {'profileId': app.user.profile.id}) }}">{{ 'My Friends' }}</a>

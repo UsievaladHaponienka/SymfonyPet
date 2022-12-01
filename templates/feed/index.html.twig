@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if(app.user.profile.username) %}
+        {{ app.user.profile.username }}
+    {% else %}
+        {{ 'My profile' }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="grid grid-cols-12 gap-4">
+        {% if(app.user) %}
+            <div class="col-span-2 col-start-2">
+                {% include 'components/profile/navigation.html.twig' %}
+            </div>
+        {% endif %}
+        <div class="col-span-8 bg-indigo-300 rounded ">
+            <div class="grid grid-rows">
+{#                {% if (app.user and app.user.profile.id == profile.id) %}#}
+{#                    <div class="m-4">#}
+{#                        {{ form_start(postForm) }}#}
+{#                        {{ form_end(postForm) }}#}
+{#                    </div>#}
+{#                {% endif %}#}
+                <div>
+                    {% include('components/post/post-list.html.twig') with {'posts': posts} %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

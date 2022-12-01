@@ -70,14 +70,14 @@ class CommentController extends AbstractController
         if ($post->getGroup()) {
             return $this->redirectToRoute('group_show', [
                 'groupId' => $post->getGroup()->getId(),
-                '_fragment' => 'comment-' . $post->getId()
+                '_fragment' => 'post-' . $post->getId()
             ]);
         } else {
             /** @var User $user */
             $user = $this->getUser();
             return $this->redirectToRoute('profile_index', [
                 'profileId' => $user->getProfile()->getId(),
-                '_fragment' => 'comment-' . $post->getId()
+                '_fragment' => 'post-' . $post->getId()
             ]);
         }
     }
