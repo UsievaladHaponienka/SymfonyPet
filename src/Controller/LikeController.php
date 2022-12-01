@@ -42,7 +42,7 @@ class LikeController extends AbstractController
 
             $this->likeRepository->save($like, true);
 
-            return $this->getRedirect($post->getGroup());
+            return $this->getRedirect($post);
         }
 
         throw $this->createNotFoundException();
@@ -63,7 +63,7 @@ class LikeController extends AbstractController
                 })->first();
             $this->likeRepository->remove($like, true);
 
-            return $this->getRedirect($post->getGroup());
+            return $this->getRedirect($post);
         }
 
         throw $this->createNotFoundException();
@@ -71,14 +71,20 @@ class LikeController extends AbstractController
 
 
     //TODO: code duplication with Comment controller and Post controller
-    protected function getRedirect(Group $group = null): Response
+    protected function getRedirect(Post $post): Response
     {
-        if ($group) {
-            return $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
+        if ($post->getGroup()) {
+            return $this->redirectToRoute('group_show', [
+                'groupId' => $post->getGroup()->getId(),
+                '_fragment' => 'post-' . $post->getId()
+            ]);
         } else {
             /** @var User $user */
             $user = $this->getUser();
-            return $this->redirectToRoute('profile_index', ['profileId' => $user->getProfile()->getId()]);
+            return $this->redirectToRoute('profile_index', [
+                'profileId' => $user->getProfile()->getId(),
+                '_fragment' => 'post-' . $post->getId()
+            ]);
         }
     }
 }

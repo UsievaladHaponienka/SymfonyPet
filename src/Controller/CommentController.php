@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\Group;
+use App\Entity\Post;
 use App\Entity\User;
 use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
@@ -43,7 +44,7 @@ class CommentController extends AbstractController
                 $this->commentRepository->save($comment, true);
             }
 
-            return $this->getRedirect($post->getGroup());
+            return $this->getRedirect($post);
         }
 
         throw $this->createNotFoundException();
@@ -54,24 +55,30 @@ class CommentController extends AbstractController
     {
         $comment = $this->commentRepository->find($commentId);
 
-        if($comment && $this->isActionAllowed($comment)) {
+        if ($comment && $this->isActionAllowed($comment)) {
             $post = $comment->getPost();
             $this->commentRepository->remove($comment, true);
 
-            return $this->getRedirect($post->getGroup());
+            return $this->getRedirect($post);
         }
 
         throw $this->createNotFoundException();
     }
 
-    protected function getRedirect(Group $group = null): Response
+    protected function getRedirect(Post $post = null): Response
     {
-        if ($group) {
-            return $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
+        if ($post->getGroup()) {
+            return $this->redirectToRoute('group_show', [
+                'groupId' => $post->getGroup()->getId(),
+                '_fragment' => 'comment-' . $post->getId()
+            ]);
         } else {
             /** @var User $user */
             $user = $this->getUser();
-            return $this->redirectToRoute('profile_index', ['profileId' => $user->getProfile()->getId()]);
+            return $this->redirectToRoute('profile_index', [
+                'profileId' => $user->getProfile()->getId(),
+                '_fragment' => 'comment-' . $post->getId()
+            ]);
         }
     }
 

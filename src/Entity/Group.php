@@ -39,6 +39,7 @@ class Group
     private Collection $albums;
 
     #[ORM\OneToMany(mappedBy: 'group', targetEntity: Post::class, cascade: ['remove'])]
+    #[ORM\OrderBy(['created_at' => 'DESC'])]
     private Collection $posts;
 
     #[ORM\ManyToMany(targetEntity: Profile::class, inversedBy: 'groups')]
