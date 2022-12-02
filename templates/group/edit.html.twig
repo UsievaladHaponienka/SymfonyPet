@@ -42,6 +42,7 @@
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                     {% for profile in group.profile %}
+                        {% if(profile.id != group.admin.id) %}
                         <div class="col-span-1 pb-4 flex justify-center">
                             <img src="{{ profile.profileImageUrl }}">
                         </div>
@@ -54,6 +55,7 @@
                                 title: 'Remove from group'
                             } %}
                         </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>

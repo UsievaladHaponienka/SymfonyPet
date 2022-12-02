@@ -1,0 +1,20 @@
+<button
+        onclick="deleteGroup()"
+        class="bg-rose-700 hover:bg-rose-600 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+    {{ 'Delete group' }}
+</button>
+<script>
+    function deleteGroup() {
+        let confirmation = confirm('Are you sure you want to delete group "' + '{{ group.title }}' +
+            '"? All posts and photos will be deleted too, and this action can not be reverted.')
+
+        if (confirmation) {
+            axios.delete('{{ path('group_delete', {'groupId': group.id}) }}'
+            ).then(response => {
+                    alert('Group ' + response.data.groupTitle + ' was deleted.');
+                    window.location.href = '{{ path('group_index') }}';
+                }
+            )
+        }
+    }
+</script>

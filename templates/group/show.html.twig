@@ -53,22 +53,11 @@
                                 } %}
                             </div>
                             <div class="mr-4 flex justify-right">
-                                {% include('components/buttons/button-red.html.twig') with {
-                                    'url': path('group_confirm_delete', {'groupId': group.id}),
-                                    'title': 'Delete group'
-                                } %}
+                                {% include('components/buttons/group/admin-delete-group-button.html.twig') %}
                             </div>
                         </div>
                     {% endif %}
                 </div>
-                {#                <div class="grid grid-cols-4 gap-4"> #}
-                {#                    <div class="m-4"> #}
-                {#                        <a href="{{ path('album_index', {'profileId': profile.id}) }}">Albums</a> #}
-                {#                    </div> #}
-                {#                    <div class="m-4"> #}
-                {#                        <a href="{{ path('group_index', {'profileId': profile.id}) }}">Groups</a> #}
-                {#                    </div> #}
-                {#                </div> #}
                 {% if (app.user and app.user.profile.id == group.admin.id) %}
                     <div class="m-4">
                         {{ form_start(postForm) }}
@@ -82,5 +71,4 @@
             </div>
         </div>
     </div>
-    {% include ('components/buttons/group/user-action-script.html.twig') %}
 {% endblock %}

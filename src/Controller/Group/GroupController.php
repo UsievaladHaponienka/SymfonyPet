@@ -1,21 +1,17 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Group;
 
 use App\Entity\Album;
 use App\Entity\Group;
-use App\Entity\GroupRequest;
 use App\Entity\User;
 use App\Form\GroupFormType;
 use App\Form\PostFormType;
 use App\Form\SearchFormType;
 use App\Repository\AlbumRepository;
 use App\Repository\GroupRepository;
-use App\Repository\GroupRequestRepository;
-use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
 use DateTimeImmutable;
-use phpDocumentor\Reflection\Types\This;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,18 +20,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class GroupController extends AbstractController
 {
     private GroupRepository $groupRepository;
-    private ProfileRepository $profileRepository;
     private ImageProcessor $imageProcessor;
     private AlbumRepository $albumRepository;
 
     public function __construct(
         GroupRepository        $groupRepository,
-        ProfileRepository      $profileRepository,
         AlbumRepository        $albumRepository,
         ImageProcessor         $imageProcessor,
     ) {
         $this->groupRepository = $groupRepository;
-        $this->profileRepository = $profileRepository;
         $this->imageProcessor = $imageProcessor;
         $this->albumRepository = $albumRepository;
     }
@@ -65,75 +58,6 @@ class GroupController extends AbstractController
                 'groupForm' => $form->createView(),
                 'searchForm' => $searchForm->createView()
             ]);
-        }
-
-        throw $this->createNotFoundException();
-    }
-
-    #[Route('group/edit/{groupId}', name: 'group_edit')]
-    public function edit(Request $request, int $groupId): Response
-    {
-        $group = $this->groupRepository->find($groupId);
-
-        if ($group && $this->isAdmin($group)) {
-            $form = $this->createForm(GroupFormType::class, $group);
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                $group->setTitle($form->get('title')->getData());
-                $group->setDescription($form->get('description')->getData());
-                $group->setType($form->get('type')->getData());
-
-                $image = $form->get('group_image_url')->getData();
-                if ($image) {
-                    $newFileName = $this->imageProcessor->saveImage(
-                        $image,
-                        ImageProcessor::PROFILE_IMAGE_TYPE,
-                        '/public/images/group/'
-                    );
-                    $group->setGroupImageUrl('/images/group/' . $newFileName);
-                }
-
-                $this->groupRepository->save($group, true);
-
-                return $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
-            }
-
-            return $this->render('group/edit.html.twig', [
-                'group' => $group,
-                'groupEditForm' => $form->createView()
-            ]);
-        }
-
-        throw $this->createNotFoundException();
-    }
-
-    #[Route('group/confirm-delete/{groupId}', name: 'group_confirm_delete')]
-    public function confirmDelete(int $groupId): Response
-    {
-        $group = $this->groupRepository->find($groupId);
-
-        if ($group && $this->isAdmin($group)) {
-            return $this->render('group/confirm-delete.html.twig', [
-                'group' => $group
-            ]);
-        }
-
-        throw $this->createNotFoundException();
-    }
-
-    #[Route('group/delete/{groupId}', name: 'group_delete')]
-    public function delete(int $groupId): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        $group = $this->groupRepository->find($groupId);
-
-        if ($group && $this->isAdmin($group)) {
-            $this->groupRepository->remove($group, true);
-
-            return $this->redirectToRoute('group_index');
         }
 
         throw $this->createNotFoundException();
@@ -201,12 +125,5 @@ class GroupController extends AbstractController
         $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
 
         return $defaultGroupAlbum;
-    }
-
-    protected function isAdmin(Group $group): bool
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        return $user->getProfile()->getId() == $group->getAdmin()->getId();
     }
 }
