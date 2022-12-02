@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Repository\GroupRepository;
 use App\Repository\GroupRequestRepository;
 use App\Repository\ProfileRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -42,7 +43,7 @@ class GroupInteractionController extends BaseController
 
             $this->groupRepository->save($group, true);
 
-            return $this->redirectToRoute('group_show', ['groupId' => $groupId]);
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
@@ -59,7 +60,7 @@ class GroupInteractionController extends BaseController
             $group->removeProfile($user->getProfile());
             $this->groupRepository->save($group, true);
 
-            return $this->redirectToRoute('group_show', ['groupId' => $groupId]);
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
@@ -79,7 +80,7 @@ class GroupInteractionController extends BaseController
 
             $this->groupRequestRepository->save($joinRequest, true);
 
-            return $this->redirectToRoute('group_show', ['groupId' => $groupId]);
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
@@ -101,10 +102,7 @@ class GroupInteractionController extends BaseController
             if ($joinRequest && $joinRequest->getProfile()->getId() == $user->getProfile()->getId()) {
                 $this->groupRequestRepository->remove($joinRequest, true);
 
-                //TODO: Resolve redirect
-                return $this->redirectToRoute('group_show', [
-                    'groupId' => $joinRequest->getRequestedGroup()->getId()
-                ]);
+                return new JsonResponse();
             }
 
             throw $this->createNotFoundException();

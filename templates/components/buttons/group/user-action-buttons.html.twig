@@ -1,0 +1,36 @@
+<!-- If user is already in group, user can only leave group-->
+{% if(group.isInGroup(app.user.profile)) %}
+    <button id="leave-group-button"
+            onclick="leaveGroup('{{ group.id }}')"
+            class="bg-rose-700 hover:bg-rose-600 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+        {{ 'Leave group' }}
+    </button>
+{% else %}
+    <!-- User is not in group -->
+    <!-- If group is public, user can join group -->
+    {% if(group.type == constant('PUBLIC_GROUP_TYPE', group)) %}
+        <button id="join-group-button"
+                onclick="joinGroup('{{ group.id }}')"
+                class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+            {{ 'Join group' }}
+        </button>
+    {% else %}
+        <!-- Group is private -->
+        <!-- If user has already requested access to group, use can cancel request -->
+        {% if(group.isRequested(app.user)) %}
+            <button id="cancel-join-group-request-button"
+                    onclick="cancelJoinGroupRequest('{{ group.id }}')"
+                    class="bg-rose-700 hover:bg-rose-600 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+                {{ 'Cancel request' }}
+            </button>
+        {% else %}
+            <!-- If user hasn't requested access, user can make access request-->
+            <button id="create-join-group-request-button"
+                    onclick="createJoinGroupRequest('{{ group.id }}')"
+                    class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+                {{ 'Join group' }}
+            </button>
+        {% endif %}
+    {% endif %}
+{% endif %}
+

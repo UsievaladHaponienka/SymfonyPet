@@ -1,0 +1,60 @@
+<script>
+    const classRed = 'bg-rose-700 hover:bg-rose-600';
+    const classBlue = 'bg-indigo-500 hover:bg-indigo-400';
+
+    function joinGroup(groupId) {
+        let url  = Routing.generate('group_join', {
+            'groupId': groupId
+        });
+        axios.post(url)
+            .then(response => {
+                let btn = document.getElementById('join-group-button');
+                btn.className = btn.className.replace(classBlue, classRed);
+                btn.id = 'leave-group-button'
+                btn.setAttribute('onclick', 'leaveGroup(\'' + groupId + '\')')
+                btn.innerHTML = 'Leave group'
+            })
+    }
+
+    function leaveGroup(groupId) {
+        let url  = Routing.generate('group_leave', {
+            'groupId': groupId
+        });
+        axios.post(url)
+            .then(response => {
+                let btn = document.getElementById('leave-group-button');
+                btn.className = btn.className.replace(classRed, classBlue);
+                btn.id = 'join-group-button';
+                btn.setAttribute('onclick', 'joinGroup(' + groupId + ')')
+                btn.innerHTML = 'Join group'
+            })
+    }
+
+    function createJoinGroupRequest(groupId) {
+        let url  = Routing.generate('group_request_create', {
+            'groupId': groupId
+        });
+        axios.post(url)
+            .then(response => {
+                let btn = document.getElementById('create-join-group-request-button');
+                btn.className = btn.className.replace(classBlue, classRed);
+                btn.id = 'cancel-join-group-request-button'
+                btn.setAttribute('onclick', 'cancelJoinGroupRequest(\'' + groupId + '\')')
+                btn.innerHTML = 'Cancel request'
+            })
+    }
+
+    function cancelJoinGroupRequest(groupId) {
+        let url  = Routing.generate('group_request_cancel', {
+            'groupId': groupId
+        });
+        axios.post(url)
+            .then(response => {
+                let btn = document.getElementById('cancel-join-group-request-button');
+                btn.className = btn.className.replace(classRed, classBlue);
+                btn.id = 'create-join-group-request-button'
+                btn.setAttribute('onclick', 'createJoinGroupRequest(\'' + groupId + '\')')
+                btn.innerHTML = 'Join group'
+            })
+    }
+</script>

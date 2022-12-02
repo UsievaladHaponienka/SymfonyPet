@@ -25,7 +25,9 @@
                             </div>
                             <div class="mt-4">
                                 {% if group.admin.id != app.user.profile.id %}
-                                    {% include('components/group/group-interaction-buttons.html.twig') with {'group': group} %}
+                                    {% include('components/buttons/group/user-action-buttons.html.twig') with {
+                                        'group': group
+                                    } %}
                                 {% endif %}
                             </div>
                         </div>
@@ -80,4 +82,5 @@
             </div>
         </div>
     </div>
+    {% include ('components/buttons/group/user-action-script.html.twig') %}
 {% endblock %}
