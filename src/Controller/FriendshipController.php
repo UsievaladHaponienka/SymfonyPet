@@ -5,10 +5,13 @@ namespace App\Controller;
 use App\Entity\Friendship;
 use App\Entity\FriendshipRequest;
 use App\Entity\User;
+use App\Form\SearchFormType;
 use App\Repository\FriendshipRepository;
 use App\Repository\FriendshipRequestRepository;
 use App\Repository\ProfileRepository;
+use App\Service\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -17,15 +20,19 @@ class FriendshipController extends AbstractController
     private ProfileRepository $profileRepository;
     private FriendshipRequestRepository $friendshipRequestRepository;
     private FriendshipRepository $friendshipRepository;
+    private SearchService $searchService;
 
     public function __construct(
         ProfileRepository           $profileRepository,
         FriendshipRequestRepository $friendshipRequestRepository,
         FriendshipRepository        $friendshipRepository,
-    ) {
+        SearchService               $searchService
+    )
+    {
         $this->profileRepository = $profileRepository;
         $this->friendshipRequestRepository = $friendshipRequestRepository;
         $this->friendshipRepository = $friendshipRepository;
+        $this->searchService = $searchService;
     }
 
     #[Route('friendship-request/create/{profileId}', name: 'friendship_request_create')]
@@ -61,26 +68,35 @@ class FriendshipController extends AbstractController
                 $user->getProfile()->getId() == $request->getRequester()->getId())) {
             $this->friendshipRequestRepository->remove($request, true);
 
-            return $this->redirectToRoute('friends_index', ['profileId' => $user->getProfile()->getId()]);
+            return $this->redirectToRoute('friends_index');
         }
 
         throw $this->createNotFoundException();
     }
 
-    #[Route('friends/{profileId}', name: 'friends_index')]
-    public function index(int $profileId): Response
+    #[Route('friends', name: 'friends_index')]
+    public function index(Request $request): Response
     {
-        $profile = $this->profileRepository->find($profileId);
+        /** @var User $user */
+        $user = $this->getUser();
+        $profile = $user->getProfile();
 
-        if ($profile) {
-            $friends = []; //Friend list here
+        $profileSearchForm = $this->createForm(SearchFormType::class);
+        $profileSearchForm->handleRequest($request);
 
-            return $this->render('friendship/index.html.twig', [
-                'profile' => $profile
-            ]);
+        $profileSearchResult = null;
+        if ($profileSearchForm->isSubmitted() && $profileSearchForm->isValid()) {
+            $profileSearchResult = $this->searchService->searchProfiles(
+                $profileSearchForm->get('search_string')->getData()
+            );
         }
 
-        throw $this->createNotFoundException();
+
+        return $this->render('friendship/index.html.twig', [
+            'profile' => $profile,
+            'searchForm' => $profileSearchForm->createView(),
+            'profileSearchResult' => $profileSearchResult
+        ]);
     }
 
     #[Route('friendship/create/{profileId}', name: 'friendship_create')]
@@ -113,7 +129,7 @@ class FriendshipController extends AbstractController
 
             $this->friendshipRequestRepository->remove($request, true);
 
-            return $this->redirectToRoute('friends_index', ['profileId' => $profile->getId()]);
+            return $this->redirectToRoute('friends_index');
         }
 
         throw $this->createNotFoundException();
@@ -126,7 +142,7 @@ class FriendshipController extends AbstractController
         $user = $this->getUser();
         $firstFriendshipObject = $this->friendshipRepository->find($friendshipId);
 
-        if($firstFriendshipObject->getProfile()->getId() == $user->getProfile()->getId()) {
+        if ($firstFriendshipObject->getProfile()->getId() == $user->getProfile()->getId()) {
 
             $this->friendshipRepository->remove($firstFriendshipObject);
 
@@ -134,9 +150,9 @@ class FriendshipController extends AbstractController
                 'profile' => $firstFriendshipObject->getFriend()->getId(),
                 'friend' => $user->getProfile()->getId()
             ]);
-                $this->friendshipRepository->remove($secondFriendshipObject, true);
+            $this->friendshipRepository->remove($secondFriendshipObject, true);
 
-                return $this->redirectToRoute('friends_index', ['profileId' => $user->getProfile()->getId()]);
+            return $this->redirectToRoute('friends_index');
         }
 
         throw $this->createNotFoundException();

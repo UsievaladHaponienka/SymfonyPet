@@ -12,7 +12,7 @@
             </div>
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-4 gap-4">
                 <!-- TODO: Maybe tabs as components are not required-->
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'my-friends', tabType: 'friends', title: 'My Friends', isActive: true } %}
@@ -20,6 +20,8 @@
                     id: 'incoming-requests', tabType: 'friends', title: 'Incoming Requests', isActive: false } %}
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'outgoing-requests', tabType: 'friends', title: 'Outgoing Requests', isActive: false } %}
+                {% include('components/tabs/tab-button.html.twig') with {
+                    id: 'search-friends', tabType: 'friends', title: 'Search Friends', isActive: false } %}
 
 
                 <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
@@ -49,7 +51,6 @@
                     {% endfor %}
                 </div>
             </div>
-
 
             <!-- Incoming requests -->
             <div class="tab-content" id="incoming-requests" style="display: none">
@@ -84,7 +85,6 @@
                 </div>
             </div>
 
-
             <!-- Outgoing Requests -->
             <div class="tab-content" id="outgoing-requests" style="display: none">
                 <div class="grid grid-cols-3 gap-4">
@@ -104,6 +104,34 @@
                                 'url': path('friendship_request_delete', {'requestId': request.id}),
                                 'title': 'Cancel'
                             } %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Search Friends -->
+            <div class="tab-content" id="search-friends" style="display: block">
+                <div class="flex flex-col items-center py-4">
+                    <div class="max-w-xl">
+                        {{ form_start(searchForm) }}
+                        <h1 class="text-2xl text-center">Search friends</h1>
+                        {{ form_end(searchForm) }}
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    {% for profile in  profileSearchResult %}
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <a href="{{ path('profile_index', {'profileId': profile.id}) }}">
+                                <img src="{{ profile.profileImageUrl }}">
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            <a href="{{ path('profile_index', {'profileId': profile.id}) }}">
+                                {{ profile.username }}
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+
                         </div>
                     {% endfor %}
                 </div>

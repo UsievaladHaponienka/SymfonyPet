@@ -11,6 +11,7 @@ use App\Form\SearchFormType;
 use App\Repository\AlbumRepository;
 use App\Repository\GroupRepository;
 use App\Service\ImageProcessor;
+use App\Service\SearchService;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -23,15 +24,19 @@ class GroupController extends AbstractController
     private GroupRepository $groupRepository;
     private ImageProcessor $imageProcessor;
     private AlbumRepository $albumRepository;
+    private SearchService $searchService;
 
     public function __construct(
-        GroupRepository        $groupRepository,
-        AlbumRepository        $albumRepository,
-        ImageProcessor         $imageProcessor,
-    ) {
+        GroupRepository $groupRepository,
+        AlbumRepository $albumRepository,
+        ImageProcessor  $imageProcessor,
+        SearchService   $searchService
+    )
+    {
         $this->groupRepository = $groupRepository;
         $this->imageProcessor = $imageProcessor;
         $this->albumRepository = $albumRepository;
+        $this->searchService = $searchService;
     }
 
     #[Route('groups', name: 'group_index')]
@@ -49,8 +54,10 @@ class GroupController extends AbstractController
         $searchForm->handleRequest($request);
         $groupSearchResult = null;
 
-        if($searchForm->isSubmitted() && $searchForm->isValid()) {
-            $groupSearchResult = $this->searchGroups($searchForm);
+        if ($searchForm->isSubmitted() && $searchForm->isValid()) {
+            $groupSearchResult = $this->searchService->searchGroups(
+                $searchForm->get('search_string')->getData()
+            );
         }
 
         /** @var User $user */
@@ -131,18 +138,5 @@ class GroupController extends AbstractController
         $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
 
         return $defaultGroupAlbum;
-    }
-
-    protected function searchGroups(FormInterface $form): array
-    {
-        $searchString = $form->get('search_string')->getData();
-
-        return $this->groupRepository
-            ->createQueryBuilder('q')
-            ->where('q.title LIKE :searchString')
-            ->orWhere('q.description LIKE :searchString')
-            ->setParameter(':searchString', '%' . $searchString . '%')
-            ->getQuery()
-            ->getResult();
     }
 }
