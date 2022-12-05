@@ -24,10 +24,11 @@
             </div>
                 <!-- My Groups -->
                 <div class="tab-content" id="groups" style="display: block">
-                    <div class="grid grid-cols-3">
+                    <div class="grid grid-cols-4">
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                         {% for group in profile.groups %}
                             <div class="col-span-1 pb-4 flex justify-center">
                                 <a href="{{ path('group_show', {'groupId': group.id}) }}">
@@ -42,15 +43,22 @@
                             <div class="col-span-1 pb-4 text-center">
                                 {{ group.description }}
                             </div>
+                            <div class="col-span-1 pb-4 text-center">
+                                {% include('components/buttons/group/group-interaction-buttons.html.twig') with {
+                                    group: group
+                                } %}
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
+
                 <!-- Requested Groups-->
                 <div class="tab-content" id="requested-groups" style="display: none">
-                    <div class="grid grid-cols-3">
+                    <div class="grid grid-cols-4">
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                         {% for request in profile.groupRequests %}
                             <div class="col-span-1 pb-4 flex justify-center">
                                 <a href="{{ path('group_show', {'groupId': request.requestedGroup.id}) }}">
@@ -64,6 +72,11 @@
                             </div>
                             <div class="col-span-1 pb-4 text-center">
                                 {{ request.requestedGroup.description }}
+                            </div>
+                            <div class="col-span-1 pb-4 text-center">
+                                {% include('components/buttons/group/group-interaction-buttons.html.twig') with {
+                                    group: request.requestedGroup
+                                } %}
                             </div>
                         {% endfor %}
                     </div>
@@ -143,4 +156,5 @@
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'groups'} %}
+    {% include('components/buttons/group/group-interaction-script.html.twig') %}
 {% endblock %}

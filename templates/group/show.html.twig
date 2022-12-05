@@ -13,15 +13,15 @@
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
             <div class="grid grid-rows">
-                <div class="grid grid-cols-8 ml-4">
-                    <div class="col-span-1 flex item-left justify-left">
+                <div class="grid grid-cols-8 ml-4 my-2">
+                    <div class="col-span-1">
                         <div>
-                            <div>
+                            <div class="flex justify-center">
                                 <img src="{{ group.groupImageUrl }}" alt="{{ 'No profile image' }}">
                             </div>
-                            <div class="mt-4">
+                            <div class="flex justify-center">
                                 {% if group.admin.id != app.user.profile.id %}
-                                    {% include('components/buttons/group/user-action-buttons.html.twig') with {
+                                    {% include('components/buttons/group/group-interaction-buttons.html.twig') with {
                                         'group': group
                                     } %}
                                 {% endif %}
@@ -67,4 +67,5 @@
             </div>
         </div>
     </div>
+    {% include('components/buttons/group/group-interaction-script.html.twig') %}
 {% endblock %}

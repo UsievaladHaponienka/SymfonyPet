@@ -22,15 +22,13 @@
                     id: 'outgoing-requests', tabType: 'friends', title: 'Outgoing Requests', isActive: false } %}
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'search-friends', tabType: 'friends', title: 'Search Friends', isActive: false } %}
-
-
-                <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
-                <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
-                <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
             </div>
             <!-- My Friends -->
             <div class="tab-content" id="my-friends" style="display: block">
                 <div class="grid grid-cols-3 gap-4">
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                     {% for friendship in  profile.friendships %}
                         <div class="col-span-1 pb-4 flex justify-center">
                             <a href="{{ path('profile_index', {'profileId': friendship.friend.id}) }}">
@@ -44,7 +42,7 @@
                         </div>
                         <div class="col-span-1 pb-4 text-center">
                             {% include('components/buttons/button-red.html.twig') with {
-                                'url': path('friendship_delete', {'friendshipId': friendship.id}),
+                                'url': path('friendship_delete', {'profileId': friendship.friend.id}),
                                 'title': 'Remove'
                             } %}
                         </div>
@@ -136,7 +134,7 @@
                             </a>
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-                            Invite/Cancel invite action should be here
+                            WIP
                         </div>
                         {% endif %}
                     {% endfor %}

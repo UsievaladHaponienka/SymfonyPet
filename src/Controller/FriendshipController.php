@@ -11,6 +11,7 @@ use App\Repository\FriendshipRequestRepository;
 use App\Repository\ProfileRepository;
 use App\Service\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -135,24 +136,23 @@ class FriendshipController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('friendship/delete/{friendshipId}', name: 'friendship_delete')]
-    public function deleteFriendship(int $friendshipId): Response
+    #[Route('friendship/delete/{profileId}', name: 'friendship_delete')]
+    public function deleteFriendship(int $profileId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-        $firstFriendshipObject = $this->friendshipRepository->find($friendshipId);
 
-        if ($firstFriendshipObject->getProfile()->getId() == $user->getProfile()->getId()) {
+        $friendshipObjects = $this->friendshipRepository->findBy([
+            'profile' => [$user->getProfile()->getId(), $profileId],
+            'friend' => [$user->getProfile()->getId(), $profileId]
+        ]);
 
-            $this->friendshipRepository->remove($firstFriendshipObject);
+        if($friendshipObjects) {
+            foreach ($friendshipObjects as $friendship) {
+                $this->friendshipRepository->remove($friendship, true);
+            }
 
-            $secondFriendshipObject = $this->friendshipRepository->findOneBy([
-                'profile' => $firstFriendshipObject->getFriend()->getId(),
-                'friend' => $user->getProfile()->getId()
-            ]);
-            $this->friendshipRepository->remove($secondFriendshipObject, true);
-
-            return $this->redirectToRoute('friends_index');
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
