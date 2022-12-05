@@ -33,7 +33,7 @@ class ImageProcessor
         $this->imagine = new Imagine();
     }
 
-    public function saveImage(UploadedFile $image, string $imageType, string $storagePath = '/public/images/')
+    public function saveImage(UploadedFile $image, string $imageType, string $storagePath = '/public/images/'): string
     {
         //TODO: Resize image
         $newFileName = uniqid() . '.' . $image->guessExtension();

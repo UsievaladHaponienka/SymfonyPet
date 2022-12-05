@@ -8,7 +8,6 @@ use App\Entity\GroupRequest;
 use App\Entity\User;
 use App\Repository\GroupRepository;
 use App\Repository\GroupRequestRepository;
-use App\Repository\ProfileRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,17 +18,13 @@ class GroupInteractionController extends BaseController
 
     private GroupRequestRepository $groupRequestRepository;
 
-    private ProfileRepository $profileRepository;
-
     public function __construct(
         GroupRepository $groupRepository,
         GroupRequestRepository $groupRequestRepository,
-        ProfileRepository $profileRepository
     )
     {
         $this->groupRepository = $groupRepository;
         $this->groupRequestRepository = $groupRequestRepository;
-        $this->profileRepository = $profileRepository;
     }
 
     #[Route('group/join/{groupId}', name: 'group_join')]
