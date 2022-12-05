@@ -43,18 +43,22 @@
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                     {% for profile in group.profile %}
                         {% if(profile.id != group.admin.id) %}
-                        <div class="col-span-1 pb-4 flex justify-center">
-                            <img src="{{ profile.profileImageUrl }}">
-                        </div>
-                        <div class="col-span-1 pb-4 text-center">
-                            {{ profile.username }}
-                        </div>
-                        <div class="col-span-1 pb-4 text-center">
-                            {% include('components/buttons/button-red.html.twig') with {
-                                url: path('group_remove', {'profileId': profile.id, 'groupId': group.id}),
-                                title: 'Remove from group'
-                            } %}
-                        </div>
+                            <a href="{{ path('profile_index', {'profileId': profile.id}) }}">
+                                <div class="col-span-1 pb-4 flex justify-center">
+                                    <img src="{{ profile.profileImageUrl }}">
+                                </div>
+                            </a>
+                            <div class="col-span-1 pb-4 text-center">
+                                <a href="{{ path('profile_index', {'profileId': profile.id}) }}">
+                                    {{ profile.username }}
+                                </a>
+                            </div>
+                            <div class="col-span-1 pb-4 text-center">
+                                {% include('components/buttons/button-red.html.twig') with {
+                                    url: path('group_remove', {'profileId': profile.id, 'groupId': group.id}),
+                                    title: 'Remove from group'
+                                } %}
+                            </div>
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -99,6 +103,6 @@
             </div>
         </div>
     </div>
-{% include('components/tabs/tab-script.html.twig') with {'tabType': 'group-edit'} %}
+    {% include('components/tabs/tab-script.html.twig') with {'tabType': 'group-edit'} %}
 {% endblock %}
 

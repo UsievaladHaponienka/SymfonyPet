@@ -115,7 +115,7 @@ class GroupController extends AbstractController
             $group->setGroupImageUrl('/images/group/' . $newFileName);
         }
 
-        $album = $this->getDefaultGroupAlbum();
+        $album = $this->createDefaultGroupAlbum();
         $album->setGroup($group);
 
         $this->albumRepository->save($album);
@@ -124,7 +124,7 @@ class GroupController extends AbstractController
         return $this->redirectToRoute('group_index');
     }
 
-    protected function getDefaultGroupAlbum(): Album
+    protected function createDefaultGroupAlbum(): Album
     {
         $defaultGroupAlbum = new Album();
         $defaultGroupAlbum->setType(Album::GROUP_DEFAULT_TYPE);

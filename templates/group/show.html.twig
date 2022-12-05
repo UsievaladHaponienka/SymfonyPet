@@ -1,11 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {% if(app.user.profile.username) %}
-        {{ app.user.profile.username }}
-    {% else %}
-        {{ 'My profile' }}
-    {% endif %}
+    {{ group.title }}
 {% endblock %}
 
 {% block body %}
