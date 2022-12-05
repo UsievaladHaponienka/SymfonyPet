@@ -13,6 +13,7 @@ use App\Repository\GroupRepository;
 use App\Service\ImageProcessor;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -44,9 +45,13 @@ class GroupController extends AbstractController
             return $this->create($form, $group);
         }
 
-        $searchForm = $this->createForm(SearchFormType::class, null, [
-            'action' => $this->generateUrl('search_group'),
-        ]);
+        $searchForm = $this->createForm(SearchFormType::class);
+        $searchForm->handleRequest($request);
+        $groupSearchResult = null;
+
+        if($searchForm->isSubmitted() && $searchForm->isValid()) {
+            $groupSearchResult = $this->searchGroups($searchForm);
+        }
 
         /** @var User $user */
         $user = $this->getUser();
@@ -55,6 +60,7 @@ class GroupController extends AbstractController
         if ($profile) {
             return $this->render('group/index.html.twig', [
                 'profile' => $profile,
+                'groupSearchResult' => $groupSearchResult,
                 'groupForm' => $form->createView(),
                 'searchForm' => $searchForm->createView()
             ]);
@@ -125,5 +131,18 @@ class GroupController extends AbstractController
         $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
 
         return $defaultGroupAlbum;
+    }
+
+    protected function searchGroups(FormInterface $form): array
+    {
+        $searchString = $form->get('search_string')->getData();
+
+        return $this->groupRepository
+            ->createQueryBuilder('q')
+            ->where('q.title LIKE :searchString')
+            ->orWhere('q.description LIKE :searchString')
+            ->setParameter(':searchString', '%' . $searchString . '%')
+            ->getQuery()
+            ->getResult();
     }
 }

@@ -108,7 +108,7 @@
                         </div>
                     </div>
                 </div>
-            <!-- Search Groups (WIP)-->
+            <!-- Search Groups -->
                 <div class="tab-content" id="search-groups" style="display: none">
                     <div class="flex flex-col items-center py-4">
                         <div class="max-w-xl">
@@ -117,6 +117,28 @@
                             {{ form_end(searchForm) }}
                         </div>
                     </div>
+                    {% if groupSearchResult %}
+                    <div class="grid grid-cols-3">
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
+                        {% for group in groupSearchResult %}
+                            <div class="col-span-1 pb-4 flex justify-center">
+                                <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                    <img src="{{ group.groupImageUrl }}">
+                                </a>
+                            </div>
+                            <div class="col-span-1 pb-4 text-center">
+                                <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                    {{ group.title }}
+                                </a>
+                            </div>
+                            <div class="col-span-1 pb-4 text-center">
+                                {{ group.description }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
         </div>
     </div>
