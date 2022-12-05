@@ -47,7 +47,9 @@ class GroupController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            return $this->create($form, $group);
+            $this->createGroup($form, $group);
+
+            return $this->redirectToRoute('group_index');
         }
 
         $searchForm = $this->createForm(SearchFormType::class);
@@ -99,7 +101,7 @@ class GroupController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    protected function create($form, Group $group): Response
+    protected function createGroup($form, Group $group): void
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -127,8 +129,6 @@ class GroupController extends AbstractController
 
         $this->albumRepository->save($album);
         $this->groupRepository->save($group, true);
-
-        return $this->redirectToRoute('group_index');
     }
 
     protected function createDefaultGroupAlbum(): Album

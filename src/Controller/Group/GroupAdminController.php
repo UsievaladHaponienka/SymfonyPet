@@ -5,11 +5,14 @@ namespace App\Controller\Group;
 use App\Entity\Group;
 use App\Entity\User;
 use App\Form\GroupFormType;
+use App\Form\SearchFormType;
 use App\Repository\GroupRepository;
 use App\Repository\GroupRequestRepository;
 use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
+use App\Service\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,18 +24,21 @@ class GroupAdminController extends AbstractController
     private GroupRepository $groupRepository;
     private ProfileRepository $profileRepository;
     private ImageProcessor $imageProcessor;
+    private SearchService $searchService;
 
     public function __construct(
         GroupRequestRepository $groupRequestRepository,
         GroupRepository $groupRepository,
         ProfileRepository $profileRepository,
-        ImageProcessor $imageProcessor
+        ImageProcessor $imageProcessor,
+        SearchService $searchService
     )
     {
         $this->groupRequestRepository = $groupRequestRepository;
         $this->groupRepository = $groupRepository;
         $this->profileRepository = $profileRepository;
         $this->imageProcessor = $imageProcessor;
+        $this->searchService = $searchService;
     }
 
     #[Route('group/edit/{groupId}', name: 'group_edit')]
@@ -41,33 +47,31 @@ class GroupAdminController extends AbstractController
         $group = $this->groupRepository->find($groupId);
 
         if ($group && $this->isAdmin($group)) {
-            $form = $this->createForm(GroupFormType::class, $group);
-            $form->handleRequest($request);
+            $groupEditForm = $this->createForm(GroupFormType::class, $group);
+            $groupEditForm->handleRequest($request);
 
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                $group->setTitle($form->get('title')->getData());
-                $group->setDescription($form->get('description')->getData());
-                $group->setType($form->get('type')->getData());
-
-                $image = $form->get('group_image_url')->getData();
-                if ($image) {
-                    $newFileName = $this->imageProcessor->saveImage(
-                        $image,
-                        ImageProcessor::PROFILE_IMAGE_TYPE,
-                        '/public/images/group/'
-                    );
-                    $group->setGroupImageUrl('/images/group/' . $newFileName);
-                }
-
-                $this->groupRepository->save($group, true);
+            if ($groupEditForm->isSubmitted() && $groupEditForm->isValid()) {
+                $this->editGroup($group, $groupEditForm);
 
                 return $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
             }
 
+            $profileSearchForm = $this->createForm(SearchFormType::class);
+            $profileSearchForm->handleRequest($request);
+
+
+            $profileSearchResult = null;
+            if($profileSearchForm->isSubmitted() && $profileSearchForm->isValid()) {
+                $profileSearchResult = $this->searchService->searchProfiles(
+                    $profileSearchForm->get('search_string')->getData()
+                );
+            }
+
             return $this->render('group/edit.html.twig', [
                 'group' => $group,
-                'groupEditForm' => $form->createView()
+                'groupEditForm' => $groupEditForm->createView(),
+                'profileSearchForm' => $profileSearchForm->createView(),
+                'profileSearchResult' => $profileSearchResult
             ]);
         }
 
@@ -149,6 +153,25 @@ class GroupAdminController extends AbstractController
         }
 
         throw $this->createNotFoundException();
+    }
+
+    protected function editGroup(Group $group, FormInterface $groupEditForm): void
+    {
+        $group->setTitle($groupEditForm->get('title')->getData());
+        $group->setDescription($groupEditForm->get('description')->getData());
+        $group->setType($groupEditForm->get('type')->getData());
+
+        $image = $groupEditForm->get('group_image_url')->getData();
+        if ($image) {
+            $newFileName = $this->imageProcessor->saveImage(
+                $image,
+                ImageProcessor::PROFILE_IMAGE_TYPE,
+                '/public/images/group/'
+            );
+            $group->setGroupImageUrl('/images/group/' . $newFileName);
+        }
+
+        $this->groupRepository->save($group, true);
     }
 
     protected function isAdmin(Group $group): bool

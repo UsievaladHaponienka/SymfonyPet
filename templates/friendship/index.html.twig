@@ -118,8 +118,13 @@
                         {{ form_end(searchForm) }}
                     </div>
                 </div>
+                {% if(profileSearchResult) %}
                 <div class="grid grid-cols-3 gap-4">
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                     {% for profile in  profileSearchResult %}
+                        {% if(profile.id != app.user.profile.id) %}
                         <div class="col-span-1 pb-4 flex justify-center">
                             <a href="{{ path('profile_index', {'profileId': profile.id}) }}">
                                 <img src="{{ profile.profileImageUrl }}">
@@ -131,10 +136,12 @@
                             </a>
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-
+                            Invite/Cancel invite action should be here
                         </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

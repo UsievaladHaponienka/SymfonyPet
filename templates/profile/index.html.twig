@@ -23,20 +23,10 @@
                             <div>
                                 <img src="{{ profile.profileImageUrl }}" alt="{{ 'No profile image' }}">
                             </div>
-                            {% if app.user.profile.isFriend(profile.id) %}
-                                <div class="text-center bg-indigo-200 m-4 rounded">
-                                    {{ 'You are friends' }}
-                                </div>
-                            {% elseif app.user.profile.isFriendshipRequested(profile.id) %}
-                                <div class="text-center bg-indigo-200 m-4 rounded">
-                                    {{ 'Friendship request sent' }}
-                                </div>
-                            {% elseif (app.user.profile.id != profile.id) %}
-                                {% include('components/buttons/button-blue.html.twig') with {
-                                    'url': path('friendship_request_create', {'profileId': profile.id}),
-                                    'title': 'Add to Friends'
-                                } %}
-                            {% endif %}
+
+                            {% include('components/profile/friendship-interaction.html.twig') with {
+                                profile: profile
+                            } %}
                         </div>
                     </div>
                     <div class="col-span-3">

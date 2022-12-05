@@ -25,6 +25,7 @@
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'group-invites', tabType: 'group-edit', title: 'Group Invites', isActive: false} %}
             </div>
+
             <!-- Group edit -->
             <div class="tab-content" id="group-edit" style="display: block">
                 <div class="flex flex-col items-center py-4">
@@ -35,8 +36,9 @@
                     </div>
                 </div>
             </div>
+
             <!-- Group members -->
-            <div class="tab-content" id="group-members" style="display: none">
+            <div class="tab-content" id="group-members" style="display: block">
                 <div class="grid grid-cols-3">
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
@@ -63,43 +65,75 @@
                     {% endfor %}
                 </div>
             </div>
+
             <!-- Group requests -->
-            <div class="tab-content" id="group-requests" style="display: none">
+            <div class="tab-content" id="group-requests" style="display: block">
                 <div class="grid grid-cols-3">
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                     {% for request in group.groupRequests %}
-                    <div class="col-span-1 pb-4 flex justify-center">
-                        <img src="{{ request.profile.profileImageUrl }}">
-                    </div>
-                    <div class="col-span-1 pb-4 text-center">
-                        {{ request.profile.username }}
-                    </div>
-                    <div class="col-span-1 pb-4">
-                        <div class="grid grid-rows">
-                            <div class="text-center">
-                                {% include('components/buttons/button-blue.html.twig') with {
-                                    url: path('group_request_accept', {'requestId': request.id}),
-                                    title: 'Accept'
-                                } %}
-                            </div>
-                            <div class="text-center">
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <img src="{{ request.profile.profileImageUrl }}">
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {{ request.profile.username }}
+                        </div>
+                        <div class="col-span-1 pb-4">
+                            <div class="grid grid-rows">
                                 <div class="text-center">
-                                    {% include('components/buttons/button-red.html.twig') with {
-                                        url: path('group_request_decline', {'requestId': request.id}),
-                                        title: 'Decline'
+                                    {% include('components/buttons/button-blue.html.twig') with {
+                                        url: path('group_request_accept', {'requestId': request.id}),
+                                        title: 'Accept'
                                     } %}
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-center">
+                                        {% include('components/buttons/button-red.html.twig') with {
+                                            url: path('group_request_decline', {'requestId': request.id}),
+                                            title: 'Decline'
+                                        } %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Group Invites -->
+            <div class="tab-content" id="group-invites" style="display: block">
+                <div class="flex flex-col items-center py-4">
+                    <div class="max-w-xl">
+                        {{ form_start(profileSearchForm) }}
+                        <h1 class="text-2xl text-center">Search users</h1>
+                        {{ form_end(profileSearchForm) }}
                     </div>
                 </div>
-                <!-- Group invites -->
-            </div>
-            <div class="tab-content" id="group-invites" style="display: none">
-                WIP
+                {% if(profileSearchResult) %}
+                    <div class="grid grid-cols-3">
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
+                        {% for profile in  profileSearchResult %}
+                            {% if(not group.inGroup(profile)) %}
+                                <div class="col-span-1 pb-4 flex justify-center">
+                                    <a href="{{ path('profile_index', {'profileId': profile.id}) }}">
+                                        <img src="{{ profile.profileImageUrl }}">
+                                    </a>
+                                </div>
+                                <div class="col-span-1 pb-4 text-center">
+                                    <a href="{{ path('profile_index', {'profileId': profile.id}) }}">
+                                        {{ profile.username }}
+                                    </a>
+                                </div>
+                                <div class="col-span-1 pb-4 text-center">
+                                    WIP
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
