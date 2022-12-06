@@ -1,0 +1,57 @@
+<script>
+    function joinGroup(groupId) {
+        let url = '/group/join/' + groupId;
+        axios.post(url)
+            .then(response => {
+                let i;
+                let toUpdate = document.getElementsByClassName('join-group-button-' + groupId);
+                for(i = 0; i < toUpdate.length; i++) {
+                    toUpdate[i].innerHTML =
+                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '{{ "You joined group" }}' + '</div>';
+                }
+            })
+    }
+
+    function leaveGroup(groupId) {
+        let url = '/group/leave/' + groupId;
+        axios.post(url)
+            .then(response => {
+                let i;
+                let toUpdate = document.getElementsByClassName('leave-group-button-' + groupId);
+                for(i = 0; i < toUpdate.length; i++) {
+                    toUpdate[i].innerHTML =
+                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '{{ "You left group" }}' + '</div>';
+                }
+            })
+    }
+
+    function createJoinGroupRequest(groupId) {
+        let url = '/group/request/create/' + groupId;
+        axios.post(url)
+            .then(response => {
+                let i;
+                let toUpdate = document.getElementsByClassName('create-join-group-request-button-' + groupId);
+                for(i = 0; i < toUpdate.length; i++) {
+                    toUpdate[i].innerHTML =
+                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '{{ "Access requested" }}' + '</div>';
+                }
+            })
+    }
+
+    function cancelJoinGroupRequest(groupId) {
+        let url = '/group/request/cancel/' + groupId;
+        axios.post(url)
+            .then(response => {
+                let i;
+                let toUpdate = document.getElementsByClassName('cancel-join-group-request-button-' + groupId);
+                for(i = 0; i < toUpdate.length; i++) {
+                    toUpdate[i].innerHTML =
+                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '{{ "Access request canceled" }}' + '</div>';
+                }
+            })
+    }
+</script>

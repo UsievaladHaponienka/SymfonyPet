@@ -7,7 +7,7 @@
     </div>
     <!-- If user is already in group, user can only leave group-->
 {% elseif(group.isInGroup(app.user.profile)) %}
-    <div id="leave-group-button-{{ group.id }}">
+    <div class="leave-group-button-{{ group.id }}">
         <button onclick="leaveGroup('{{ group.id }}')"
                 class="bg-rose-700 hover:bg-rose-600 focus:shadow-outline focus:outline-none text-white font-bold my-4 py-2 px-4 rounded">
             {{ 'Leave group' }}
@@ -17,7 +17,7 @@
     <!-- User is not in group -->
     <!-- If group is public, user can join group -->
     {% if(group.type == constant('PUBLIC_GROUP_TYPE', group)) %}
-        <div id="join-group-button-{{ group.id }}">
+        <div class="join-group-button-{{ group.id }}">
             <button onclick="joinGroup('{{ group.id }}')"
                     class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-4 py-2 px-4 rounded">
                 {{ 'Join group' }}
@@ -27,7 +27,7 @@
         <!-- Group is private -->
         <!-- If user has already requested access to group, use can cancel request -->
         {% if(group.isRequested(app.user)) %}
-            <div id="cancel-join-group-request-button-{{ group.id }}">
+            <div class="cancel-join-group-request-button-{{ group.id }}">
                 <button onclick="cancelJoinGroupRequest('{{ group.id }}')"
                         class="bg-rose-700 hover:bg-rose-600 focus:shadow-outline focus:outline-none text-white font-bold my-4 py-2 px-4 rounded">
                     {{ 'Cancel request' }}
@@ -35,7 +35,7 @@
             </div>
         {% else %}
             <!-- If user hasn't requested access, user can make access request-->
-            <div id="create-join-group-request-button-{{ group.id }}">
+            <div class="create-join-group-request-button-{{ group.id }}">
                 <button onclick="createJoinGroupRequest('{{ group.id }}')"
                         class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-4 py-2 px-4 rounded">
                     {{ 'Join group' }}

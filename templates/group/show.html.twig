@@ -21,7 +21,7 @@
                             </div>
                             <div class="flex justify-center">
                                 {% if group.admin.id != app.user.profile.id %}
-                                    {% include('components/buttons/group/group-interaction-buttons.html.twig') with {
+                                    {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
                                         'group': group
                                     } %}
                                 {% endif %}
@@ -67,5 +67,5 @@
             </div>
         </div>
     </div>
-    {% include('components/buttons/group/group-interaction-script.html.twig') %}
+    {% include('components/buttons/group/user-group-interaction-script.html.twig') %}
 {% endblock %}

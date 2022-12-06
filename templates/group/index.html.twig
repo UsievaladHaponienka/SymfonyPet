@@ -44,7 +44,7 @@
                                 {{ group.description }}
                             </div>
                             <div class="col-span-1 pb-4 text-center">
-                                {% include('components/buttons/group/group-interaction-buttons.html.twig') with {
+                                {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
                                     group: group
                                 } %}
                             </div>
@@ -74,7 +74,7 @@
                                 {{ request.requestedGroup.description }}
                             </div>
                             <div class="col-span-1 pb-4 text-center">
-                                {% include('components/buttons/group/group-interaction-buttons.html.twig') with {
+                                {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
                                     group: request.requestedGroup
                                 } %}
                             </div>
@@ -131,10 +131,11 @@
                         </div>
                     </div>
                     {% if groupSearchResult %}
-                    <div class="grid grid-cols-3">
+                    <div class="grid grid-cols-4">
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                         {% for group in groupSearchResult %}
                             <div class="col-span-1 pb-4 flex justify-center">
                                 <a href="{{ path('group_show', {'groupId': group.id}) }}">
@@ -149,6 +150,11 @@
                             <div class="col-span-1 pb-4 text-center">
                                 {{ group.description }}
                             </div>
+                            <div class="flex justify-center">
+                                {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
+                                    group: group
+                                } %}
+                            </div>
                         {% endfor %}
                     </div>
                     {% endif %}
@@ -156,5 +162,5 @@
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'groups'} %}
-    {% include('components/buttons/group/group-interaction-script.html.twig') %}
+    {% include('components/buttons/group/user-group-interaction-script.html.twig') %}
 {% endblock %}
