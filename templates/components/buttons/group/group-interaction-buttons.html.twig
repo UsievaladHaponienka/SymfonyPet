@@ -1,5 +1,12 @@
-<!-- If user is already in group, user can only leave group-->
-{% if(group.isInGroup(app.user.profile)) %}
+<!-- If user is group admin, link to group edit page is displayed -->
+{% if (app.user.profile.id == group.admin.id) %}
+    <div>
+        <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+            <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
+        </button>
+    </div>
+    <!-- If user is already in group, user can only leave group-->
+{% elseif(group.isInGroup(app.user.profile)) %}
     <div id="leave-group-button-{{ group.id }}">
         <button onclick="leaveGroup('{{ group.id }}')"
                 class="bg-rose-700 hover:bg-rose-600 focus:shadow-outline focus:outline-none text-white font-bold my-4 py-2 px-4 rounded">

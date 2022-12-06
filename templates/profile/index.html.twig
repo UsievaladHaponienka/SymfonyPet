@@ -23,7 +23,7 @@
                             <div class="flex justify-center">
                                 <img src="{{ profile.profileImageUrl }}" alt="{{ 'No profile image' }}">
                             </div>
-                            {% include('components/profile/friendship-interaction.html.twig') with {
+                            {% include('components/buttons/friendship/friendship-interaction.html.twig') with {
                                 profile: profile
                             } %}
                         </div>
@@ -63,4 +63,5 @@
             </div>
         </div>
     </div>
+    {% include('components/buttons/friendship/friendship-interaction-script.html.twig') %}
 {% endblock %}

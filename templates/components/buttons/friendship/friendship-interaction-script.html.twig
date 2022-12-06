@@ -1,0 +1,41 @@
+<script>
+    function createFriendshipRequest(profileId) {
+        axios.post('/friendship-request/create/' + profileId).then(
+            response => {
+                document.getElementById('create-friendship-request-button-' + profileId).innerHTML =
+                    '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                    '{{ "Friendship request sent" }}' + '</div>';
+            }
+        )
+    }
+
+    function deleteFriendshipRequest(profileId) {
+        axios.post('/friendship-request/delete/' + profileId).then(
+            response => {
+                document.getElementById('cancel-friendship-request-button-' + profileId).innerHTML =
+                    '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                    '{{ "You canceled friendship request" }}' + '</div>';
+            }
+        )
+    }
+
+    function deleteFriendship(profileId) {
+        axios.post('/friendship/delete/' + profileId).then(
+            response => {
+                document.getElementById('remove-from-friends-button-' + profileId).innerHTML =
+                    '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                    '{{ "You removed " }}' + response.data.username + '{{ " from friends" }}' + '</div>';
+            }
+        )
+    }
+
+    function createFriendship(profileId) {
+        axios.post('/friendship/create/' + profileId).then(
+            response => {
+                document.getElementById('accept-friendship-request-button-' + profileId).innerHTML =
+                    '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                    '{{ "You added " }}' + response.data.username + '{{ " to friends" }}' + '</div>';
+            }
+        )
+    }
+</script>

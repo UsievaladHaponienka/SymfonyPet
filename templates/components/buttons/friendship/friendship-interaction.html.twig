@@ -1,0 +1,25 @@
+{% if app.user.profile.isFriend(profile.id) %}
+    <div id="remove-from-friends-button-{{ profile.id }}">
+        <div class="text-center flex justify-center bg-indigo-200 m-4 p-2 rounded">
+            {{ 'You are friends' }}
+        </div>
+        {% include('components/buttons/friendship/delete-friendship-button.html.twig') with {
+            profileId: profile.id
+        } %}
+    </div>
+{% elseif app.user.profile.isFriendshipRequested(profile.id) %}
+    <div id="cancel-friendship-request-button-{{ profile.id }}">
+        <div class="text-center flex justify-center bg-indigo-200 m-4 p-2 rounded">
+            {{ 'Friendship request sent' }}
+        </div>
+        {% include('components/buttons/friendship/delete-request-button.html.twig') with {
+            profileId: profile.id
+        }%}
+    </div>
+{% elseif (app.user.profile.id != profile.id) %}
+    <div id="create-friendship-request-button-{{ profile.id }}" class="mt-4">
+        {% include('components/buttons/friendship/create-request-button.html.twig') with {
+            profileId: profile.id
+        }%}
+    </div>
+{% endif %}

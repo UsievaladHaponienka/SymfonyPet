@@ -72,10 +72,10 @@
                                         'title': 'Accept'} %}
                                 </div>
                                 <div>
-                                    {% include('components/buttons/button-red.html.twig') with {
-                                        'url': path('friendship_request_delete', {'requestId': request.id}),
-                                        'title': 'Decline'
-                                    } %}
+{#                                    {% include('components/buttons/button-red.html.twig') with {#}
+{#                                        'url': path('friendship_request_delete', {'requestId': request.id}),#}
+{#                                        'title': 'Decline'#}
+{#                                    } %}#}
                                 </div>
                             </div>
                         </div>
@@ -98,10 +98,10 @@
                             </a>
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-                            {% include('components/buttons/button-red.html.twig') with {
-                                'url': path('friendship_request_delete', {'requestId': request.id}),
-                                'title': 'Cancel'
-                            } %}
+{#                            {% include('components/buttons/button-red.html.twig') with {#}
+{#                                'url': path('friendship_request_delete', {'requestId': request.id}),#}
+{#                                'title': 'Cancel'#}
+{#                            } %}#}
                         </div>
                     {% endfor %}
                 </div>

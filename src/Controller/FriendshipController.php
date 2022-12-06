@@ -36,44 +36,6 @@ class FriendshipController extends AbstractController
         $this->searchService = $searchService;
     }
 
-    #[Route('friendship-request/create/{profileId}', name: 'friendship_request_create')]
-    public function createRequest(int $profileId): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        $requesterProfile = $this->profileRepository->find($user->getProfile()->getId());
-        $requesteeProfile = $this->profileRepository->find($profileId);
-
-        if ($requesterProfile && $requesteeProfile) {
-            $friendshipRequest = new FriendshipRequest();
-            $friendshipRequest->setRequester($requesterProfile);
-            $friendshipRequest->setRequestee($requesteeProfile);
-
-            $this->friendshipRequestRepository->save($friendshipRequest, true);
-
-            return $this->redirectToRoute('profile_index', ['profileId' => $profileId]);
-        }
-
-        throw $this->createNotFoundException();
-    }
-
-    #[Route('friendship-request/delete/{requestId}', name: 'friendship_request_delete')]
-    public function deleteRequest(int $requestId): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        $request = $this->friendshipRequestRepository->find($requestId);
-
-        if ($request && ($user->getProfile()->getId() == $request->getRequestee()->getId() ||
-                $user->getProfile()->getId() == $request->getRequester()->getId())) {
-            $this->friendshipRequestRepository->remove($request, true);
-
-            return $this->redirectToRoute('friends_index');
-        }
-
-        throw $this->createNotFoundException();
-    }
 
     #[Route('friends', name: 'friends_index')]
     public function index(Request $request): Response
@@ -92,12 +54,56 @@ class FriendshipController extends AbstractController
             );
         }
 
-
         return $this->render('friendship/index.html.twig', [
             'profile' => $profile,
             'searchForm' => $profileSearchForm->createView(),
             'profileSearchResult' => $profileSearchResult
         ]);
+    }
+
+    #[Route('friendship-request/create/{profileId}', name: 'friendship_request_create')]
+    public function createRequest(int $profileId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $requesterProfile = $this->profileRepository->find($user->getProfile()->getId());
+        $requesteeProfile = $this->profileRepository->find($profileId);
+
+        if ($requesterProfile && $requesteeProfile) {
+            $friendshipRequest = new FriendshipRequest();
+            $friendshipRequest->setRequester($requesterProfile);
+            $friendshipRequest->setRequestee($requesteeProfile);
+
+            $this->friendshipRequestRepository->save($friendshipRequest, true);
+
+            return new JsonResponse();
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('friendship-request/delete/{profileId}', name: 'friendship_request_delete')]
+    public function deleteRequest(int $profileId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $request = $user
+            ->getProfile()
+            ->getRequestsMadeByProfile()
+            ->filter(function ($friendshipRequest) use ($profileId){
+                /** @var FriendshipRequest $friendshipRequest */
+                return $friendshipRequest->getRequestee()->getId() == $profileId;
+            })->first();
+
+        if ($request) {
+            $this->friendshipRequestRepository->remove($request, true);
+
+            return new JsonResponse();
+        }
+
+        throw $this->createNotFoundException();
     }
 
     #[Route('friendship/create/{profileId}', name: 'friendship_create')]
@@ -152,7 +158,7 @@ class FriendshipController extends AbstractController
                 $this->friendshipRepository->remove($friendship, true);
             }
 
-            return new JsonResponse();
+            return new JsonResponse(['username' => $this->profileRepository->find($profileId)->getUsername()]);
         }
 
         throw $this->createNotFoundException();
