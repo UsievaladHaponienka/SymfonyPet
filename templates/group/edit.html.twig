@@ -83,7 +83,7 @@
                             <div class="grid grid-rows flex justify-center">
                                 {% include('components/buttons/group/admin-group-request-buttons.html.twig') with {
                                     requestId: request.id
-                                }%}
+                                } %}
                             </div>
                         </div>
                     {% endfor %}
@@ -117,7 +117,17 @@
                                     </a>
                                 </div>
                                 <div class="col-span-1 pb-4 text-center">
-                                    Invite/Cancel invite action should be here
+                                    <div class="grid grid-rows group-invite-buttons-{{ profile.id }}"
+
+                                    {% if profile.hasInvite(group.id) %}
+                                        {% include('components/buttons/group/admin-delete-group-invite-button.html.twig') with {
+                                            profileId: profile.id, inviteId: profile.getInviteByGroup(group.id).id
+                                        } %}
+                                    {% else %}
+                                        {% include('components/buttons/group/admin-create-group-invite-button.html.twig') with {
+                                            profileId: profile.id, groupId: group.id
+                                        } %}
+                                    {% endif %}
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -128,5 +138,6 @@
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'group-edit'} %}
     {% include('components/buttons/group/admin-group-actions-script.html.twig') %}
+    {% include('components/buttons/group/admin-group-invite-script.html.twig') %}
 {% endblock %}
 

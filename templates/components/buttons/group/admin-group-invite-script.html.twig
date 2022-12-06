@@ -1,0 +1,29 @@
+<script>
+    function createInvite(profileId, groupId) {
+        axios.post('/invite/create/' + profileId + '/' + groupId).then(
+            response => {
+                let i;
+                let toUpdate = document.getElementsByClassName('group-invite-buttons-' + profileId);
+                for(i = 0; i < toUpdate.length; i++) {
+                    toUpdate[i].innerHTML =
+                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '{{ "Invite created" }}' + '</div>';
+                }
+            }
+        )
+    }
+
+    function deleteInvite(inviteId, profileId) {
+        axios.post('/invite/delete/' + inviteId).then(
+            response => {
+                let i;
+                let toUpdate = document.getElementsByClassName('group-invite-buttons-' + profileId);
+                for(i = 0; i < toUpdate.length; i++) {
+                    toUpdate[i].innerHTML =
+                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '{{ "Invite canceled" }}' + '</div>';
+                }
+            }
+        )
+    }
+</script>

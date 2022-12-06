@@ -3,11 +3,13 @@
 namespace App\Controller\Group;
 
 use App\Entity\Group;
+use App\Entity\Invite;
 use App\Entity\User;
 use App\Form\GroupFormType;
 use App\Form\SearchFormType;
 use App\Repository\GroupRepository;
 use App\Repository\GroupRequestRepository;
+use App\Repository\InviteRepository;
 use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
 use App\Service\SearchService;
@@ -25,13 +27,15 @@ class GroupAdminController extends AbstractController
     private ProfileRepository $profileRepository;
     private ImageProcessor $imageProcessor;
     private SearchService $searchService;
+    private InviteRepository $inviteRepository;
 
     public function __construct(
         GroupRequestRepository $groupRequestRepository,
-        GroupRepository $groupRepository,
-        ProfileRepository $profileRepository,
-        ImageProcessor $imageProcessor,
-        SearchService $searchService
+        GroupRepository        $groupRepository,
+        ProfileRepository      $profileRepository,
+        InviteRepository       $inviteRepository,
+        ImageProcessor         $imageProcessor,
+        SearchService          $searchService
     )
     {
         $this->groupRequestRepository = $groupRequestRepository;
@@ -39,6 +43,7 @@ class GroupAdminController extends AbstractController
         $this->profileRepository = $profileRepository;
         $this->imageProcessor = $imageProcessor;
         $this->searchService = $searchService;
+        $this->inviteRepository = $inviteRepository;
     }
 
     #[Route('group/edit/{groupId}', name: 'group_edit')]
@@ -61,7 +66,7 @@ class GroupAdminController extends AbstractController
 
 
             $profileSearchResult = null;
-            if($profileSearchForm->isSubmitted() && $profileSearchForm->isValid()) {
+            if ($profileSearchForm->isSubmitted() && $profileSearchForm->isValid()) {
                 $profileSearchResult = $this->searchService->searchProfiles(
                     $profileSearchForm->get('search_string')->getData()
                 );
@@ -98,7 +103,7 @@ class GroupAdminController extends AbstractController
     {
         $joinRequest = $this->groupRequestRepository->find($requestId);
 
-        if ($joinRequest && $this->isAdmin($joinRequest->getRequestedGroup())) {
+        if ($joinRequest && $this->isAdmin($joinRequest->getRelatedGroup())) {
             $this->groupRequestRepository->remove($joinRequest, true);
 
             return new JsonResponse();
@@ -113,7 +118,7 @@ class GroupAdminController extends AbstractController
         $joinRequest = $this->groupRequestRepository->find($requestId);
 
         if ($joinRequest) {
-            $group = $this->groupRepository->find($joinRequest->getRequestedGroup());
+            $group = $this->groupRepository->find($joinRequest->getRelatedGroup());
 
             if ($group && $this->isAdmin($group)) {
                 $group->addProfile($joinRequest->getProfile());
@@ -152,14 +157,40 @@ class GroupAdminController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    public function createInvite()
+    #[Route('invite/create/{profileId}/{groupId}', name: 'invite_create')]
+    public function createInvite(int $profileId, int $groupId): Response
     {
+        $profile = $this->profileRepository->find($profileId);
+        $group = $this->groupRepository->find($groupId);
 
+        if ($profile && $group && $this->isAdmin($group)) {
+            $invite = new Invite();
+            $invite->setProfile($profile);
+            $invite->setRelatedGroup($group);
+
+            $this->inviteRepository->save($invite, true);
+
+            return new JsonResponse(['username' => $profile->getUsername()]);
+        }
+
+        throw $this->createNotFoundException();
     }
 
-    public function deleteInvite()
+    #[Route('invite/delete/{inviteId}', name: 'invite_delete')]
+    public function deleteInvite(int $inviteId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+        $invite = $this->inviteRepository->find($inviteId);
 
+        if ($invite && ($this->isAdmin($invite->getRelatedGroup()) ||
+                $user->getProfile()->getId() == $invite->getProfile()->getId())) {
+            $this->inviteRepository->remove($invite, true);
+
+            return new JsonResponse();
+        }
+
+        throw $this->createNotFoundException();
     }
 
     protected function editGroup(Group $group, FormInterface $groupEditForm): void

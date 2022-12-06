@@ -61,21 +61,21 @@
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                         {% for request in profile.groupRequests %}
                             <div class="col-span-1 pb-4 flex justify-center">
-                                <a href="{{ path('group_show', {'groupId': request.requestedGroup.id}) }}">
-                                    <img src="{{ request.requestedGroup.groupImageUrl }}">
+                                <a href="{{ path('group_show', {'groupId': request.relatedGroup.id}) }}">
+                                    <img src="{{ request.relatedGroup.groupImageUrl }}">
                                 </a>
                             </div>
                             <div class="col-span-1 pb-4 text-center">
-                                <a href="{{ path('group_show', {'groupId': request.requestedGroup.id}) }}">
-                                    {{ request.requestedGroup.title }}
+                                <a href="{{ path('group_show', {'groupId': request.relatedGroup.id}) }}">
+                                    {{ request.relatedGroup.title }}
                                 </a>
                             </div>
                             <div class="col-span-1 pb-4 text-center">
-                                {{ request.requestedGroup.description }}
+                                {{ request.relatedGroup.description }}
                             </div>
                             <div class="col-span-1 pb-4 text-center">
                                 {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
-                                    group: request.requestedGroup
+                                    group: request.relatedGroup
                                 } %}
                             </div>
                         {% endfor %}

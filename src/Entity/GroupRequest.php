@@ -15,7 +15,7 @@ class GroupRequest
 
     #[ORM\ManyToOne(inversedBy: 'groupRequests')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Group $requestedGroup = null;
+    private ?Group $relatedGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupRequests')]
     #[ORM\JoinColumn(nullable: false)]
@@ -26,14 +26,14 @@ class GroupRequest
         return $this->id;
     }
 
-    public function getRequestedGroup(): ?Group
+    public function getRelatedGroup(): ?Group
     {
-        return $this->requestedGroup;
+        return $this->relatedGroup;
     }
 
-    public function setRequestedGroup(?Group $requestedGroup): self
+    public function setRelatedGroup(?Group $relatedGroup): self
     {
-        $this->requestedGroup = $requestedGroup;
+        $this->relatedGroup = $relatedGroup;
 
         return $this;
     }

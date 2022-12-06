@@ -57,8 +57,8 @@ class Profile
     #[ORM\OneToMany(mappedBy: 'profile', targetEntity: GroupRequest::class)]
     private Collection $groupRequests;
 
-    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: GroupInvites::class)]
-    private Collection $groupInvites;
+    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Invite::class)]
+    private Collection $invites;
 
     public function __construct()
     {
@@ -70,7 +70,7 @@ class Profile
         $this->requestee = new ArrayCollection();
         $this->friendships = new ArrayCollection();
         $this->groupRequests = new ArrayCollection();
-        $this->groupInvites = new ArrayCollection();
+        $this->invites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -364,29 +364,29 @@ class Profile
     }
 
     /**
-     * @return Collection<int, GroupInvites>
+     * @return Collection<int, Invite>
      */
-    public function getGroupInvites(): Collection
+    public function getInvites(): Collection
     {
-        return $this->groupInvites;
+        return $this->invites;
     }
 
-    public function addGroupInvite(GroupInvites $groupInvite): self
+    public function addInvite(Invite $invite): self
     {
-        if (!$this->groupInvites->contains($groupInvite)) {
-            $this->groupInvites->add($groupInvite);
-            $groupInvite->setProfile($this);
+        if (!$this->invites->contains($invite)) {
+            $this->invites->add($invite);
+            $invite->setProfile($this);
         }
 
         return $this;
     }
 
-    public function removeGroupInvite(GroupInvites $groupInvite): self
+    public function removeInvite(Invite $invite): self
     {
-        if ($this->groupInvites->removeElement($groupInvite)) {
+        if ($this->invites->removeElement($invite)) {
             // set the owning side to null (unless already changed)
-            if ($groupInvite->getProfile() === $this) {
-                $groupInvite->setProfile(null);
+            if ($invite->getProfile() === $this) {
+                $invite->setProfile(null);
             }
         }
 
@@ -458,5 +458,27 @@ class Profile
                 return $group->getAdmin()->getId() == $this->getId();
             });
 
+    }
+
+    public function hasInvite(int $groupId): bool
+    {
+        return (bool)$this->getInvites()
+            ->filter(
+                function ($invite) use ($groupId) {
+                    /** @var Invite $invite */
+                    return $invite->getRelatedGroup()->getId() == $groupId;
+                }
+            )->count();
+    }
+
+    public function getInviteByGroup(int $groupId): Invite
+    {
+        return $this->getInvites()
+            ->filter(
+                function ($invite) use ($groupId) {
+                    /** @var Invite $invite */
+                    return $invite->getRelatedGroup()->getId() == $groupId;
+                }
+            )->first();
     }
 }

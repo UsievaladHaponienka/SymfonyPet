@@ -72,7 +72,7 @@ class GroupInteractionController extends BaseController
         if ($group && $group->getType() == Group::PRIVATE_GROUP_TYPE && !$group->isInGroup($user->getProfile())) {
             $joinRequest = new GroupRequest();
             $joinRequest->setProfile($user->getProfile());
-            $joinRequest->setRequestedGroup($group);
+            $joinRequest->setRelatedGroup($group);
 
             $this->groupRequestRepository->save($joinRequest, true);
 
