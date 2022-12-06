@@ -67,20 +67,19 @@
                             </a>
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-                            <div class="grid grid-rows">
+                            <div class="grid grid-rows delete-friendship-request-button-{{ request.requester.id }} create-friendship-button-{{ request.requester.id }}">
                                 <div class="text-center flex justify-center bg-indigo-200 m-4 p-2 rounded">
                                     {{ 'Friendship requested' }}
                                 </div>
                                 <div>
-                                    {% include('components/buttons/button-blue.html.twig') with {
-                                        'url': path('friendship_create', {'profileId': request.requester.id}),
-                                        'title': 'Accept'} %}
+                                    {% include ('components/buttons/friendship/create-freindship-button.html.twig') with {
+                                        profileId: request.requester.id
+                                    } %}
                                 </div>
                                 <div>
-{#                                    {% include('components/buttons/button-red.html.twig') with {#}
-{#                                        'url': path('friendship_request_delete', {'requestId': request.id}),#}
-{#                                        'title': 'Decline'#}
-{#                                    } %}#}
+                                    {% include('components/buttons/friendship/delete-request-button.html.twig') with {
+                                        profileId: request.requester.id
+                                    }%}
                                 </div>
                             </div>
                         </div>

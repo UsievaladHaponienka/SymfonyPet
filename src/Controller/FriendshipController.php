@@ -89,13 +89,10 @@ class FriendshipController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $request = $user
-            ->getProfile()
-            ->getRequestsMadeByProfile()
-            ->filter(function ($friendshipRequest) use ($profileId){
-                /** @var FriendshipRequest $friendshipRequest */
-                return $friendshipRequest->getRequestee()->getId() == $profileId;
-            })->first();
+        $request = $this->friendshipRequestRepository->findOneBy([
+            'requestee' => [$user->getProfile()->getId(), $profileId],
+            'requester' => [$user->getProfile()->getId(), $profileId]
+        ]);
 
         if ($request) {
             $this->friendshipRequestRepository->remove($request, true);
@@ -134,9 +131,10 @@ class FriendshipController extends AbstractController
                 'requestee' => $profile->getId()
             ]);
 
+
             $this->friendshipRequestRepository->remove($request, true);
 
-            return $this->redirectToRoute('friends_index');
+            return new JsonResponse(['username' => $friendProfile->getUsername()]);
         }
 
         throw $this->createNotFoundException();
@@ -153,7 +151,7 @@ class FriendshipController extends AbstractController
             'friend' => [$user->getProfile()->getId(), $profileId]
         ]);
 
-        if($friendshipObjects) {
+        if ($friendshipObjects) {
             foreach ($friendshipObjects as $friendship) {
                 $this->friendshipRepository->remove($friendship, true);
             }
