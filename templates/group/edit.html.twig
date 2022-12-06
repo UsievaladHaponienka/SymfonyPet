@@ -80,22 +80,11 @@
                         <div class="col-span-1 pb-4 text-center">
                             {{ request.profile.username }}
                         </div>
-                        <div class="col-span-1 pb-4">
-                            <div class="grid grid-rows">
-                                <div class="text-center">
-                                    {% include('components/buttons/button-blue.html.twig') with {
-                                        url: path('group_request_accept', {'requestId': request.id}),
-                                        title: 'Accept'
-                                    } %}
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-center">
-                                        {% include('components/buttons/button-red.html.twig') with {
-                                            url: path('group_request_decline', {'requestId': request.id}),
-                                            title: 'Decline'
-                                        } %}
-                                    </div>
-                                </div>
+                        <div class="col-span-1 pb-4 group-request-buttons-{{ request.id }}">
+                            <div class="grid grid-rows flex justify-center">
+                                {% include('components/buttons/group/admin-group-request-buttons.html.twig') with {
+                                    requestId: request.id
+                                }%}
                             </div>
                         </div>
                     {% endfor %}
@@ -139,5 +128,6 @@
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'group-edit'} %}
+    {% include('components/buttons/group/admin-group-request-script.html.twig') %}
 {% endblock %}
 

@@ -99,12 +99,9 @@ class GroupAdminController extends AbstractController
         $joinRequest = $this->groupRequestRepository->find($requestId);
 
         if ($joinRequest && $this->isAdmin($joinRequest->getRequestedGroup())) {
-            $groupId = $joinRequest->getRequestedGroup()->getId();
             $this->groupRequestRepository->remove($joinRequest, true);
 
-            return $this->redirectToRoute('group_edit', [
-                'groupId' => $groupId
-            ]);
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
@@ -124,7 +121,7 @@ class GroupAdminController extends AbstractController
 
                 $this->groupRepository->save($group, true);
 
-                return $this->redirectToRoute('group_edit', ['groupId' => $group->getId()]);
+                return new JsonResponse();
             }
 
             //TODO: Maybe refactor, I don't like 2 throws in method. Same for method below
@@ -153,6 +150,16 @@ class GroupAdminController extends AbstractController
         }
 
         throw $this->createNotFoundException();
+    }
+
+    public function createInvite()
+    {
+
+    }
+
+    public function deleteInvite()
+    {
+
     }
 
     protected function editGroup(Group $group, FormInterface $groupEditForm): void
