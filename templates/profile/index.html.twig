@@ -23,9 +23,11 @@
                             <div class="flex justify-center">
                                 <img src="{{ profile.profileImageUrl }}" alt="{{ 'No profile image' }}">
                             </div>
-                            {% include('components/buttons/friendship/friendship-interaction.html.twig') with {
-                                profile: profile
-                            } %}
+                            <div class="delete-friendship-button-{{ profile.id }}">
+                                {% include('components/buttons/friendship/friendship-interaction.html.twig') with {
+                                    profileId: profile.id
+                                }%}
+                            </div>
                         </div>
                     </div>
                     <div class="col-span-3">

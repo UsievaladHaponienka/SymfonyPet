@@ -393,6 +393,12 @@ class Profile
         return $this;
     }
 
+    /**
+     * Check if profile with id = $friendId is a friend of current user
+     *
+     * @param int $friendId
+     * @return bool
+     */
     public function isFriend(int $friendId): bool
     {
         $friendships = $this->getFriendships()->filter(
@@ -404,25 +410,45 @@ class Profile
         return (bool)$friendships->count();
     }
 
-    //TODO: Don't like this method, it probably should be refactored
-    public function isFriendshipRequested(int $requesteeId): bool
+    /**
+     * Check if current user has incoming friendship request from profile with id = $profileId
+     *
+     * @param int $profileId
+     * @return bool
+     */
+    public function hasIncomingRequest(int $profileId): bool
     {
-        $requestsBy = $this->getRequestsMadeByProfile()->filter(
-            function ($request) use ($requesteeId) {
-                return $request->getRequestee()->getId() == $requesteeId;
-            }
-        );
-
-        $requesterId = $this->getUser()->getProfile()->getId();
-        $requestsTo = $this->getRequestsMadeToProfile()->filter(
-            function ($request) use ($requesterId) {
-                return $request->getRequestee()->getId() == $requesterId;
-            }
-        );
-
-        return (bool)($requestsBy->count() + $requestsTo->count());
+        return (bool)$this->getRequestsMadeToProfile()
+            ->filter(
+                function ($request) use ($profileId) {
+                    /** @var FriendshipRequest $request */
+                    return $request->getRequester()->getId() == $profileId;
+                }
+            )->count();
     }
 
+    /**
+     * Check if current user has outgoing friendship request to profile with id = $profileId
+     *
+     * @param int $profileId
+     * @return bool
+     */
+    public function hasOutgoingRequest(int $profileId): bool
+    {
+        return (bool)$this->getRequestsMadeByProfile()
+            ->filter(
+                function ($request) use ($profileId) {
+                    /** @var FriendshipRequest $request */
+                    return $request->getRequestee()->getId() == $profileId;
+                }
+            )->count();
+    }
+
+    /**
+     * Get collection of all groups administrated by current user
+     *
+     * @return Collection
+     */
     public function getAdministratedGroups(): Collection
     {
         return $this

@@ -40,11 +40,10 @@
                                 {{ friendship.friend.username }}
                             </a>
                         </div>
-                        <div class="col-span-1 pb-4 text-center">
-                            {% include('components/buttons/button-red.html.twig') with {
-                                'url': path('friendship_delete', {'profileId': friendship.friend.id}),
-                                'title': 'Remove'
-                            } %}
+                        <div class="delete-friendship-button-{{ friendship.friend.id }} col-span-1 pb-4 text-center">
+                            {% include('components/buttons/friendship/delete-friendship-button.html.twig') with {
+                                profileId: friendship.friend.id
+                            }%}
                         </div>
                     {% endfor %}
                 </div>
@@ -52,7 +51,10 @@
 
             <!-- Incoming requests -->
             <div class="tab-content" id="incoming-requests" style="display: none">
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-3 gap-4 mt-4">
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                     {% for request in profile.requestsMadeToProfile %}
                         <div class="col-span-1 pb-4 flex justify-center">
                             <a href="{{ path('profile_index', {'profileId': request.requester.id}) }}">
@@ -66,6 +68,9 @@
                         </div>
                         <div class="col-span-1 pb-4 text-center">
                             <div class="grid grid-rows">
+                                <div class="text-center flex justify-center bg-indigo-200 m-4 p-2 rounded">
+                                    {{ 'Friendship requested' }}
+                                </div>
                                 <div>
                                     {% include('components/buttons/button-blue.html.twig') with {
                                         'url': path('friendship_create', {'profileId': request.requester.id}),
@@ -85,7 +90,10 @@
 
             <!-- Outgoing Requests -->
             <div class="tab-content" id="outgoing-requests" style="display: none">
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-3 gap-4 mt-4">
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                     {% for request in profile.requestsMadeByProfile %}
                         <div class="col-span-1 pb-4 flex justify-center">
                             <a href="{{ path('profile_index', {'profileId': request.requestee.id}) }}">
@@ -98,10 +106,14 @@
                             </a>
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-{#                            {% include('components/buttons/button-red.html.twig') with {#}
-{#                                'url': path('friendship_request_delete', {'requestId': request.id}),#}
-{#                                'title': 'Cancel'#}
-{#                            } %}#}
+                            <div class="delete-friendship-request-button-{{ request.requestee.id }}">
+                                <div class="text-center flex justify-center bg-indigo-200 m-4 p-2 rounded">
+                                    {{ 'Friendship request sent' }}
+                                </div>
+                                {% include('components/buttons/friendship/delete-request-button.html.twig') with {
+                                    profileId: request.requestee.id
+                                } %}
+                            </div>
                         </div>
                     {% endfor %}
                 </div>
@@ -112,7 +124,7 @@
                 <div class="flex flex-col items-center py-4">
                     <div class="max-w-xl">
                         {{ form_start(searchForm) }}
-                        <h1 class="text-2xl text-center">Search friends</h1>
+                        <h1 class="text-2xl text-center">Search users</h1>
                         {{ form_end(searchForm) }}
                     </div>
                 </div>
@@ -134,7 +146,9 @@
                             </a>
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-                            WIP
+                            {% include('components/buttons/friendship/friendship-interaction.html.twig') with {
+                                profileId: profile.id
+                            }%}
                         </div>
                         {% endif %}
                     {% endfor %}
@@ -144,4 +158,5 @@
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'friends'} %}
+    {% include('components/buttons/friendship/friendship-interaction-script.html.twig') %}
 {% endblock %}
