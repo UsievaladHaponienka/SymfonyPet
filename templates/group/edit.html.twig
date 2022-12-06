@@ -57,9 +57,8 @@
                                 </a>
                             </div>
                             <div class="col-span-1 pb-4 text-center">
-                                {% include('components/buttons/button-red.html.twig') with {
-                                    url: path('group_remove', {'profileId': profile.id, 'groupId': group.id}),
-                                    title: 'Remove from group'
+                                {% include('components/buttons/group/admin-remove-from-group-button.html.twig') with {
+                                    profileId: profile.id, groupId: group.id
                                 } %}
                             </div>
                         {% endif %}
@@ -128,6 +127,6 @@
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'group-edit'} %}
-    {% include('components/buttons/group/admin-group-request-script.html.twig') %}
+    {% include('components/buttons/group/admin-group-actions-script.html.twig') %}
 {% endblock %}
 

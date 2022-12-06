@@ -143,7 +143,7 @@ class GroupAdminController extends AbstractController
                 $group->removeProfile($profile);
                 $this->groupRepository->save($group, true);
 
-                return $this->redirectToRoute('group_edit', ['groupId' => $group->getId()]);
+                return new JsonResponse(['username' => $profile->getUsername()]);
             }
 
             throw $this->createNotFoundException();
