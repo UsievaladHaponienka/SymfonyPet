@@ -17,35 +17,28 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CommentController extends AbstractController
 {
-    private PostRepository $postRepository;
-
-    private CommentRepository $commentRepository;
-
-    public function __construct(PostRepository $postRepository, CommentRepository $commentRepository)
-    {
-        $this->postRepository = $postRepository;
-        $this->commentRepository = $commentRepository;
-    }
+    public function __construct(
+        private readonly PostRepository $postRepository,
+        private readonly CommentRepository $commentRepository
+    )
+    {}
 
     #[Route('comment/create/{postId}', name: 'comment_create')]
     public function create(Request $request, int $postId): Response
     {
         $post = $this->postRepository->find($postId);
         if ($post) {
+            /** @var User $user */
+            $user = $this->getUser();
             $comment = new Comment();
-            $form = $this->createForm(CommentFormType::class, $comment);
+            $comment->setContent($request->request->get('comment_content'));
+            $comment->setProfile($user->getProfile());
 
-            $form->handleRequest($request);
+            $post->addComment($comment);
 
-            if ($form->isSubmitted() && $form->isValid()) {
-                $comment->setContent($form->get('content')->getData());
-                $comment->setPost($post);
-                $comment->setProfile($this->getUser()->getProfile());
+            $this->postRepository->save($post, true);
 
-                $this->commentRepository->save($comment, true);
-            }
-
-            return $this->getRedirect($post);
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
@@ -65,28 +58,10 @@ class CommentController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    protected function getRedirect(Post $post = null): Response
-    {
-        if ($post->getGroup()) {
-            return $this->redirectToRoute('group_show', [
-                'groupId' => $post->getGroup()->getId(),
-                '_fragment' => 'post-' . $post->getId()
-            ]);
-        } else {
-            /** @var User $user */
-            $user = $this->getUser();
-            return $this->redirectToRoute('profile_index', [
-                'profileId' => $user->getProfile()->getId(),
-                '_fragment' => 'post-' . $post->getId()
-            ]);
-        }
-    }
-
     protected function isActionAllowed(Comment $comment): bool
     {
         /** @var User $user */
         $user = $this->getUser();
         return $user->getProfile()->getId() == $comment->getProfile()->getId();
-
     }
 }

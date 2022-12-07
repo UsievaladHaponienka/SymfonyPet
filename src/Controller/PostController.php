@@ -164,7 +164,7 @@ class PostController extends AbstractController
         }
     }
 
-    //TODO: code duplication with Comment controller (and Likes controller in future)
+    //TODO: code duplication with Comment controller
     protected function getRedirect(Group $group = null): Response
     {
         if ($group) {

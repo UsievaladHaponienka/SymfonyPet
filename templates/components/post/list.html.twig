@@ -25,10 +25,12 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-3 bg-white rounded mx-4" id="post-{{post.id}}">
-            <div class="col-span-2 pl-4 py-4">
-                <img class="" src="{{ post.photo.imageUrl }}">
-            </div>
+        <div class="grid grid-cols-3 bg-white rounded mx-4" id="post-{{ post.id }}">
+            {% if (post.photo) %}
+                <div class="col-span-2 pl-4 py-4">
+                    <img class="" src="{{ post.photo.imageUrl }}">
+                </div>
+            {% endif %}
             <div class="col-span-1 pl-4 py-4">
                 {{ post.content }}
             </div>
@@ -43,7 +45,8 @@
         {% if post.comments %}
             <div class="m-4">
                 {% for comment in post.comments %}
-                    <div class="grid grid-cols-8 border border-indigo-300 border-1 rounded bg-white my-2" id="comment-{{comment.id}}">
+                    <div class="grid grid-cols-8 border border-indigo-300 border-1 rounded bg-white my-2"
+                         id="comment-{{ comment.id }}">
                         <div class="col-span-1">
                             <div class="ml-4 my-4">
                                 <img src="{{ comment.profile.profileImageUrl }}">
@@ -63,10 +66,11 @@
                     </div>
                 {% endfor %}
                 <div class="pb-4">
-                    {{ component('post/post-comment', {'postId': post.id}) }}
+                    {% include('components/post/comment.html.twig') %}
                 </div>
             </div>
         {% endif %}
     </div>
 {% endfor %}
-{{ include('components/buttons/post/post-script.html.twig') }}
+{% include('components/buttons/post/post-script.html.twig') %}
+{% include('components/post/comment-script.html.twig') %}

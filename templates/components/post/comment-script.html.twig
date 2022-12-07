@@ -1,0 +1,17 @@
+<script>
+    function addComment(postId) {
+        let params = new URLSearchParams();
+        let commentContent = document.getElementById('new-comment-' + postId).value;
+        params.append('comment_content', commentContent)
+
+        axios({
+            method: 'post',
+            url: '/comment/create/' + postId,
+            data: params
+        }).then(
+            response => {
+                alert('comment sent!')
+            }
+        )
+    }
+</script>
