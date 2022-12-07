@@ -21,9 +21,7 @@
                             </div>
                             <div class="flex justify-center">
                                 {% if group.admin.id != app.user.profile.id %}
-                                    {% include('components/buttons/group/membership/complex-interaction.html.twig') with {
-                                        'group': group
-                                    } %}
+                                    {% include('components/buttons/group/membership/complex-interaction.html.twig') %}
                                 {% endif %}
                             </div>
                         </div>
@@ -43,10 +41,9 @@
                     {% if (group.admin.id == app.user.profile.id) %}
                         <div class="col-span-1">
                             <div class="mr-4 flex justify-right">
-                                {% include('components/buttons/button-blue.html.twig') with {
-                                    'url': path('group_edit', {'groupId': group.id}),
-                                    'title': 'Manage group'
-                                } %}
+                                <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+                                    <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
+                                </button>
                             </div>
                             <div class="mr-4 flex justify-right">
                                 {% include('components/buttons/group/delete-group-button.html.twig') %}

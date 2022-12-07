@@ -5,23 +5,17 @@
         </button>
     </div>
 {% elseif(group.isInGroup(app.user.profile)) %}
-    {% include('components/buttons/group/membership/leave.html.twig') with {
-        groupId: group.id
-    } %}
+    {% include('components/buttons/group/membership/leave.html.twig') %}
 {% else %}
     {% if(group.isPublic()) %}
-        {% include('components/buttons/group/membership/join.html.twig') with {
-            groupId: group.id
-        } %}
+        {% include('components/buttons/group/membership/join.html.twig') %}
     {% else %}
         {% if(group.getRequestByProfile(app.user.profile)) %}
             {% include('components/buttons/group/membership/delete-request.html.twig') with {
-                requestId: group.getRequestByProfile(app.user.profile).id
+                request: group.getRequestByProfile(app.user.profile)
             } %}
         {% else %}
-            {% include('components/buttons/group/membership/create-request.html.twig') with {
-                groupId: group.id
-            } %}
+            {% include('components/buttons/group/membership/create-request.html.twig') %}
         {% endif %}
     {% endif %}
 {% endif %}

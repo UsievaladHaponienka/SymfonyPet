@@ -24,9 +24,7 @@
                                 <img src="{{ profile.profileImageUrl }}" alt="{{ 'No profile image' }}">
                             </div>
                             <div class="delete-friendship-button-{{ profile.id }}">
-                                {% include('components/buttons/friendship/friendship-interaction.html.twig') with {
-                                    profileId: profile.id
-                                }%}
+                                {% include('components/buttons/friendship/friendship-interaction.html.twig') %}
                             </div>
                         </div>
                     </div>

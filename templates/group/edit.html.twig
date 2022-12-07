@@ -59,9 +59,7 @@
                                 </a>
                             </div>
                             <div class="col-span-1 pb-4 text-center">
-                                {% include('components/buttons/group/membership/remove-from-group.html.twig') with {
-                                    profileId: profile.id, groupId: group.id
-                                } %}
+                                {% include('components/buttons/group/membership/remove-from-group.html.twig') %}
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -83,13 +81,9 @@
                         </div>
                         <div class="col-span-1 pb-4 group-request-buttons-{{ request.id }}">
                             <div class="grid grid-rows flex justify-center">
-                                {% include('components/buttons/group/membership/accept-request.html.twig') with {
-                                    requestId: request.id
-                                } %}
+                                {% include('components/buttons/group/membership/accept-request.html.twig') %}
 
-                                {% include('components/buttons/group/membership/delete-request.html.twig') with {
-                                    requestId: request.id
-                                } %}
+                                {% include('components/buttons/group/membership/delete-request.html.twig') %}
                             </div>
                         </div>
                     {% endfor %}

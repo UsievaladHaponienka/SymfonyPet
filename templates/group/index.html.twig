@@ -53,9 +53,7 @@
                                     </button>
                                 </div>
                             {% else %}
-                                {% include('components/buttons/group/membership/leave.html.twig') with {
-                                    groupId: group.id
-                                } %}
+                                {% include('components/buttons/group/membership/leave.html.twig') %}
                             {% endif %}
                         </div>
                     {% endfor %}
@@ -84,9 +82,7 @@
                             {{ request.relatedGroup.description }}
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-                            {% include('components/buttons/group/membership/delete-request.html.twig') with {
-                                requestId: request.id
-                            } %}
+                            {% include('components/buttons/group/membership/delete-request.html.twig') %}
                         </div>
                     {% endfor %}
                 </div>
@@ -149,10 +145,9 @@
                             {{ group.description }}
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-                            {% include('components/buttons/button-blue.html.twig') with {
-                                url: path('group_edit', {'groupId': group.id}),
-                                title: 'Manage Group'
-                            } %}
+                            <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+                                <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
+                            </button>
                         </div>
                     {% endfor %}
                 </div>
@@ -199,9 +194,7 @@
                                 {{ group.description }}
                             </div>
                             <div class="flex justify-center">
-                                {% include('components/buttons/group/membership/complex-interaction.html.twig') with {
-                                    group: group
-                                } %}
+                                {% include('components/buttons/group/membership/complex-interaction.html.twig') %}
                             </div>
                         {% endfor %}
                     </div>
