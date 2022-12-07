@@ -52,7 +52,7 @@ class Group
     #[ORM\OneToMany(mappedBy: 'relatedGroup', targetEntity: GroupRequest::class, cascade: ['remove'])]
     private Collection $groupRequests;
 
-    #[ORM\OneToMany(mappedBy: 'invites', targetEntity: Invite::class)]
+    #[ORM\OneToMany(mappedBy: 'relatedGroup', targetEntity: Invite::class, cascade: ['remove'])]
     private Collection $invites;
 
     public function __construct()

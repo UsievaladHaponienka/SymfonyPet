@@ -15,29 +15,25 @@ use App\Service\SearchService;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class GroupController extends AbstractController
+class GroupController extends BaseGroupController
 {
-    private GroupRepository $groupRepository;
-    private ImageProcessor $imageProcessor;
-    private AlbumRepository $albumRepository;
-    private SearchService $searchService;
-
+    /**
+     * @param GroupRepository $groupRepository
+     * @param AlbumRepository $albumRepository
+     * @param ImageProcessor $imageProcessor
+     * @param SearchService $searchService
+     */
     public function __construct(
-        GroupRepository $groupRepository,
-        AlbumRepository $albumRepository,
-        ImageProcessor  $imageProcessor,
-        SearchService   $searchService
-    )
-    {
-        $this->groupRepository = $groupRepository;
-        $this->imageProcessor = $imageProcessor;
-        $this->albumRepository = $albumRepository;
-        $this->searchService = $searchService;
-    }
+        private readonly GroupRepository $groupRepository,
+        private readonly AlbumRepository $albumRepository,
+        private readonly ImageProcessor  $imageProcessor,
+        private readonly SearchService   $searchService
+    ) {}
 
     #[Route('groups', name: 'group_index')]
     public function index(Request $request): Response
@@ -101,6 +97,58 @@ class GroupController extends AbstractController
         throw $this->createNotFoundException();
     }
 
+    #[Route('group/edit/{groupId}', name: 'group_edit')]
+    public function edit(Request $request, int $groupId): Response
+    {
+        $group = $this->groupRepository->find($groupId);
+
+        if ($group && $this->isAdmin($group)) {
+            $groupEditForm = $this->createForm(GroupFormType::class, $group);
+            $groupEditForm->handleRequest($request);
+
+            if ($groupEditForm->isSubmitted() && $groupEditForm->isValid()) {
+                $this->editGroup($group, $groupEditForm);
+
+                return $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
+            }
+
+            $profileSearchForm = $this->createForm(SearchFormType::class);
+            $profileSearchForm->handleRequest($request);
+
+
+            $profileSearchResult = null;
+            if ($profileSearchForm->isSubmitted() && $profileSearchForm->isValid()) {
+                $profileSearchResult = $this->searchService->searchProfiles(
+                    $profileSearchForm->get('search_string')->getData()
+                );
+            }
+
+            return $this->render('group/edit.html.twig', [
+                'group' => $group,
+                'groupEditForm' => $groupEditForm->createView(),
+                'profileSearchForm' => $profileSearchForm->createView(),
+                'profileSearchResult' => $profileSearchResult
+            ]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('group/delete/{groupId}', name: 'group_delete', methods: ['DELETE'])]
+    public function delete(int $groupId): Response
+    {
+        $group = $this->groupRepository->find($groupId);
+
+        if ($group && $this->isAdmin($group)) {
+            $groupTitle = $group->getTitle();
+            $this->groupRepository->remove($group, true);
+
+            return new JsonResponse(['groupTitle' => $groupTitle]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
     protected function createGroup($form, Group $group): void
     {
         /** @var User $user */
@@ -128,6 +176,25 @@ class GroupController extends AbstractController
         $album->setGroup($group);
 
         $this->albumRepository->save($album);
+        $this->groupRepository->save($group, true);
+    }
+
+    protected function editGroup(Group $group, FormInterface $groupEditForm): void
+    {
+        $group->setTitle($groupEditForm->get('title')->getData());
+        $group->setDescription($groupEditForm->get('description')->getData());
+        $group->setType($groupEditForm->get('type')->getData());
+
+        $image = $groupEditForm->get('group_image_url')->getData();
+        if ($image) {
+            $newFileName = $this->imageProcessor->saveImage(
+                $image,
+                ImageProcessor::PROFILE_IMAGE_TYPE,
+                '/public/images/group/'
+            );
+            $group->setGroupImageUrl('/images/group/' . $newFileName);
+        }
+
         $this->groupRepository->save($group, true);
     }
 

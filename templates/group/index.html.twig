@@ -10,11 +10,13 @@
             </div>
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
-            <div class="grid grid-cols-5 m-4">
+            <div class="grid grid-cols-6 m-4">
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'groups', tabType: 'groups', title: 'My Groups', isActive: true } %}
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'requested-groups', tabType: 'groups', title: 'Requested Groups', isActive: false } %}
+                {% include('components/tabs/tab-button.html.twig') with {
+                    id: 'group-invites', tabType: 'groups', title: 'Group Invites', isActive: false} %}
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'administrated-groups', tabType: 'groups', title: 'Administrated Groups', isActive: false} %}
                 {% include('components/tabs/tab-button.html.twig') with {
@@ -22,115 +24,149 @@
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'search-groups', tabType: 'groups', title: 'Search Groups', isActive: false} %}
             </div>
-                <!-- My Groups -->
-                <div class="tab-content" id="groups" style="display: block">
-                    <div class="grid grid-cols-4">
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
-                        {% for group in profile.groups %}
-                            <div class="col-span-1 pb-4 flex justify-center">
-                                <a href="{{ path('group_show', {'groupId': group.id}) }}">
-                                    <img src="{{ group.groupImageUrl }}">
-                                </a>
-                            </div>
-                            <div class="col-span-1 pb-4 text-center">
-                                <a href="{{ path('group_show', {'groupId': group.id}) }}">
-                                    {{ group.title }}
-                                </a>
-                            </div>
-                            <div class="col-span-1 pb-4 text-center">
-                                {{ group.description }}
-                            </div>
-                            <div class="col-span-1 pb-4 text-center">
-                                {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
-                                    group: group
-                                } %}
-                            </div>
-                        {% endfor %}
-                    </div>
+            <!-- My Groups -->
+            <div class="tab-content" id="groups" style="display: block">
+                <div class="grid grid-cols-4">
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
+                    {% for group in profile.groups %}
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                <img src="{{ group.groupImageUrl }}">
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                {{ group.title }}
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {{ group.description }}
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
+                                group: group
+                            } %}
+                        </div>
+                    {% endfor %}
                 </div>
+            </div>
 
-                <!-- Requested Groups-->
-                <div class="tab-content" id="requested-groups" style="display: none">
-                    <div class="grid grid-cols-4">
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
-                        {% for request in profile.groupRequests %}
-                            <div class="col-span-1 pb-4 flex justify-center">
-                                <a href="{{ path('group_show', {'groupId': request.relatedGroup.id}) }}">
-                                    <img src="{{ request.relatedGroup.groupImageUrl }}">
-                                </a>
-                            </div>
-                            <div class="col-span-1 pb-4 text-center">
-                                <a href="{{ path('group_show', {'groupId': request.relatedGroup.id}) }}">
-                                    {{ request.relatedGroup.title }}
-                                </a>
-                            </div>
-                            <div class="col-span-1 pb-4 text-center">
-                                {{ request.relatedGroup.description }}
-                            </div>
-                            <div class="col-span-1 pb-4 text-center">
-                                {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
-                                    group: request.relatedGroup
-                                } %}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <!-- Administrated Groups -->
-                <div class="tab-content" id="administrated-groups" style="display: none">
-                    <div class="grid grid-cols-4">
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
-                        <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
-                        {% for group in profile.getAdministratedGroups %}
-                            <div class="col-span-1 pb-4 flex justify-center">
-                                <a href="{{ path('group_show', {'groupId': group.id}) }}">
-                                    <img src="{{ group.groupImageUrl }}">
-                                </a>
-                            </div>
-                            <div class="col-span-1 text-center">
-                                <a href="{{ path('group_show', {'groupId': group.id}) }}">
-                                    {{ group.title }}
-                                </a>
-                            </div>
-                            <div class="col-span-1 pb-4 text-center">
-                                {{ group.description }}
-                            </div>
-                            <div class="col-span-1 pb-4 text-center">
-                                {% include('components/buttons/button-blue.html.twig') with {
-                                    url: path('group_edit', {'groupId': group.id}),
-                                    title: 'Manage Group'
-                                } %}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <!-- Create Group -->
-                <div class="tab-content" id="create-group" style="display: none">
-                    <div class="flex flex-col items-center py-4">
-                        <div class="max-w-xl">
-                            {{ form_start(groupForm) }}
-                            <h1 class="text-2xl text-center">Create new group</h1>
-                            {{ form_end(groupForm) }}
+            <!-- Requested Groups-->
+            <div class="tab-content" id="requested-groups" style="display: none">
+                <div class="grid grid-cols-4">
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
+                    {% for request in profile.groupRequests %}
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <a href="{{ path('group_show', {'groupId': request.relatedGroup.id}) }}">
+                                <img src="{{ request.relatedGroup.groupImageUrl }}">
+                            </a>
                         </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            <a href="{{ path('group_show', {'groupId': request.relatedGroup.id}) }}">
+                                {{ request.relatedGroup.title }}
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {{ request.relatedGroup.description }}
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
+                                group: request.relatedGroup
+                            } %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Group Invites -->
+            <div class="tab-content" id="group-invites" style="display: none">
+                <div class="grid grid-cols-4">
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
+                    {% for invite in profile.invites %}
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <a href="{{ path('group_show', {'groupId': invite.relatedGroup.id}) }}">
+                                <img src="{{ invite.relatedGroup.groupImageUrl }}">
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            <a href="{{ path('group_show', {'groupId': invite.relatedGroup.id}) }}">
+                                {{ invite.relatedGroup.title }}
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {{ invite.relatedGroup.description }}
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            <div class="grid grid-rows">
+
+                            </div>
+                            {% include('components/buttons/group/admin-delete-group-invite-button.html.twig') with {
+                                profileId: profile.id, inviteId: invite.id
+                            } %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Administrated Groups -->
+            <div class="tab-content" id="administrated-groups" style="display: none">
+                <div class="grid grid-cols-4">
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
+                    {% for group in profile.getAdministratedGroups %}
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                <img src="{{ group.groupImageUrl }}">
+                            </a>
+                        </div>
+                        <div class="col-span-1 text-center">
+                            <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                {{ group.title }}
+                            </a>
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {{ group.description }}
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {% include('components/buttons/button-blue.html.twig') with {
+                                url: path('group_edit', {'groupId': group.id}),
+                                title: 'Manage Group'
+                            } %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Create Group -->
+            <div class="tab-content" id="create-group" style="display: none">
+                <div class="flex flex-col items-center py-4">
+                    <div class="max-w-xl">
+                        {{ form_start(groupForm) }}
+                        <h1 class="text-2xl text-center">Create new group</h1>
+                        {{ form_end(groupForm) }}
                     </div>
                 </div>
+            </div>
             <!-- Search Groups -->
-                <div class="tab-content" id="search-groups" style="display: none">
-                    <div class="flex flex-col items-center py-4">
-                        <div class="max-w-xl">
-                            {{ form_start(searchForm) }}
-                            <h1 class="text-2xl text-center">Search groups</h1>
-                            {{ form_end(searchForm) }}
-                        </div>
+            <div class="tab-content" id="search-groups" style="display: none">
+                <div class="flex flex-col items-center py-4">
+                    <div class="max-w-xl">
+                        {{ form_start(searchForm) }}
+                        <h1 class="text-2xl text-center">Search groups</h1>
+                        {{ form_end(searchForm) }}
                     </div>
-                    {% if groupSearchResult %}
+                </div>
+                {% if groupSearchResult %}
                     <div class="grid grid-cols-4">
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
                         <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
@@ -157,8 +193,8 @@
                             </div>
                         {% endfor %}
                     </div>
-                    {% endif %}
-                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'groups'} %}

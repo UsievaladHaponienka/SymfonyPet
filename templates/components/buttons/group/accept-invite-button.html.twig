@@ -1,0 +1,22 @@
+<div>
+    <button onclick="deleteInvite({{ inviteId }})"
+            class="bg-rose-700 hover:bg-rose-600 focus:shadow-outline focus:outline-none text-white font-bold m-4 p-2 rounded">
+        {{ 'Accept Invite' }}
+    </button>
+</div>
+<script>
+    function acceptInvite(inviteId) {
+        axios.post('/group/invite/accept/' + groupId)
+            .then(response => {
+                let i;
+                let toUpdate = document.getElementsByClassName('cancel-join-group-request-button-' + groupId);
+                for(i = 0; i < toUpdate.length; i++) {
+                    toUpdate[i].innerHTML =
+                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '{{ "Access request canceled" }}' + '</div>';
+                }
+            })
+    }
+</script>
+
+

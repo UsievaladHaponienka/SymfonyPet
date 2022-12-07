@@ -16,7 +16,7 @@
                 } %}
             </div>
             <!-- TODO: remove group requests tab for public group -->
-            <div class="grid grid-cols-4 m-4">
+            <div class="grid grid-cols-5 m-4">
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'group-edit', tabType: 'group-edit', title: 'Edit group', isActive: true } %}
                 {% include('components/tabs/tab-button.html.twig') with {
@@ -24,7 +24,9 @@
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'group-requests', tabType: 'group-edit', title: 'Group Requests', isActive: false} %}
                 {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'group-invites', tabType: 'group-edit', title: 'Group Invites', isActive: false} %}
+                    id: 'invited-users', tabType: 'group-edit', title: 'Invited Users', isActive: false} %}
+                {% include('components/tabs/tab-button.html.twig') with {
+                    id: 'send-invites', tabType: 'group-edit', title: 'Send Invites', isActive: false} %}
             </div>
 
             <!-- Group edit -->
@@ -91,7 +93,7 @@
             </div>
 
             <!-- Group Invites -->
-            <div class="tab-content" id="group-invites" style="display: block">
+            <div class="tab-content" id="send-invites" style="display: block">
                 <div class="flex flex-col items-center py-4">
                     <div class="max-w-xl">
                         {{ form_start(profileSearchForm) }}
@@ -118,7 +120,6 @@
                                 </div>
                                 <div class="col-span-1 pb-4 text-center">
                                     <div class="grid grid-rows group-invite-buttons-{{ profile.id }}"
-
                                     {% if profile.hasInvite(group.id) %}
                                         {% include('components/buttons/group/admin-delete-group-invite-button.html.twig') with {
                                             profileId: profile.id, inviteId: profile.getInviteByGroup(group.id).id
@@ -134,6 +135,30 @@
                     </div>
                 {% endif %}
             </div>
+
+            <!-- Group edit -->
+            <div class="tab-content" id="invited-users" style="display: block">
+                <div class="grid grid-cols-3">
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
+                    {% for invite in group.invites %}
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <img src="{{ invite.profile.profileImageUrl }}">
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {{ invite.profile.username }}
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            <div class="grid grid-rows group-invite-buttons-{{ invite.profile.id }}"
+                            {% include('components/buttons/group/admin-delete-group-invite-button.html.twig') with {
+                                profileId: invite.profile.id, inviteId: invite.id
+                            } %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'group-edit'} %}

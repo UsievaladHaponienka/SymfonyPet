@@ -1,7 +1,6 @@
 <script>
     function joinGroup(groupId) {
-        let url = '/group/join/' + groupId;
-        axios.post(url)
+        axios.post('/group/join/' + groupId)
             .then(response => {
                 let i;
                 let toUpdate = document.getElementsByClassName('join-group-button-' + groupId);
@@ -14,8 +13,7 @@
     }
 
     function leaveGroup(groupId) {
-        let url = '/group/leave/' + groupId;
-        axios.post(url)
+        axios.post('/group/leave/' + groupId)
             .then(response => {
                 let i;
                 let toUpdate = document.getElementsByClassName('leave-group-button-' + groupId);
@@ -28,8 +26,7 @@
     }
 
     function createJoinGroupRequest(groupId) {
-        let url = '/group/request/create/' + groupId;
-        axios.post(url)
+        axios.post('/group/request/create/' + groupId)
             .then(response => {
                 let i;
                 let toUpdate = document.getElementsByClassName('create-join-group-request-button-' + groupId);
@@ -41,9 +38,8 @@
             })
     }
 
-    function cancelJoinGroupRequest(groupId) {
-        let url = '/group/request/cancel/' + groupId;
-        axios.post(url)
+    function deleteJoinGroupRequest(groupId) {
+        axios.post('/group/request/delete/' + groupId)
             .then(response => {
                 let i;
                 let toUpdate = document.getElementsByClassName('cancel-join-group-request-button-' + groupId);

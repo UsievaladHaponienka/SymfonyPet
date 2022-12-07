@@ -2,29 +2,24 @@
 
 namespace App\Controller\Group;
 
-use App\Controller\BaseController;
 use App\Entity\Group;
 use App\Entity\GroupRequest;
 use App\Entity\User;
 use App\Repository\GroupRepository;
 use App\Repository\GroupRequestRepository;
+use App\Repository\ProfileRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class GroupInteractionController extends BaseController
+class MembershipController extends BaseGroupController
 {
-    private GroupRepository $groupRepository;
-
-    private GroupRequestRepository $groupRequestRepository;
-
     public function __construct(
-        GroupRepository $groupRepository,
-        GroupRequestRepository $groupRequestRepository,
+        private readonly GroupRepository        $groupRepository,
+        private readonly GroupRequestRepository $groupRequestRepository,
+        private readonly ProfileRepository $profileRepository,
     )
     {
-        $this->groupRepository = $groupRepository;
-        $this->groupRequestRepository = $groupRequestRepository;
     }
 
     #[Route('group/join/{groupId}', name: 'group_join')]
@@ -82,23 +77,62 @@ class GroupInteractionController extends BaseController
         throw $this->createNotFoundException();
     }
 
-    #[Route('group/request/cancel/{groupId}', name: 'group_request_cancel')]
-    public function cancelJoinRequest(int $groupId): Response
+    #[Route('group/request/delete/{requestId}', name: 'group_request_delete')]
+    public function deleteJoinRequest(int $requestId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-        $group = $this->groupRepository->find($groupId);
+        $joinRequest = $this->groupRequestRepository->find(($requestId));
 
-        if ($group) {
-            $joinRequest = $this->groupRequestRepository->findOneBy([
-                'profile' => $user->getProfile(),
-                'requestedGroup' => $group->getId()
-            ]);
+        if ($joinRequest && (
+                $joinRequest->getProfile()->getId() == $user->getProfile()->getId() ||
+                $this->isAdmin($joinRequest->getRelatedGroup())
+            )) {
+            $this->groupRequestRepository->remove($joinRequest, true);
 
-            if ($joinRequest && $joinRequest->getProfile()->getId() == $user->getProfile()->getId()) {
-                $this->groupRequestRepository->remove($joinRequest, true);
+            return new JsonResponse();
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('group/request/accept/{requestId}', name: 'group_request_accept')]
+    public function acceptJoinRequest(int $requestId): Response
+    {
+        $joinRequest = $this->groupRequestRepository->find($requestId);
+
+        if ($joinRequest) {
+            $group = $this->groupRepository->find($joinRequest->getRelatedGroup());
+
+            if ($group && $this->isAdmin($group)) {
+                $group->addProfile($joinRequest->getProfile());
+                $this->groupRequestRepository->remove($joinRequest);
+
+                $this->groupRepository->save($group, true);
 
                 return new JsonResponse();
+            }
+
+            //TODO: Maybe refactor, I don't like 2 throws in method. Same for method above
+            throw $this->createNotFoundException();
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('group/remove/{groupId}/{profileId}', name: 'group_remove')]
+    public function removeFromGroup(int $groupId, int $profileId): Response
+    {
+        $group = $this->groupRepository->find($groupId);
+
+        if ($group && $this->isAdmin($group)) {
+            $profile = $this->profileRepository->find($profileId);
+
+            if ($profile) {
+                $group->removeProfile($profile);
+                $this->groupRepository->save($group, true);
+
+                return new JsonResponse(['username' => $profile->getUsername()]);
             }
 
             throw $this->createNotFoundException();
