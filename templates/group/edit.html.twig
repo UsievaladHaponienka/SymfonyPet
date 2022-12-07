@@ -11,9 +11,9 @@
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded">
             <div class="ml-4">
-                {% include('components/buttons/back-button.html.twig') with {
-                    url: path('group_show', {'groupId': group.id})
-                } %}
+                <button class="bg-indigo-200 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-gray-700 font-bold mt-4 py-2 px-4 rounded">
+                    <a href="{{ path('group_show', {'groupId': group.id}) }}">{{ 'Back' }}</a>
+                </button>
             </div>
             <!-- TODO: remove group requests tab for public group -->
             <div class="grid grid-cols-5 m-4">

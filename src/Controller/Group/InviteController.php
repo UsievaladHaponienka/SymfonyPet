@@ -13,12 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class InviteController extends BaseGroupController
 {
-
     public function __construct(
         private readonly ProfileRepository $profileRepository,
-        private readonly GroupRepository $groupRepository,
-        private readonly InviteRepository $inviteRepository
-    ) {}
+        private readonly GroupRepository   $groupRepository,
+        private readonly InviteRepository  $inviteRepository
+    )
+    {
+    }
 
     #[Route('invite/create/{profileId}/{groupId}', name: 'invite_create')]
     public function createInvite(int $profileId, int $groupId): Response
@@ -59,18 +60,19 @@ class InviteController extends BaseGroupController
     #[Route('invite/accept/{inviteId}', name: 'invite_accept')]
     public function acceptInvite(int $inviteId): Response
     {
-//        /** @var User $user */
-//        $user = $this->getUser();
-//        $invite = $this->inviteRepository->find($inviteId);
-//
-//        if ($invite && ($this->isAdmin($invite->getRelatedGroup()) ||
-//                $user->getProfile()->getId() == $invite->getProfile()->getId())) {
-//            $this->inviteRepository->remove($invite, true);
-//
-//            return new JsonResponse();
-//        }
-//
-//        throw $this->createNotFoundException();
-    }
+        /** @var User $user */
+        $user = $this->getUser();
+        $invite = $this->inviteRepository->find($inviteId);
 
+        if ($invite && $invite->getProfile()->getId() == $user->getProfile()->getId()) {
+            $group = $invite->getRelatedGroup()->addProfile($user->getProfile());
+
+            $this->inviteRepository->remove($invite);
+            $this->groupRepository->save($group, true);
+
+            return new JsonResponse();
+        }
+
+        throw $this->createNotFoundException();
+    }
 }

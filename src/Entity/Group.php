@@ -318,6 +318,6 @@ class Group
 
     public function isPublic(): bool
     {
-        return $this->getType() == $this::PUBLIC_GROUP_TYPE;
+        return $this->getType() == self::PUBLIC_GROUP_TYPE;
     }
 }

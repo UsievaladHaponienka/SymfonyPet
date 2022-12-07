@@ -1,12 +1,24 @@
-<button class="
-{% if((post.isLikedBy(app.user))) %}
-    {{ 'bg-sky-500 hover:bg-sky-400' }}
-{% else %}
-    {{ 'bg-sky-900 hover:bg-sky-800' }}
-{% endif %} focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
-    {% if (post.isLikedBy(app.user)) %}
-        <a href="{{ path('like_remove', {'postId': post.id}) }}">{{ 'Liked (' }}{{ post.likes.count }}{{ ')' }}</a>
-    {% else %}
-        <a href="{{ path('like_add', {'postId': post.id}) }}">{{ 'Like (' }}{{ post.likes.count }}{{ ')' }}</a>
-    {% endif %}
+<button id="like-button-{{ post.id }}"
+        onclick="like({{ post.id }})"
+        class="{{ post.getLikeButtonStyle(app.user.profile)}} focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
+    {{ post.getLikeButtonText(app.user.profile) }}
 </button>
+<script>
+    const likedStyle = 'bg-sky-500 hover:bg-sky-400';
+    const notLikedStyle = 'bg-sky-900 hover:bg-sky-800';
+
+    function like(postId) {
+        axios.post('/like/' + postId).then(
+            response => {
+                let btn = document.getElementById('like-button-' + postId);
+                if (response.data.like_added) {
+                    btn.className = btn.className.replace(notLikedStyle, likedStyle);
+                } else {
+                    btn.className = btn.className.replace(likedStyle, notLikedStyle);
+                }
+
+                btn.innerHTML = response.data.button_text;
+            }
+        )
+    }
+</script>

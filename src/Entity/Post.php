@@ -14,6 +14,9 @@ class Post
     public const USER_POST_TYPE = 'user';
     public const GROUP_POST_TYPE = 'group';
 
+    public const LIKED_BUTTON_STYLE = 'bg-sky-500 hover:bg-sky-400';
+    public const NOT_LIKED_BUTTON_STYLE = 'bg-sky-900 hover:bg-sky-800';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -37,10 +40,10 @@ class Post
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Like::class, cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Like::class, cascade: ['remove', 'persist'], orphanRemoval: true)]
     private Collection $likes;
 
-    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Comment::class, cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Comment::class, cascade: ['remove', 'persist'], orphanRemoval: true)]
     private Collection $comments;
 
     #[ORM\OneToOne(mappedBy: 'post', cascade: ['persist', 'remove'])]
@@ -226,13 +229,26 @@ class Post
         }
     }
 
-    public function isLikedBy(User $user): bool
+    public function isLikedBy(Profile $profile): bool
     {
-        $likes = $this->getLikes()->filter(function ($element) use ($user) {
+        $likes = $this->getLikes()->filter(function ($element) use ($profile) {
             /** @var Like $element */
-            return $element->getProfile()->getId() == $user->getProfile()->getId();
+            return $element->getProfile()->getId() == $profile->getId();
         });
 
         return (bool) $likes->count();
+    }
+
+    public function getLikeButtonStyle(Profile $profile): string
+    {
+        return $this->isLikedBy($profile) ? self::LIKED_BUTTON_STYLE : self::NOT_LIKED_BUTTON_STYLE;
+    }
+
+    public function getLikeButtonText(Profile $profile): string
+    {
+        if ($this->isLikedBy($profile)) {
+            return 'Liked (' .  $this->getLikes()->count() . ')';
+        }
+        return 'Like (' .  $this->getLikes()->count() . ')';
     }
 }
