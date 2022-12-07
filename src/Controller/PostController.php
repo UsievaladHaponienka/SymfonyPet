@@ -14,6 +14,7 @@ use App\Repository\PhotoRepository;
 use App\Repository\PostRepository;
 use App\Service\ImageProcessor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -143,14 +144,12 @@ class PostController extends AbstractController
         $post = $this->postRepository->find($postId);
 
         if ($post && $this->isActionAllowed($post)) {
-            $group = $post->getGroup();
             $this->postRepository->remove($post, true);
 
-            return $this->getRedirect($group);
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
-
     }
 
     protected function isActionAllowed(Post $post): bool

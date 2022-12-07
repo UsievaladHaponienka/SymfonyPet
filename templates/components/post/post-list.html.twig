@@ -1,5 +1,5 @@
 {% for post in posts %}
-    <div class="m-4 bg-indigo-200 rounded">
+    <div class="m-4 bg-indigo-200 rounded" id="post-{{ post.id }}">
         <div class="grid grid-rows gap-4">
             <div class="grid grid-cols-8">
                 {% if (post.group) %}
@@ -19,10 +19,7 @@
                 {% endif %}
                 {% if (app.user and post.canBeDeleted(app.user)) %}
                     <div class="mr-4 my-4 cols-span-1 col-start-8 text-right">
-                        {% include('components/buttons/button-red.html.twig') with {
-                            'url': path('post_delete', {'postId': post.id}),
-                            'title': 'Delete'
-                        } %}
+                        {% include('components/buttons/post/delete.html.twig') %}
                     </div>
                 {% endif %}
             </div>
@@ -37,7 +34,7 @@
             </div>
         </div>
         <div class="m-4">
-            {% include('components/buttons/like-button.html.twig') %}
+            {% include('components/buttons/post/like/like-button.html.twig') %}
         </div>
 
         <div class="m-4 text-2xl">
@@ -60,10 +57,7 @@
                         </div>
                         {% if app.user.profile.id == comment.profile.id %}
                             <div class="col-span-1 text-right mr-4">
-                                {% include('components/buttons/button-red.html.twig') with {
-                                    'url': path('comment_delete', {'commentId': comment.id}),
-                                    'title': 'Delete'
-                                } %}
+                                {% include('components/buttons/post/comment/delete.html.twig') %}
                             </div>
                         {% endif %}
                     </div>
@@ -75,3 +69,4 @@
         {% endif %}
     </div>
 {% endfor %}
+{{ include('components/buttons/post/post-script.html.twig') }}

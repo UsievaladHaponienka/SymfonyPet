@@ -10,6 +10,7 @@ use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
 use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -56,10 +57,9 @@ class CommentController extends AbstractController
         $comment = $this->commentRepository->find($commentId);
 
         if ($comment && $this->isActionAllowed($comment)) {
-            $post = $comment->getPost();
             $this->commentRepository->remove($comment, true);
 
-            return $this->getRedirect($post);
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
