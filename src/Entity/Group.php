@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\Request;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
@@ -255,30 +256,6 @@ class Group
         return $this;
     }
 
-    public function isInGroup(Profile $profile): bool
-    {
-        $groupProfiles = $this
-            ->getProfile()
-            ->filter(function ($element) use ($profile){
-                /** @var Profile $element */
-                return $element->getId() == $profile->getId();
-            });
-
-        return (bool) $groupProfiles->count();
-    }
-
-    public function isRequested(User $user): bool
-    {
-        $groupRequests = $this
-            ->getGroupRequests()
-            ->filter(function ($element) use ($user){
-                /** @var GroupRequest $element */
-                return $element->getProfile()->getId() == $user->getProfile()->getId();
-            });
-
-        return (bool) $groupRequests->count();
-    }
-
     /**
      * @return Collection<int, Invite>
      */
@@ -307,5 +284,40 @@ class Group
         }
 
         return $this;
+    }
+
+    /**
+     * Check if profile with id = $profileId is already in group
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isInGroup(Profile $profile): bool
+    {
+        $groupProfiles = $this
+            ->getProfile()
+            ->filter(function ($element) use ($profile){
+                /** @var Profile $element */
+                return $element->getId() == $profile->getId();
+            });
+
+        return (bool) $groupProfiles->count();
+    }
+
+    public function getRequestByProfile(Profile $profile): ?GroupRequest
+    {
+        $requests = $this
+            ->getGroupRequests()
+            ->filter(function ($element) use ($profile){
+                /** @var GroupRequest $element */
+                return $element->getProfile()->getId() == $profile->getId();
+            });
+
+        return $requests->first() ?: null;
+    }
+
+    public function isPublic(): bool
+    {
+        return $this->getType() == $this::PUBLIC_GROUP_TYPE;
     }
 }

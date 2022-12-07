@@ -17,7 +17,7 @@ class MembershipController extends BaseGroupController
     public function __construct(
         private readonly GroupRepository        $groupRepository,
         private readonly GroupRequestRepository $groupRequestRepository,
-        private readonly ProfileRepository $profileRepository,
+        private readonly ProfileRepository      $profileRepository,
     )
     {
     }
@@ -124,18 +124,13 @@ class MembershipController extends BaseGroupController
     public function removeFromGroup(int $groupId, int $profileId): Response
     {
         $group = $this->groupRepository->find($groupId);
+        $profile = $this->profileRepository->find($profileId);
 
-        if ($group && $this->isAdmin($group)) {
-            $profile = $this->profileRepository->find($profileId);
+        if ($group && $profile && $group->isInGroup($profile) && $this->isAdmin($group)) {
+            $group->removeProfile($profile);
+            $this->groupRepository->save($group, true);
 
-            if ($profile) {
-                $group->removeProfile($profile);
-                $this->groupRepository->save($group, true);
-
-                return new JsonResponse(['username' => $profile->getUsername()]);
-            }
-
-            throw $this->createNotFoundException();
+            return new JsonResponse(['username' => $profile->getUsername()]);
         }
 
         throw $this->createNotFoundException();

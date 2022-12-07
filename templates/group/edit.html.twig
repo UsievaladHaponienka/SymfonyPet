@@ -59,7 +59,7 @@
                                 </a>
                             </div>
                             <div class="col-span-1 pb-4 text-center">
-                                {% include('components/buttons/group/admin-remove-from-group-button.html.twig') with {
+                                {% include('components/buttons/group/membership/remove-from-group.html.twig') with {
                                     profileId: profile.id, groupId: group.id
                                 } %}
                             </div>
@@ -83,7 +83,11 @@
                         </div>
                         <div class="col-span-1 pb-4 group-request-buttons-{{ request.id }}">
                             <div class="grid grid-rows flex justify-center">
-                                {% include('components/buttons/group/admin-group-request-buttons.html.twig') with {
+                                {% include('components/buttons/group/membership/accept-request.html.twig') with {
+                                    requestId: request.id
+                                } %}
+
+                                {% include('components/buttons/group/membership/delete-request.html.twig') with {
                                     requestId: request.id
                                 } %}
                             </div>
@@ -92,7 +96,29 @@
                 </div>
             </div>
 
-            <!-- Group Invites -->
+            <!-- Invited Users -->
+            <div class="tab-content" id="invited-users" style="display: block">
+                <div class="grid grid-cols-3">
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
+                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
+                    {% for invite in group.invites %}
+                        <div class="col-span-1 pb-4 flex justify-center">
+                            <img src="{{ invite.profile.profileImageUrl }}">
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {{ invite.profile.username }}
+                        </div>
+                        <div class="col-span-1 pb-4 text-center">
+                            {% include('components/buttons/group/invite/delete.html.twig') with {
+                                inviteId: invite.id
+                            } %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Send Invites -->
             <div class="tab-content" id="send-invites" style="display: block">
                 <div class="flex flex-col items-center py-4">
                     <div class="max-w-xl">
@@ -119,16 +145,17 @@
                                     </a>
                                 </div>
                                 <div class="col-span-1 pb-4 text-center">
-                                    <div class="grid grid-rows group-invite-buttons-{{ profile.id }}"
-                                    {% if profile.hasInvite(group.id) %}
-                                        {% include('components/buttons/group/admin-delete-group-invite-button.html.twig') with {
-                                            profileId: profile.id, inviteId: profile.getInviteByGroup(group.id).id
-                                        } %}
-                                    {% else %}
-                                        {% include('components/buttons/group/admin-create-group-invite-button.html.twig') with {
-                                            profileId: profile.id, groupId: group.id
-                                        } %}
-                                    {% endif %}
+                                    <div class="grid grid-rows">
+                                        {% if profile.hasInvite(group.id) %}
+                                            {% include('components/buttons/group/invite/delete.html.twig') with {
+                                                inviteId: profile.getInviteByGroup(group.id).id
+                                            } %}
+                                        {% else %}
+                                            {% include('components/buttons/group/invite/create.html.twig') with {
+                                                profileId: profile.id, groupId: group.id
+                                            } %}
+                                        {% endif %}
+                                    </div>
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -136,33 +163,10 @@
                 {% endif %}
             </div>
 
-            <!-- Group edit -->
-            <div class="tab-content" id="invited-users" style="display: block">
-                <div class="grid grid-cols-3">
-                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile image' }}</div>
-                    <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
-                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
-                    {% for invite in group.invites %}
-                        <div class="col-span-1 pb-4 flex justify-center">
-                            <img src="{{ invite.profile.profileImageUrl }}">
-                        </div>
-                        <div class="col-span-1 pb-4 text-center">
-                            {{ invite.profile.username }}
-                        </div>
-                        <div class="col-span-1 pb-4 text-center">
-                            <div class="grid grid-rows group-invite-buttons-{{ invite.profile.id }}"
-                            {% include('components/buttons/group/admin-delete-group-invite-button.html.twig') with {
-                                profileId: invite.profile.id, inviteId: invite.id
-                            } %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'group-edit'} %}
-    {% include('components/buttons/group/admin-group-actions-script.html.twig') %}
-    {% include('components/buttons/group/admin-group-invite-script.html.twig') %}
+    {% include('components/buttons/group/membership/membership-script.html.twig') %}
+    {% include('components/buttons/group/invite/invite-script.html.twig') %}
 {% endblock %}
 

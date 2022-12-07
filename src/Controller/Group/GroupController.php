@@ -80,7 +80,6 @@ class GroupController extends BaseGroupController
         $group = $this->groupRepository->find($groupId);
 
         if ($group) {
-            //TODO handle exceptions
             $postForm = $this->createForm(
                 PostFormType::class,
                 null, [

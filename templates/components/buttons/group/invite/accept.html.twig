@@ -1,8 +1,6 @@
-<div>
-    <button onclick="deleteInvite({{ inviteId }},{{ profileId }})"
+<div class="accept-invite-button-{{ inviteId }}">
+    <button onclick="acceptInvite({{ inviteId }})"
             class="bg-rose-700 hover:bg-rose-600 focus:shadow-outline focus:outline-none text-white font-bold m-4 p-2 rounded">
-        {{ 'Cancel Invite' }}
+        {{ 'Accept Invite' }}
     </button>
 </div>
-
-

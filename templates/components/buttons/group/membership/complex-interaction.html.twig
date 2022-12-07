@@ -1,0 +1,27 @@
+{% if (app.user.profile.id == group.admin.id) %}
+    <div>
+        <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+            <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
+        </button>
+    </div>
+{% elseif(group.isInGroup(app.user.profile)) %}
+    {% include('components/buttons/group/membership/leave.html.twig') with {
+        groupId: group.id
+    } %}
+{% else %}
+    {% if(group.isPublic()) %}
+        {% include('components/buttons/group/membership/join.html.twig') with {
+            groupId: group.id
+        } %}
+    {% else %}
+        {% if(group.getRequestByProfile(app.user.profile)) %}
+            {% include('components/buttons/group/membership/delete-request.html.twig') with {
+                requestId: group.getRequestByProfile(app.user.profile).id
+            } %}
+        {% else %}
+            {% include('components/buttons/group/membership/create-request.html.twig') with {
+                groupId: group.id
+            } %}
+        {% endif %}
+    {% endif %}
+{% endif %}

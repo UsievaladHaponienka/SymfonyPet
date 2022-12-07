@@ -21,7 +21,7 @@
                             </div>
                             <div class="flex justify-center">
                                 {% if group.admin.id != app.user.profile.id %}
-                                    {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
+                                    {% include('components/buttons/group/membership/complex-interaction.html.twig') with {
                                         'group': group
                                     } %}
                                 {% endif %}
@@ -49,7 +49,7 @@
                                 } %}
                             </div>
                             <div class="mr-4 flex justify-right">
-                                {% include('components/buttons/group/admin-delete-group-button.html.twig') %}
+                                {% include('components/buttons/group/delete-group-button.html.twig') %}
                             </div>
                         </div>
                     {% endif %}
@@ -67,5 +67,5 @@
             </div>
         </div>
     </div>
-    {% include('components/buttons/group/user-group-interaction-script.html.twig') %}
+    {% include('components/buttons/group/membership/membership-script.html.twig') %}
 {% endblock %}

@@ -46,9 +46,17 @@
                             {{ group.description }}
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-                            {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
-                                group: group
-                            } %}
+                            {% if (app.user.profile.id == group.admin.id) %}
+                                <div>
+                                    <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+                                        <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
+                                    </button>
+                                </div>
+                            {% else %}
+                                {% include('components/buttons/group/membership/leave.html.twig') with {
+                                    groupId: group.id
+                                } %}
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>
@@ -76,8 +84,8 @@
                             {{ request.relatedGroup.description }}
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-                            {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
-                                group: request.relatedGroup
+                            {% include('components/buttons/group/membership/delete-request.html.twig') with {
+                                requestId: request.id
                             } %}
                         </div>
                     {% endfor %}
@@ -109,8 +117,8 @@
                             <div class="grid grid-rows">
 
                             </div>
-                            {% include('components/buttons/group/admin-delete-group-invite-button.html.twig') with {
-                                profileId: profile.id, inviteId: invite.id
+                            {% include('components/buttons/group/invite/delete.html.twig') with {
+                                inviteId: invite.id
                             } %}
                         </div>
                     {% endfor %}
@@ -187,7 +195,7 @@
                                 {{ group.description }}
                             </div>
                             <div class="flex justify-center">
-                                {% include('components/buttons/group/user-group-interaction-buttons.html.twig') with {
+                                {% include('components/buttons/group/membership/complex-interaction.html.twig') with {
                                     group: group
                                 } %}
                             </div>
@@ -198,5 +206,5 @@
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'groups'} %}
-    {% include('components/buttons/group/user-group-interaction-script.html.twig') %}
+    {% include('components/buttons/group/membership/membership-script.html.twig') %}
 {% endblock %}
