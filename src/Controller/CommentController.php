@@ -31,6 +31,7 @@ class CommentController extends AbstractController
             $comment = new Comment();
             $comment->setContent($request->request->get('comment_content'));
             $comment->setProfile($user->getProfile());
+            $comment->setType($request->request->get('comment_type'));
 
             $post->addComment($comment);
 

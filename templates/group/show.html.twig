@@ -54,6 +54,16 @@
                         </div>
                     {% endif %}
                 </div>
+                <div class="grid grid-cols-4">
+                    <div class="flex justify-center ">
+                        <a href="{{ path('discussion_index', {'groupId': group.id}) }}">
+                            <button class="bg-indigo-500 text-white w-full tab-links hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 mx-4 rounded">
+                                {{ 'Discussions' }}
+                            </button>
+                        </a>
+                    </div>
+                </div>
+
                 {% if (app.user and app.user.profile.id == group.admin.id) %}
                     <div class="m-4">
                         {{ form_start(postForm) }}

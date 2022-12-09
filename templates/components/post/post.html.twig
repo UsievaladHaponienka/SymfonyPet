@@ -60,7 +60,7 @@
                 {% endfor %}
             </div>
             <div class="pb-4">
-                {% include('components/post/new-comment.html.twig') %}
+                {% include('components/post/new-comment.html.twig') with {type: 'post'} %}
             </div>
         </div>
     {% endif %}

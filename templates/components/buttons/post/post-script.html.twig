@@ -27,10 +27,12 @@
         )
     }
 
-    function addComment(postId) {
+    function addComment(postId, type) {
         let params = new URLSearchParams();
         let commentContent = document.getElementById('new-comment-' + postId).value;
+
         params.append('comment_content', commentContent)
+        params.append('comment_type', type)
 
         axios({
             method: 'post',
