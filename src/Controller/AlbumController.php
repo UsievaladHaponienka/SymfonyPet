@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\AlbumFormType;
 use App\Repository\AlbumRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -118,31 +119,15 @@ class AlbumController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('album/confirm-delete/{albumId}', name: 'album_confirm_delete')]
-    public function confirmDelete(int $albumId): Response
-    {
-        $album = $this->albumRepository->find($albumId);
-
-        if ($album && $this->isActionAllowed($album)) {
-            return $this->render('album/confirm-delete.html.twig', [
-                'album' => $album
-            ]);
-        }
-
-        throw $this->createNotFoundException();
-    }
-
     #[Route('album/delete/{albumId}', name: 'album_delete')]
     public function delete(int $albumId): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
         if ($album && $this->isActionAllowed($album)) {
             $this->albumRepository->remove($album, true);
 
-            return $this->redirectToRoute('album_index');
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();

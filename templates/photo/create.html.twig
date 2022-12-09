@@ -23,6 +23,8 @@
             <div class="m-6">
                 {{ form_start(photoForm) }}
                 <h1 class="text-2xl text-center">Add new photo</h1>
+                {{ form_row(photoForm.image_url, {'label': 'Photo'}) }}
+                {{ form_rest(photoForm) }}
                 {{ form_end(photoForm) }}
             </div>
         </div>

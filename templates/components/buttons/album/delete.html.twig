@@ -1,0 +1,19 @@
+<button onclick="deleteAlbum({{ album.id }}, '{{ album.title }}')"
+        class="bg-rose-700 hover:bg-rose-600 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+    {{ 'Delete album' }}
+</button>
+<script>
+    function deleteAlbum(albumId, albumTitle) {
+        let confirmation = confirm('Are you sure you want to delete album' + albumTitle + '? ' +
+            'All photos on this album will also be deleted.');
+
+        if (confirmation) {
+            axios.post('/album/delete/' + albumId).then(
+                response => {
+                    alert(albumTitle + ' was deleted.');
+                    window.location.href = '{{ path('album_index') }}';
+                }
+            )
+        }
+    }
+</script>
