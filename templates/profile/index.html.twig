@@ -58,10 +58,13 @@
                     </div>
                 {% endif %}
                 <div>
-                    {% include('components/post/list.html.twig') with {'posts': profile.posts} %}
+                    {% for post in profile.posts %}
+                        {% include('components/post/post.html.twig') %}
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
     {% include('components/buttons/friendship/friendship-interaction-script.html.twig') %}
+    {% include('components/buttons/post/post-script.html.twig') %}
 {% endblock %}

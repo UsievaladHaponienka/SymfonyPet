@@ -36,10 +36,10 @@ class Group
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\OneToMany(mappedBy: 'group', targetEntity: Album::class, cascade: ['remove'])]
+    #[ORM\OneToMany(mappedBy: 'group', targetEntity: Album::class, cascade: ['remove', 'persist'])]
     private Collection $albums;
 
-    #[ORM\OneToMany(mappedBy: 'group', targetEntity: Post::class, cascade: ['remove'])]
+    #[ORM\OneToMany(mappedBy: 'group', targetEntity: Post::class, cascade: ['remove', 'persist'])]
     #[ORM\OrderBy(['created_at' => 'DESC'])]
     private Collection $posts;
 
@@ -50,7 +50,7 @@ class Group
     #[ORM\JoinColumn(nullable: false)]
     private ?Profile $admin = null;
 
-    #[ORM\OneToMany(mappedBy: 'relatedGroup', targetEntity: GroupRequest::class, cascade: ['remove'])]
+    #[ORM\OneToMany(mappedBy: 'relatedGroup', targetEntity: GroupRequest::class, cascade: ['remove', 'persist'])]
     private Collection $groupRequests;
 
     #[ORM\OneToMany(mappedBy: 'relatedGroup', targetEntity: Invite::class, cascade: ['remove'])]
@@ -319,5 +319,13 @@ class Group
     public function isPublic(): bool
     {
         return $this->getType() == self::PUBLIC_GROUP_TYPE;
+    }
+
+    public function getDefaultAlbum(): Album
+    {
+        return $this->albums->filter(function ($album) {
+            /** @var Album $album */
+            return $album->getType() == Album::GROUP_DEFAULT_TYPE;
+        })->first();
     }
 }

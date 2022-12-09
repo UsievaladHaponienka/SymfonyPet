@@ -460,18 +460,22 @@ class Profile
 
     }
 
+    /**
+     * Check if current user has already been invited to group with id = $groupId
+     *
+     * @param int $groupId
+     * @return bool
+     */
     public function hasInvite(int $groupId): bool
     {
-        return (bool)$this->getInvites()
-            ->filter(
-                function ($invite) use ($groupId) {
-                    /** @var Invite $invite */
-                    return $invite->getRelatedGroup()->getId() == $groupId;
-                }
-            )->count();
+        return (bool) $this->getInviteByGroup($groupId);
     }
 
-    public function getInviteByGroup(int $groupId): Invite
+    /**
+     * @param int $groupId
+     * @return Invite|null
+     */
+    public function getInviteByGroup(int $groupId): ?Invite
     {
         return $this->getInvites()
             ->filter(
@@ -480,5 +484,13 @@ class Profile
                     return $invite->getRelatedGroup()->getId() == $groupId;
                 }
             )->first();
+    }
+
+    public function getDefaultAlbum(): Album
+    {
+        return $this->albums->filter(function ($album) {
+            /** @var Album $album */
+            return $album->getType() == Album::USER_DEFAULT_TYPE;
+        })->first();
     }
 }

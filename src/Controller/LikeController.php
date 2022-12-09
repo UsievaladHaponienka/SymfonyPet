@@ -16,17 +16,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LikeController extends AbstractController
 {
-    private PostRepository $postRepository;
-
-    private LikeRepository $likeRepository;
-
     public function __construct(
-        PostRepository $postRepository,
-        LikeRepository $likeRepository
+        private readonly PostRepository $postRepository,
+        private readonly LikeRepository $likeRepository
     )
     {
-        $this->postRepository = $postRepository;
-        $this->likeRepository = $likeRepository;
     }
 
     #[Route('like/{postId}', name: 'like')]
@@ -56,7 +50,7 @@ class LikeController extends AbstractController
 
         return new JsonResponse([
             'like_added' => true,
-            'button_text' => 'Liked (' .  $post->getLikes()->count() . ')'
+            'button_text' => 'Liked (' . $post->getLikes()->count() . ')'
         ]);
     }
 
@@ -72,7 +66,7 @@ class LikeController extends AbstractController
 
         return new JsonResponse([
             'like_added' => false,
-            'button_text' => 'Like (' .  $post->getLikes()->count() . ')'
+            'button_text' => 'Like (' . $post->getLikes()->count() . ')'
         ]);
     }
 }

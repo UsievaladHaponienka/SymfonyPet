@@ -18,22 +18,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class FriendshipController extends AbstractController
 {
-    private ProfileRepository $profileRepository;
-    private FriendshipRequestRepository $friendshipRequestRepository;
-    private FriendshipRepository $friendshipRepository;
-    private SearchService $searchService;
-
     public function __construct(
-        ProfileRepository           $profileRepository,
-        FriendshipRequestRepository $friendshipRequestRepository,
-        FriendshipRepository        $friendshipRepository,
-        SearchService               $searchService
+        private readonly ProfileRepository           $profileRepository,
+        private readonly FriendshipRequestRepository $friendshipRequestRepository,
+        private readonly FriendshipRepository        $friendshipRepository,
+        private readonly SearchService               $searchService
     )
     {
-        $this->profileRepository = $profileRepository;
-        $this->friendshipRequestRepository = $friendshipRequestRepository;
-        $this->friendshipRepository = $friendshipRepository;
-        $this->searchService = $searchService;
     }
 
 

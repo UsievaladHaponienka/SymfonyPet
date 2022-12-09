@@ -16,18 +16,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PhotoController extends AbstractController
 {
-    private ImageProcessor $imageProcessor;
-    private AlbumRepository $albumRepository;
-    private PhotoRepository $photoRepository;
-
     public function __construct(
-        ImageProcessor  $imageProcessor,
-        AlbumRepository $albumRepository,
-        PhotoRepository $photoRepository
+        private readonly ImageProcessor  $imageProcessor,
+        private readonly AlbumRepository $albumRepository,
+        private readonly PhotoRepository $photoRepository
     ){
-        $this->imageProcessor = $imageProcessor;
-        $this->albumRepository = $albumRepository;
-        $this->photoRepository = $photoRepository;
     }
 
     #[Route('photo/{photoId}', name: 'photo_index')]

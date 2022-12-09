@@ -27,6 +27,23 @@
         )
     }
 
+    function addComment(postId) {
+        let params = new URLSearchParams();
+        let commentContent = document.getElementById('new-comment-' + postId).value;
+        params.append('comment_content', commentContent)
+
+        axios({
+            method: 'post',
+            url: '/comment/create/' + postId,
+            data: params
+        }).then(
+            response => {
+                document.getElementById('post-comments-' + postId).innerHTML += response.data.commentContent;
+                document.getElementById('new-comment-' + postId).value = '';
+            }
+        )
+    }
+
     function deleteComment(commentId) {
         axios.post('/comment/delete/' + commentId).then(
             response => {

@@ -17,14 +17,17 @@
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
             <div class="grid grid-rows">
-{#                {% if (app.user and app.user.profile.id == profile.id) %}#}
-{#                    <div class="m-4">#}
-{#                        {{ form_start(postForm) }}#}
-{#                        {{ form_end(postForm) }}#}
-{#                    </div>#}
-{#                {% endif %}#}
+                {#                {% if (app.user and app.user.profile.id == profile.id) %} #}
+                {#                    <div class="m-4"> #}
+                {#                        {{ form_start(postForm) }} #}
+                {#                        {{ form_end(postForm) }} #}
+                {#                    </div> #}
+                {#                {% endif %} #}
                 <div>
-                    {% include('components/post/list.html.twig') with {'posts': posts} %}
+                    {% for post in posts %}
+                        {% include('components/post/post.html.twig') %}
+                    {% endfor %}
+                    {% include('components/buttons/post/post-script.html.twig') %}
                 </div>
             </div>
         </div>

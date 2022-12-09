@@ -13,7 +13,6 @@ use App\Repository\GroupRepository;
 use App\Service\ImageProcessor;
 use App\Service\SearchService;
 use DateTimeImmutable;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,11 +28,13 @@ class GroupController extends BaseGroupController
      * @param SearchService $searchService
      */
     public function __construct(
-        private readonly GroupRepository $groupRepository,
-        private readonly AlbumRepository $albumRepository,
-        private readonly ImageProcessor  $imageProcessor,
-        private readonly SearchService   $searchService
-    ) {}
+        private readonly GroupRepository      $groupRepository,
+        private readonly AlbumRepository      $albumRepository,
+        private readonly ImageProcessor       $imageProcessor,
+        private readonly SearchService        $searchService
+    )
+    {
+    }
 
     #[Route('groups', name: 'group_index')]
     public function index(Request $request): Response
@@ -81,10 +82,9 @@ class GroupController extends BaseGroupController
 
         if ($group) {
             $postForm = $this->createForm(
-                PostFormType::class,
-                null, [
+                PostFormType::class, null, [
                 'action' => $this->generateUrl('post_create_group', ['groupId' => $groupId]),
-                'method' => 'POST',
+                'method' => 'POST'
             ]);
 
             return $this->render('group/show.html.twig', [

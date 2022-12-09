@@ -59,7 +59,10 @@
                     </div>
                 {% endif %}
                 <div>
-                    {% include('components/post/list.html.twig') with {'posts': group.posts} %}
+                    {% for post in group.posts %}
+                        {% include('components/post/post.html.twig') %}
+                    {% endfor %}
+                    {% include('components/buttons/post/post-script.html.twig') %}
                 </div>
             </div>
         </div>

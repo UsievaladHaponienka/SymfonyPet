@@ -3,10 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
-use App\Entity\Group;
-use App\Entity\Post;
 use App\Entity\User;
-use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
 use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

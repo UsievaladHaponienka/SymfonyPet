@@ -2,14 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\Post;
 use App\Entity\User;
 use App\Form\PostFormType;
 use App\Form\ProfileFormType;
 use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,21 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProfileController extends AbstractController
 {
-    private ProfileRepository $profileRepository;
-
-    private ImageProcessor $imageProcessor;
-
-    /**
-     * @param ProfileRepository $profileRepository
-     * @param ImageProcessor $imageProcessor
-     */
     public function __construct(
-        ProfileRepository $profileRepository,
-        ImageProcessor    $imageProcessor
+        private readonly ProfileRepository    $profileRepository,
+        private readonly ImageProcessor       $imageProcessor,
     )
     {
-        $this->profileRepository = $profileRepository;
-        $this->imageProcessor = $imageProcessor;
     }
 
     #[Route('/profile/edit', name: 'profile_edit')]
@@ -76,20 +63,25 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/profile/{profileId}', name: 'profile_index')]
-    public function index(int $profileId): Response
+    public function index(Request $request, int $profileId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $profile = $this->profileRepository->find($profileId);
 
-        $post = new Post();
-        $postForm = $this->createForm(PostFormType::class, $post, [
-            'action' => $this->generateUrl('post_create_user', ['profileId' => $profileId]),
-            'method' => 'POST'
-        ]);
+        if ($profile) {
+            $postForm = $this->createForm(
+                PostFormType::class, null, [
+                'action' => $this->generateUrl('post_create_user', ['profileId' => $profileId]),
+                'method' => 'POST'
+            ]);
 
-        return $this->render('profile/index.html.twig',
-            [
+            return $this->render('profile/index.html.twig', [
                 'profile' => $profile,
                 'postForm' => $postForm->createView()
             ]);
+        }
+
+        throw $this->createNotFoundException();
     }
 }

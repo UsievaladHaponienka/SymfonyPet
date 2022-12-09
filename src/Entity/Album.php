@@ -37,7 +37,7 @@ class Album
     #[ORM\ManyToOne(inversedBy: 'albums')]
     private ?Group $group = null;
 
-    #[ORM\OneToMany(mappedBy: 'album', targetEntity: Photo::class, cascade: ['remove'])]
+    #[ORM\OneToMany(mappedBy: 'album', targetEntity: Photo::class, cascade: ['remove', 'persist'])]
     private Collection $photos;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

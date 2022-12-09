@@ -6,7 +6,6 @@ use App\Entity\Album;
 use App\Entity\User;
 use App\Form\AlbumFormType;
 use App\Repository\AlbumRepository;
-use App\Repository\ProfileRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,20 +13,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AlbumController extends AbstractController
 {
-    private AlbumRepository $albumRepository;
-    private ProfileRepository $profileRepository;
-
-    /**
-     * @param AlbumRepository $albumRepository
-     * @param ProfileRepository $profileRepository
-     */
     public function __construct(
-        AlbumRepository   $albumRepository,
-        ProfileRepository $profileRepository
+        private readonly AlbumRepository   $albumRepository
     )
     {
-        $this->albumRepository = $albumRepository;
-        $this->profileRepository = $profileRepository;
     }
 
     #[Route('albums', name: 'album_index')]
