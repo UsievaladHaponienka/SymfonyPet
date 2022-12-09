@@ -18,10 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class CommentController extends AbstractController
 {
     public function __construct(
-        private readonly PostRepository $postRepository,
+        private readonly PostRepository    $postRepository,
         private readonly CommentRepository $commentRepository
     )
-    {}
+    {
+    }
 
     #[Route('comment/create/{postId}', name: 'comment_create')]
     public function create(Request $request, int $postId): Response
@@ -38,7 +39,11 @@ class CommentController extends AbstractController
 
             $this->postRepository->save($post, true);
 
-            return new JsonResponse();
+            return new JsonResponse([
+                'commentContent' => $this->renderView('components/post/comment.html.twig', [
+                    'comment' => $comment
+                ])
+            ]);
         }
 
         throw $this->createNotFoundException();

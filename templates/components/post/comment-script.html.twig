@@ -10,7 +10,8 @@
             data: params
         }).then(
             response => {
-                alert('comment sent!')
+                document.getElementById('post-comments-' + postId).innerHTML +=
+                    response.data.commentContent;
             }
         )
     }

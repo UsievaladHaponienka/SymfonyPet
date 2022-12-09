@@ -1,14 +1,19 @@
-<div>
-    <label class="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4 required"
-           for="new-comment-{{ post.id }}">{{ 'Content' }}
-    </label>
-    <textarea
-            id="new-comment-{{ post.id }}"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
-</div>
-<div>
-    <button onclick="addComment({{ post.id }})"
-            class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
-        Send Comment
-    </button>
+<div class="grid grid-cols-8 border border-indigo-300 border-1 rounded bg-white my-2"
+     id="comment-{{ comment.id }}">
+    <div class="col-span-1">
+        <div class="ml-4 my-4">
+            <img src="{{ comment.profile.profileImageUrl }}">
+        </div>
+    </div>
+    <div class="col-span-6 m-4">
+        <div class="text-2xl text-indigo-500">
+            {{ comment.profile.username }}
+        </div>
+        {{ comment.content }}
+    </div>
+    {% if app.user.profile.id == comment.profile.id %}
+        <div class="col-span-1 text-right mr-4">
+            {% include('components/buttons/post/comment/delete.html.twig') %}
+        </div>
+    {% endif %}
 </div>
