@@ -38,7 +38,7 @@ class PostFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Post::class,
-            'attr' => ['class' => $this->getFormClass()] //Add CSS class to form
+            'attr' => ['class' => $this->getFormClass()]
         ]);
     }
 }

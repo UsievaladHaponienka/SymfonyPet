@@ -321,6 +321,15 @@ class Group
         return $this->getType() == self::PUBLIC_GROUP_TYPE;
     }
 
+    public function createDefaultGroupAlbum(): Album
+    {
+        $defaultGroupAlbum = new Album();
+        $defaultGroupAlbum->setType(Album::GROUP_DEFAULT_TYPE);
+        $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
+
+        return $defaultGroupAlbum;
+    }
+
     public function getDefaultAlbum(): Album
     {
         return $this->albums->filter(function ($album) {

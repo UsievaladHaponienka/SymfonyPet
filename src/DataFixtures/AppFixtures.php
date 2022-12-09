@@ -4,8 +4,11 @@ namespace App\DataFixtures;
 
 use App\Entity\Album;
 use App\Entity\Group;
+use App\Entity\Photo;
+use App\Entity\Post;
 use App\Entity\Profile;
 use App\Entity\User;
+use App\Repository\GroupRepository;
 use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
 use DateTimeImmutable;
@@ -18,11 +21,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    private UserPasswordHasherInterface $passwordHasher;
-    private EntityManagerInterface $entityManager;
-    private ImageProcessor $imageProcessor;
-    private KernelInterface $kernel;
-
     private const DEFAULT_USER_PASSWORD = 'test@123';
 
     private array $userData = [
@@ -72,27 +70,51 @@ class AppFixtures extends Fixture
             'members_usernames' => ['Classic Rock Fan']
         ]
     ];
-    private ProfileRepository $profileRepository;
+
+    private array $postData = [
+        [
+            'type' => 'group',
+            'content' => 'First Metallica album',
+            'group_title' => 'Metallica Fan Club',
+            'photo' => 'kill_them_all'
+        ],
+        [
+            'type' => 'group',
+            'content' => 'Second Metallica album',
+            'group_title' => 'Metallica Fan Club',
+            'photo' => 'ride_the_lightning'
+        ],
+        [
+            'type' => 'group',
+            'content' => 'The best Slayer album',
+            'group_title' => 'Slayer Fan Club',
+            'photo' => 'reign_in_blood'
+        ],
+        [
+            'type' => 'group',
+            'content' => 'Helios Erebus by God Is An Astronaut, 2015 ',
+            'group_title' => 'God Is An Astronaut Fan Club',
+            'photo' => 'helios_erebus'
+        ],
+    ];
+
 
     public function __construct(
-        UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface      $entityManager,
-        ImageProcessor              $imageProcessor,
-        KernelInterface             $kernel,
-        ProfileRepository           $profileRepository
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly EntityManagerInterface      $entityManager,
+        private readonly ImageProcessor              $imageProcessor,
+        private readonly KernelInterface             $kernel,
+        private readonly ProfileRepository           $profileRepository,
+        private readonly GroupRepository             $groupRepository
     )
     {
-        $this->passwordHasher = $passwordHasher;
-        $this->entityManager = $entityManager;
-        $this->imageProcessor = $imageProcessor;
-        $this->kernel = $kernel;
-        $this->profileRepository = $profileRepository;
     }
 
     public function load(ObjectManager $manager): void
     {
         $this->createUsers();
         $this->createGroups();
+        $this->createPosts();
 
         $manager->flush();
     }
@@ -151,7 +173,7 @@ class AppFixtures extends Fixture
         $this->entityManager->flush();
     }
 
-    public function createGroups()
+    public function createGroups(): void
     {
         foreach ($this->groupData as $groupDatum) {
             $group = new Group();
@@ -176,6 +198,9 @@ class AppFixtures extends Fixture
             );
             $group->setGroupImageUrl('/images/group/' . $newGroupImage);
 
+            $album = $group->createDefaultGroupAlbum();
+            $group->addAlbum($album);
+
             foreach ($groupDatum['members_usernames'] as $memberUsername) {
                 $memberProfile = $this->profileRepository->findOneBy([
                     'username' => $memberUsername
@@ -186,5 +211,55 @@ class AppFixtures extends Fixture
 
             $this->entityManager->persist($group);
         }
+
+        $this->entityManager->flush();
+    }
+
+    protected function createPosts(): void
+    {
+        foreach ($this->postData as $postDatum) {
+            $post = new Post();
+            $post->setType($postDatum['type']);
+            $post->setContent($postDatum['content']);
+            $post->setCreatedAt(new DateTimeImmutable());
+
+            if ($post->getType() == Post::GROUP_POST_TYPE) {
+                $group = $this->groupRepository->findOneBy([
+                    'title' => $postDatum['group_title']
+                ]);
+                $post->setGroup($group);
+                $defaultAlbum = $group->getDefaultAlbum();
+            } else {
+                $profile = $this->profileRepository->findOneBy([
+                    'username' => $postDatum['username']
+                ]);
+                $post->setProfile($profile);
+                $defaultAlbum = $profile->getDefaultAlbum();
+            }
+
+            if($postDatum['photo']) {
+                $image = $this->createImage($postDatum['photo']);
+
+                $newImage = $this->imageProcessor->saveImage($image,
+                ImageProcessor::POST_IMAGE_TYPE,
+                    '/public/images/posts/');
+
+                $photo = new Photo();
+                $photo->setImageUrl('/images/posts/' . $newImage);
+                $photo->setPost($post);
+                $photo->setCreatedAt(new DateTimeImmutable());
+
+                if ($post->getContent()) {
+                    $photo->setDescription($post->getContent());
+                }
+
+                $defaultAlbum->addPhoto($photo);
+
+                $this->entityManager->persist($post);
+                $this->entityManager->persist($defaultAlbum);
+            }
+        }
+
+        $this->entityManager->flush();
     }
 }
