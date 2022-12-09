@@ -4,17 +4,25 @@
         <div class="grid grid-cols-8">
             {% if (post.group) %}
                 <div class="ml-4 my-4">
-                    <img src="{{ post.group.groupImageUrl }}">
+                    <a href="{{ path('group_show', {'groupId': post.group.id}) }}">
+                        <img src="{{ post.group.groupImageUrl }}">
+                    </a>
                 </div>
                 <div class="ml-4 my-4">
-                    <div class="text-2xl">{{ post.group.title }}</div>
+                    <a href="{{ path('group_show', {'groupId': post.group.id}) }}">
+                        <div class="text-2xl">{{ post.group.title }}</div>
+                    </a>
                 </div>
             {% else %}
                 <div class="ml-4 my-4">
-                    <img src="{{ post.profile.profileImageUrl }}">
+                    <a href="{{ path('profile_index', {'profileId': post.profile.id}) }}">
+                        <img src="{{ post.profile.profileImageUrl }}">
+                    </a>
                 </div>
                 <div class="ml-4 my-4">
-                    <div class="text-2xl">{{ post.profile.username }}</div>
+                    <a href="{{ path('profile_index', {'profileId': post.profile.id}) }}">
+                        <div class="text-2xl">{{ post.profile.username }}</div>
+                    </a>
                 </div>
             {% endif %}
             {% if (app.user and post.canBeDeleted(app.user)) %}
