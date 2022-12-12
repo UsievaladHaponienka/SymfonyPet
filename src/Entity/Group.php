@@ -290,6 +290,37 @@ class Group
         return $this;
     }
 
+
+    /**
+     * @return Collection<int, Discussion>
+     */
+    public function getDiscussions(): Collection
+    {
+        return $this->discussions;
+    }
+
+    public function addDiscussion(Discussion $discussion): self
+    {
+        if (!$this->discussions->contains($discussion)) {
+            $this->discussions->add($discussion);
+            $discussion->setRelatedGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDiscussion(Discussion $discussion): self
+    {
+        if ($this->discussions->removeElement($discussion)) {
+            // set the owning side to null (unless already changed)
+            if ($discussion->getRelatedGroup() === $this) {
+                $discussion->setRelatedGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
     /**
      * Check if profile with id = $profileId is already in group
      *
@@ -342,33 +373,8 @@ class Group
         })->first();
     }
 
-    /**
-     * @return Collection<int, Discussion>
-     */
-    public function getDiscussions(): Collection
+    public function isViewAllowed(Profile $profile): bool
     {
-        return $this->discussions;
-    }
-
-    public function addDiscussion(Discussion $discussion): self
-    {
-        if (!$this->discussions->contains($discussion)) {
-            $this->discussions->add($discussion);
-            $discussion->setRelatedGroup($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDiscussion(Discussion $discussion): self
-    {
-        if ($this->discussions->removeElement($discussion)) {
-            // set the owning side to null (unless already changed)
-            if ($discussion->getRelatedGroup() === $this) {
-                $discussion->setRelatedGroup(null);
-            }
-        }
-
-        return $this;
+        return $this->isPublic() || $this->isInGroup($profile);
     }
 }

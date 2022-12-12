@@ -8,7 +8,7 @@
                         <img src="{{ post.group.groupImageUrl }}">
                     </a>
                 </div>
-                <div class="ml-4 my-4">
+                <div class="ml-4 my-4 col-span-6">
                     <a href="{{ path('group_show', {'groupId': post.group.id}) }}">
                         <div class="text-2xl">{{ post.group.title }}</div>
                     </a>
@@ -19,7 +19,7 @@
                         <img src="{{ post.profile.profileImageUrl }}">
                     </a>
                 </div>
-                <div class="ml-4 my-4">
+                <div class="ml-4 my-4 col-span-6">
                     <a href="{{ path('profile_index', {'profileId': post.profile.id}) }}">
                         <div class="text-2xl">{{ post.profile.username }}</div>
                     </a>
