@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {{ group.title }} Discussions
+    Add new discussion
 {% endblock %}
 
 {% block body %}
@@ -35,33 +35,15 @@
                             </div>
                         </div>
                     </div>
-                    {% if (group.admin.id == app.user.profile.id) %}
-                        <div class="col-span-1">
-                            <div class="mr-4 flex justify-right">
-                                <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
-                                    <a href="{{ path('discussion_create', {'groupId': group.id}) }}">
-                                        {{ 'Add new discussion' }}
-                                    </a>
-                                </button>
-                            </div>
-                        </div>
-                    {% endif %}
                 </div>
             </div>
 
-            <div class="grid grid-rows m-4 p-4">
-                {% for discussion in group.discussions %}
-                    <a href="">
-                        <div class="grid grid rows bg-indigo-200 rounded ">
-                            <div class="text-2xl p-2">
-                                {{ discussion.title }}
-                            </div>
-                            <div class="text-xl px-2 pb-2">
-                                {{ discussion.description }}
-                            </div>
-                        </div>
-                    </a>
-                {% endfor %}
+            <div class="grid grid-rows">
+                <div class="m-6">
+                    {{ form_start(discussionForm) }}
+                    <h1 class="text-2xl text-center">Add new discussion</h1>
+                    {{ form_end(discussionForm) }}
+                </div>
             </div>
         </div>
     </div>

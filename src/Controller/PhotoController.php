@@ -20,7 +20,8 @@ class PhotoController extends AbstractController
         private readonly ImageProcessor  $imageProcessor,
         private readonly AlbumRepository $albumRepository,
         private readonly PhotoRepository $photoRepository
-    ){
+    )
+    {
     }
 
     #[Route('photo/{photoId}', name: 'photo_index')]
