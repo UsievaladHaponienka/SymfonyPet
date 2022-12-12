@@ -17,10 +17,10 @@
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
             <div class="grid grid-rows">
-                <div class="grid grid-cols-4 my-2">
-                    <div class="col-span-1 flex justify-center">
+                <div class="grid grid-cols-4">
+                    <div class="col-span-1 flex justify-left ml-4 mt-4">
                         <div>
-                            <div class="flex justify-center">
+                            <div>
                                 <img src="{{ profile.profileImageUrl }}" alt="{{ 'No profile image' }}">
                             </div>
                             <div class="delete-friendship-button-{{ profile.id }}">
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-span-3">
+                    <div class="col-span-3 mt-4">
                         <div class="grid grid-rows">
                             {% if(profile.username) %}
                                 <div class="text-2xl">
@@ -66,5 +66,6 @@
         </div>
     </div>
     {% include('components/buttons/friendship/friendship-interaction-script.html.twig') %}
-    {% include('components/buttons/post/post-script.html.twig') %}
+    {% include('components/post/post-script.html.twig') %}
+    {% include('components/comment/comment-script.html.twig') %}
 {% endblock %}

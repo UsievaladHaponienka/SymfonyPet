@@ -27,7 +27,8 @@
                     {% for post in posts %}
                         {% include('components/post/post.html.twig') %}
                     {% endfor %}
-                    {% include('components/buttons/post/post-script.html.twig') %}
+                    {% include('components/post/post-script.html.twig') %}
+                    {% include('components/comment/comment-script.html.twig') %}
                 </div>
             </div>
         </div>

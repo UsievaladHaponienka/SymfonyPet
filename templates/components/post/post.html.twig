@@ -56,11 +56,11 @@
         <div class="m-4">
             <div id="post-comments-{{ post.id }}">
                 {% for comment in post.comments %}
-                    {% include('components/post/comment.html.twig') %}
+                    {% include('components/comment/comment.html.twig') %}
                 {% endfor %}
             </div>
             <div class="pb-4">
-                {% include('components/post/new-comment.html.twig') with {type: 'post'} %}
+                {% include('components/comment/new-comment.html.twig') with {type: 'post'} %}
             </div>
         </div>
     {% endif %}

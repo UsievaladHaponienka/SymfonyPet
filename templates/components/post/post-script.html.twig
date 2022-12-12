@@ -1,0 +1,29 @@
+<script>
+    const likedStyle = 'bg-sky-500 hover:bg-sky-400';
+    const notLikedStyle = 'bg-sky-900 hover:bg-sky-800';
+
+    function like(postId) {
+        axios.post('/like/' + postId).then(
+            response => {
+                let btn = document.getElementById('like-button-' + postId);
+                if (response.data.like_added) {
+                    btn.className = btn.className.replace(notLikedStyle, likedStyle);
+                } else {
+                    btn.className = btn.className.replace(likedStyle, notLikedStyle);
+                }
+
+                btn.innerHTML = response.data.button_text;
+            }
+        )
+    }
+
+    function deletePost(postId) {
+        axios.post('/post/delete/' + postId).then(
+            response => {
+                document.getElementById('post-' + postId).innerHTML =
+                    '<div class="m-4 bg-indigo-200 rounded" id="post-' + postId + '">' + '{{ "Post Deleted" }}' +
+                    '</div>';
+            }
+        )
+    }
+</script>

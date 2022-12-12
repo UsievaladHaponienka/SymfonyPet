@@ -18,14 +18,18 @@
                     <div class="col-span-1">
                         <div>
                             <div class="flex justify-center">
-                                <img src="{{ group.groupImageUrl }}" alt="{{ 'No group image' }}">
+                                <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                    <img src="{{ group.groupImageUrl }}" alt="{{ 'No group image' }}">
+                                </a>
                             </div>
                         </div>
                     </div>
                     <div class="col-span-6 ml-4">
                         <div class="grid grid-rows">
                             <div class="text-2xl">
-                                {{ group.title }}
+                                <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                    {{ group.title }}
+                                </a>
                             </div>
                             <div class="text-gray-500">
                                 <p>{{ group.type }} {{ 'group' }}</p>
@@ -49,20 +53,28 @@
                 </div>
             </div>
 
-            <div class="grid grid-rows m-4 p-4">
+            <div class="grid grid-rows m-4 gap-4">
                 {% for discussion in group.discussions %}
-                    <a href="{{ path('discussion_show', {'discussionId': discussion.id}) }}">
-                        <div class="grid grid rows bg-indigo-200 rounded ">
-                            <div class="text-2xl p-2">
-                                {{ discussion.title }}
-                            </div>
-                            <div class="text-xl px-2 pb-2">
-                                {{ discussion.description }}
-                            </div>
+                    <div class="grid grid-cols-8 bg-indigo-200 rounded" id="discussion-{{ discussion.id }}">
+                        <div class="col-span-7">
+                            <a href="{{ path('discussion_show', {'discussionId': discussion.id}) }}">
+                                <div class="grid grid rows">
+                                    <div class="text-2xl p-2">
+                                        {{ discussion.title }}
+                                    </div>
+                                    <div class="text-xl px-2 pb-2">
+                                        {{ discussion.description }}
+                                    </div>
+                                </div>
+                            </a>
                         </div>
-                    </a>
+                        <div class="mr-2">
+                            {% include('components/buttons/discussion/delete.html.twig') %}
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
         </div>
     </div>
+    {% include('components/buttons/discussion/delete-script.html.twig') %}
 {% endblock %}

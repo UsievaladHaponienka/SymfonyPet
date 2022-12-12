@@ -19,11 +19,6 @@
                             <div class="flex justify-center">
                                 <img src="{{ group.groupImageUrl }}" alt="{{ 'No group image' }}">
                             </div>
-                            <div class="flex justify-center">
-                                {% if group.admin.id != app.user.profile.id %}
-                                    {% include('components/buttons/group/membership/complex-interaction.html.twig') %}
-                                {% endif %}
-                            </div>
                         </div>
                     </div>
                     <div class="col-span-6 ml-4">
@@ -50,10 +45,16 @@
                                 {% include('components/buttons/group/delete-group-button.html.twig') %}
                             </div>
                         </div>
+                    {% else %}
+                        <div class="flex justify-center">
+                            {% if group.admin.id != app.user.profile.id %}
+                                {% include('components/buttons/group/membership/complex-interaction.html.twig') %}
+                            {% endif %}
+                        </div>
                     {% endif %}
                 </div>
                 <div class="grid grid-cols-4">
-                    <div class="flex justify-center ">
+                    <div class="flex justify-left ">
                         <a href="{{ path('discussion_index', {'groupId': group.id}) }}">
                             <button class="bg-indigo-500 text-white w-full tab-links hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 mx-4 rounded">
                                 {{ 'Discussions' }}
@@ -74,7 +75,7 @@
                         {% for post in group.posts %}
                             {% include('components/post/post.html.twig') %}
                         {% endfor %}
-                        {% include('components/buttons/post/post-script.html.twig') %}
+                        {% include('components/post/post-script.html.twig') %}
                     {% else %}
                         <div class="m-4 p-4 text-2xl text-center bg-indigo-200 rounded">
                             {{ 'This group is private. Join it if you want to see group posts' }}
@@ -85,4 +86,5 @@
         </div>
     </div>
     {% include('components/buttons/group/membership/membership-script.html.twig') %}
+    {% include('components/comment/comment-script.html.twig') %}
 {% endblock %}

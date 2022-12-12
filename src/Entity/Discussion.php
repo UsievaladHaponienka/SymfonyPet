@@ -20,7 +20,7 @@ class Discussion
     #[ORM\JoinColumn(nullable: false)]
     private ?Group $relatedGroup = null;
 
-    #[ORM\OneToMany(mappedBy: 'discussion', targetEntity: Comment::class)]
+    #[ORM\OneToMany(mappedBy: 'discussion', targetEntity: Comment::class, cascade: ['remove', 'persist'])]
     private Collection $comment;
 
     #[ORM\Column(length: 255)]

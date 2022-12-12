@@ -23,7 +23,7 @@ class CommentController extends AbstractController
     {
     }
 
-    #[Route('comment/create_post/{postId}', name: 'comment_create')]
+    #[Route('comment/create_post/{postId}', name: 'comment_create_post')]
     public function createForPost(Request $request, int $postId): Response
     {
         $post = $this->postRepository->find($postId);
@@ -40,7 +40,7 @@ class CommentController extends AbstractController
 
     }
 
-    #[Route('comment/create_discussion/{discussionId}', name: 'comment_create')]
+    #[Route('comment/create_discussion/{discussionId}', name: 'comment_create_discussion')]
     public function createForDiscussion(Request $request, int $discussionId): Response
     {
         $discussion = $this->discussionRepository->find($discussionId);
@@ -56,7 +56,6 @@ class CommentController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-
     protected function createComment(Request $request, Comment $comment): Response
     {
         /** @var User $user */
@@ -68,7 +67,7 @@ class CommentController extends AbstractController
         $this->commentRepository->save($comment, true);
 
         return new JsonResponse([
-            'commentContent' => $this->renderView('components/post/comment.html.twig', [
+            'commentContent' => $this->renderView('components/comment/comment.html.twig', [
                 'comment' => $comment
             ])
         ]);

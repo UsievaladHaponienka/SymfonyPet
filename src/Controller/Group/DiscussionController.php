@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\DiscussionFormType;
 use App\Repository\DiscussionRepository;
 use App\Repository\GroupRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -81,6 +82,20 @@ class DiscussionController extends BaseGroupController
             }
 
             throw $this->createNotFoundException();
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('discussion/delete/{discussionId}', name: 'discussion_delete')]
+    public function delete(int $discussionId): Response
+    {
+        $discussion = $this->discussionRepository->find($discussionId);
+
+        if($discussion && $this->isAdmin($discussion->getRelatedGroup())) {
+            $this->discussionRepository->remove($discussion, true);
+
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
