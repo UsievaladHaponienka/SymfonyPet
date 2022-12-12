@@ -3,6 +3,7 @@
 namespace App\Controller\Group;
 
 use App\Entity\Discussion;
+use App\Entity\User;
 use App\Form\DiscussionFormType;
 use App\Repository\DiscussionRepository;
 use App\Repository\GroupRepository;
@@ -56,6 +57,30 @@ class DiscussionController extends BaseGroupController
                 'group' => $group,
                 'discussionForm' => $discussionForm->createView()
             ]);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('discussion/{discussionId}', name: 'discussion_show')]
+    public function show(int $discussionId): Response
+    {
+        $discussion = $this->discussionRepository->find($discussionId);
+
+        if ($discussion) {
+            /** @var User $user */
+            $user = $this->getUser();
+            $group = $discussion->getRelatedGroup();
+
+            if ($group->isPublic() || $group->isInGroup($user->getProfile())) {
+
+                return $this->render('discussion/show.html.twig', [
+                    'group' => $group,
+                    'discussion' => $discussion
+                ]);
+            }
+
+            throw $this->createNotFoundException();
         }
 
         throw $this->createNotFoundException();

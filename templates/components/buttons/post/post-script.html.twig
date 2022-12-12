@@ -27,21 +27,22 @@
         )
     }
 
-    function addComment(postId, type) {
+    function addComment(entityId, type) {
         let params = new URLSearchParams();
-        let commentContent = document.getElementById('new-comment-' + postId).value;
+        let commentContent = document.getElementById('new-comment-' + type + '-' + entityId).value;
+        let url = type === 'post' ? '/comment/create_post/' + entityId : '/comment/create_discussion/' + entityId;
 
         params.append('comment_content', commentContent)
         params.append('comment_type', type)
 
         axios({
             method: 'post',
-            url: '/comment/create/' + postId,
+            url: url,
             data: params
         }).then(
             response => {
-                document.getElementById('post-comments-' + postId).innerHTML += response.data.commentContent;
-                document.getElementById('new-comment-' + postId).value = '';
+                document.getElementById(type + '-comments-' + entityId).innerHTML += response.data.commentContent;
+                document.getElementById('new-comment-' + type + '-' + entityId).value = '';
             }
         )
     }

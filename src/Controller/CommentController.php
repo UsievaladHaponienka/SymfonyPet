@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Entity\User;
 use App\Repository\CommentRepository;
+use App\Repository\DiscussionRepository;
 use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,36 +16,62 @@ use Symfony\Component\Routing\Annotation\Route;
 class CommentController extends AbstractController
 {
     public function __construct(
-        private readonly PostRepository    $postRepository,
-        private readonly CommentRepository $commentRepository
+        private readonly PostRepository       $postRepository,
+        private readonly DiscussionRepository $discussionRepository,
+        private readonly CommentRepository    $commentRepository
     )
     {
     }
 
-    #[Route('comment/create/{postId}', name: 'comment_create')]
-    public function create(Request $request, int $postId): Response
+    #[Route('comment/create_post/{postId}', name: 'comment_create')]
+    public function createForPost(Request $request, int $postId): Response
     {
         $post = $this->postRepository->find($postId);
+
         if ($post) {
-            /** @var User $user */
-            $user = $this->getUser();
             $comment = new Comment();
-            $comment->setContent($request->request->get('comment_content'));
-            $comment->setProfile($user->getProfile());
-            $comment->setType($request->request->get('comment_type'));
+            $comment->setType(Comment::POST_TYPE);
+            $comment->setPost($post);
 
-            $post->addComment($comment);
-
-            $this->postRepository->save($post, true);
-
-            return new JsonResponse([
-                'commentContent' => $this->renderView('components/post/comment.html.twig', [
-                    'comment' => $comment
-                ])
-            ]);
+            return $this->createComment($request, $comment);
         }
 
         throw $this->createNotFoundException();
+
+    }
+
+    #[Route('comment/create_discussion/{discussionId}', name: 'comment_create')]
+    public function createForDiscussion(Request $request, int $discussionId): Response
+    {
+        $discussion = $this->discussionRepository->find($discussionId);
+
+        if ($discussion) {
+            $comment = new Comment();
+            $comment->setType(Comment::DISCUSSION_TYPE);
+            $comment->setDiscussion($discussion);
+
+            return $this->createComment($request, $comment);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+
+    protected function createComment(Request $request, Comment $comment): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $comment->setContent($request->request->get('comment_content'));
+        $comment->setProfile($user->getProfile());
+
+        $this->commentRepository->save($comment, true);
+
+        return new JsonResponse([
+            'commentContent' => $this->renderView('components/post/comment.html.twig', [
+                'comment' => $comment
+            ])
+        ]);
     }
 
     #[Route('comment/delete/{commentId}', name: 'comment_delete')]
