@@ -290,7 +290,6 @@ class Group
         return $this;
     }
 
-
     /**
      * @return Collection<int, Discussion>
      */

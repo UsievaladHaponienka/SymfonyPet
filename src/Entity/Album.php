@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Traits\GroupOwned;
-use App\Entity\Traits\ProfileOwned;
 use App\Repository\AlbumRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,8 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
 class Album
 {
-    use GroupOwned;
-    use ProfileOwned;
 
     public const USER_DEFAULT_TYPE = 'user_posts';
     public const USER_CUSTOM_TYPE = 'user_custom';
@@ -153,12 +149,12 @@ class Album
             /*
              * User custom albums can be deleted or edited by user
              */
-            return $this->isProfileActionAllowed($profile);
+            return $this->getProfile()->getId() == $profile->getId();
         } elseif ($this->getType() == Album::GROUP_CUSTOM_TYPE) {
             /*
              * Group custom albums can be deleted or edited by group admin
              */
-            return $this->isGroupActionAllowed($profile);
+            return $this->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
         }
 
         return false;

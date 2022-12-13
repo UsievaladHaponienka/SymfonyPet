@@ -2,9 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\Traits\GroupOwned;
 use App\Entity\Traits\Likeable;
-use App\Entity\Traits\ProfileOwned;
 use App\Repository\PostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,8 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Post
 {
     use Likeable;
-    use ProfileOwned;
-    use GroupOwned;
 
     public const USER_POST_TYPE = 'user';
     public const GROUP_POST_TYPE = 'group';

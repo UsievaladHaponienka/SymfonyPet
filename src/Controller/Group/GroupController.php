@@ -2,13 +2,11 @@
 
 namespace App\Controller\Group;
 
-use App\Entity\Album;
 use App\Entity\Group;
 use App\Entity\User;
 use App\Form\GroupFormType;
 use App\Form\PostFormType;
 use App\Form\SearchFormType;
-use App\Repository\AlbumRepository;
 use App\Repository\GroupRepository;
 use App\Service\ImageProcessor;
 use App\Service\SearchService;
@@ -23,13 +21,11 @@ class GroupController extends BaseGroupController
 {
     /**
      * @param GroupRepository $groupRepository
-     * @param AlbumRepository $albumRepository
      * @param ImageProcessor $imageProcessor
      * @param SearchService $searchService
      */
     public function __construct(
         private readonly GroupRepository      $groupRepository,
-        private readonly AlbumRepository      $albumRepository,
         private readonly ImageProcessor       $imageProcessor,
         private readonly SearchService        $searchService
     )
@@ -114,7 +110,6 @@ class GroupController extends BaseGroupController
             $profileSearchForm = $this->createForm(SearchFormType::class);
             $profileSearchForm->handleRequest($request);
 
-
             $profileSearchResult = null;
             if ($profileSearchForm->isSubmitted() && $profileSearchForm->isValid()) {
                 $profileSearchResult = $this->searchService->searchProfiles(
@@ -195,6 +190,4 @@ class GroupController extends BaseGroupController
 
         $this->groupRepository->save($group, true);
     }
-
-
 }

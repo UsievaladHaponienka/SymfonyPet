@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Entity\Traits\Likeable;
-use App\Entity\Traits\ProfileOwned;
 use App\Repository\CommentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,7 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Comment
 {
     use Likeable;
-    use ProfileOwned;
 
     public const POST_TYPE = 'post';
     public const DISCUSSION_TYPE = 'discussion';
