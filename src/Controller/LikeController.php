@@ -2,15 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\Group;
+use App\Entity\Comment;
 use App\Entity\Like;
 use App\Entity\Post;
-use App\Entity\Profile;
 use App\Entity\User;
-use App\EntityInterface\LikeableInterface;
-use App\Repository\CommentRepository;
-use App\Repository\LikeRepository;
-use App\Repository\PostRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,8 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class LikeController extends AbstractController
 {
     public function __construct(
-        private readonly PostRepository    $postRepository,
-        private readonly CommentRepository $commentRepository
+        private readonly EntityManagerInterface $entityManager
     )
     {
     }
@@ -30,45 +25,35 @@ class LikeController extends AbstractController
     public function like(Request $request, int $entityId): Response
     {
         $likeType = $request->request->get('type');
-        $entityRepository = $likeType == Like::POST_TYPE ? $this->postRepository : $this->commentRepository;
+        /** @var User $user */
+        $user = $this->getUser();
 
-        /** @var LikeableInterface $entity */
+        $entityRepository = $likeType == Like::POST_TYPE ?
+            $this->entityManager->getRepository(Post::class) :
+            $this->entityManager->getRepository(Comment::class);
+
         $entity = $entityRepository->find($entityId);
 
-        if ($entity) {
-            /** @var User $user */
-            $user = $this->getUser();
+        if ($entity->getLikeIfExists($user->getProfile())) {
+            $entity->removeLike($entity->getLikeIfExists($user->getProfile()));
+            $entityRepository->save($entity, true);
 
-            if ($entity->isLikedBy($user->getProfile())) {
-                $like = $entity
-                    ->getLikes()
-                    ->filter(function ($element) use ($user) {
-                        /** @var Like $element */
-                        return $element->getProfile()->getId() == $user->getProfile()->getId();
-                    })->first();
+            return new JsonResponse([
+                'like_added' => false,
+                'button_text' => 'Like (' . $entity->getLikes()->count() . ')'
+            ]);
+        } else {
+            $like = new Like();
+            $like->setProfile($user->getProfile());
+            $like->setType($likeType);
 
-                $entity->removeLike($like);
-                $entityRepository->save($entity, true);
+            $entity->addLike($like);
+            $entityRepository->save($entity, true);
 
-                return new JsonResponse([
-                    'like_added' => false,
-                    'button_text' => 'Like (' . $entity->getLikes()->count() . ')'
-                ]);
-            } else {
-                $like = new Like();
-                $like->setType($likeType);
-                $like->setProfile($user->getProfile());
-
-                $entity->addLike($like);
-                $entityRepository->save($entity, true);
-
-                return new JsonResponse([
-                    'like_added' => true,
-                    'button_text' => 'Liked (' . $entity->getLikes()->count() . ')'
-                ]);
-            }
+            return new JsonResponse([
+                'like_added' => true,
+                'button_text' => 'Liked (' . $entity->getLikes()->count() . ')'
+            ]);
         }
-
-        throw $this->createNotFoundException();
     }
 }

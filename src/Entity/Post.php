@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\EntityInterface\LikeableInterface;
+use App\Entity\Traits\Likeable;
 use App\Repository\PostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,8 +10,10 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
-class Post implements LikeableInterface
+class Post
 {
+    use Likeable;
+
     public const USER_POST_TYPE = 'user';
     public const GROUP_POST_TYPE = 'group';
 
@@ -225,15 +227,5 @@ class Post implements LikeableInterface
         } else {
             return $this->getProfile()->getId() == $user->getProfile()->getId();
         }
-    }
-
-    public function isLikedBy(Profile $profile): bool
-    {
-        $likes = $this->getLikes()->filter(function ($element) use ($profile) {
-            /** @var Like $element */
-            return $element->getProfile()->getId() == $profile->getId();
-        });
-
-        return (bool) $likes->count();
     }
 }

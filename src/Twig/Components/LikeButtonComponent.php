@@ -2,12 +2,12 @@
 
 namespace App\Twig\Components;
 
+use App\Entity\Comment;
 use App\Entity\Like;
+use App\Entity\Post;
 use App\Entity\Profile;
 use App\Entity\User;
-use App\EntityInterface\LikeableInterface;
-use App\Repository\CommentRepository;
-use App\Repository\PostRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
@@ -44,8 +44,7 @@ final class LikeButtonComponent
     public string $buttonText;
 
     public function __construct(
-        private readonly CommentRepository     $commentRepository,
-        private readonly PostRepository        $postRepository,
+        private readonly EntityManagerInterface $entityManager,
         private readonly TokenStorageInterface $tokenStorage
     )
     {
@@ -61,12 +60,13 @@ final class LikeButtonComponent
             $this->type = $type;
             $this->entityId = $entityId;
 
-            $entityRepository = $type == Like::POST_TYPE ? $this->postRepository : $this->commentRepository;
+            $entityRepository = $type == Like::POST_TYPE ?
+                $this->entityManager->getRepository(Post::class) :
+                $this->entityManager->getRepository(Comment::class);
 
-            /** @var LikeableInterface $entity */
             $entity = $entityRepository->find($entityId);
 
-            $this->styleClass = $entity->isLikedBy($user->getProfile()) ?
+            $this->styleClass = $entity->getLikeIfExists($user->getProfile()) ?
                 self::LIKED_BUTTON_STYLE :
                 self::NOT_LIKED_BUTTON_STYLE;
 
@@ -74,9 +74,9 @@ final class LikeButtonComponent
         }
     }
 
-    public function getLikeButtonText(LikeableInterface $entity, Profile $profile): string
+    public function getLikeButtonText(Post|Comment $entity, Profile $profile): string
     {
-        if ($entity->isLikedBy($profile)) {
+        if ($entity->getLikeIfExists($profile)) {
             return 'Liked (' . $entity->getLikes()->count() . ')';
         }
         return 'Like (' . $entity->getLikes()->count() . ')';

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\EntityInterface\LikeableInterface;
+use App\Entity\Traits\Likeable;
 use App\Repository\CommentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,8 +10,10 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
-class Comment implements LikeableInterface
+class Comment
 {
+    use Likeable;
+
     public const POST_TYPE = 'post';
     public const DISCUSSION_TYPE = 'discussion';
 
@@ -139,15 +141,5 @@ class Comment implements LikeableInterface
         }
 
         return $this;
-    }
-
-    public function isLikedBy(Profile $profile): bool
-    {
-        $likes = $this->getLikes()->filter(function ($element) use ($profile) {
-            /** @var Like $element */
-            return $element->getProfile()->getId() == $profile->getId();
-        });
-
-        return (bool) $likes->count();
     }
 }
