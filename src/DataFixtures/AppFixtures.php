@@ -227,7 +227,7 @@ class AppFixtures extends Fixture
                 $group = $this->groupRepository->findOneBy([
                     'title' => $postDatum['group_title']
                 ]);
-                $post->setGroup($group);
+                $post->setRelatedGroup($group);
                 $defaultAlbum = $group->getDefaultAlbum();
             } else {
                 $profile = $this->profileRepository->findOneBy([

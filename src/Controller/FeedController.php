@@ -48,7 +48,7 @@ class FeedController extends AbstractController
 
         $groupPosts = $this->postRepository->findBy([
             'type' => Post::GROUP_POST_TYPE,
-            'group' => $groupIds
+            'relatedGroup' => $groupIds
         ]);
 
         $friendIds = [];

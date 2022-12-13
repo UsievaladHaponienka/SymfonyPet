@@ -2,16 +2,20 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\GroupOwned;
+use App\Entity\Traits\ProfileOwned;
 use App\Repository\AlbumRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\Types\This;
 
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
 class Album
 {
+    use GroupOwned;
+    use ProfileOwned;
+
     public const USER_DEFAULT_TYPE = 'user_posts';
     public const USER_CUSTOM_TYPE = 'user_custom';
 
@@ -35,7 +39,7 @@ class Album
     private ?Profile $profile = null;
 
     #[ORM\ManyToOne(inversedBy: 'albums')]
-    private ?Group $group = null;
+    private ?Group $relatedGroup = null;
 
     #[ORM\OneToMany(mappedBy: 'album', targetEntity: Photo::class, cascade: ['remove', 'persist'])]
     private Collection $photos;
@@ -89,14 +93,14 @@ class Album
         return $this;
     }
 
-    public function getGroup(): ?Group
+    public function getRelatedGroup(): ?Group
     {
-        return $this->group;
+        return $this->relatedGroup;
     }
 
-    public function setGroup(?Group $group): self
+    public function setRelatedGroup(?Group $relatedGroup): self
     {
-        $this->group = $group;
+        $this->relatedGroup = $relatedGroup;
 
         return $this;
     }
@@ -141,5 +145,22 @@ class Album
         $this->description = $description;
 
         return $this;
+    }
+
+    public function isActionAllowed(Profile $profile): bool
+    {
+        if ($this->getType() == Album::USER_CUSTOM_TYPE) {
+            /*
+             * User custom albums can be deleted or edited by user
+             */
+            return $this->isProfileActionAllowed($profile);
+        } elseif ($this->getType() == Album::GROUP_CUSTOM_TYPE) {
+            /*
+             * Group custom albums can be deleted or edited by group admin
+             */
+            return $this->isGroupActionAllowed($profile);
+        }
+
+        return false;
     }
 }

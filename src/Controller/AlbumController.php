@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
 class AlbumController extends AbstractController
 {
@@ -76,10 +75,11 @@ class AlbumController extends AbstractController
     #[Route('album/edit/{albumId}', name: 'album_edit')]
     public function edit(Request $request, int $albumId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        //TODO: Check how to handle this check condition using Symfony (like Laravel middleware)
-        if ($album && $this->isActionAllowed($album)) {
+        if ($album && $album->isActionAllowed($user->getProfile())) {
             $form = $this->createForm(AlbumFormType::class, $album);
             $form->handleRequest($request);
 
@@ -123,22 +123,16 @@ class AlbumController extends AbstractController
     #[Route('album/delete/{albumId}', name: 'album_delete')]
     public function delete(int $albumId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        if ($album && $this->isActionAllowed($album)) {
+        if ($album && $album->isActionAllowed($user->getProfile())) {
             $this->albumRepository->remove($album, true);
 
             return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
-    }
-
-    protected function isActionAllowed(Album $album): bool
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        return $album->getProfile()->getUser()->getId() == $user->getId();
     }
 }

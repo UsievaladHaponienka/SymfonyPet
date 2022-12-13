@@ -15,14 +15,14 @@
         </div>
         {{ comment.content }}
     </div>
-    {% if app.user.profile.id == comment.profile.id %}
-        <div class="col-span-1 text-right mr-4">
+    <div class="col-span-1 text-right mr-4">
+        {% if comment.isActionAllowed(app.user.profile) %}
             <div>
                 {% include('components/buttons/post/comment/delete.html.twig') %}
             </div>
-            <div>
-                {{ component('like-button', {entityId: comment.id, type: 'comment'}) }}
-            </div>
+        {% endif %}
+        <div>
+            {{ component('like-button', {entityId: comment.id, type: 'comment'}) }}
         </div>
-    {% endif %}
+    </div>
 </div>

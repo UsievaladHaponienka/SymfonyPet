@@ -2,15 +2,15 @@
     <!-- Post header -->
     <div class="grid grid-rows gap-4">
         <div class="grid grid-cols-8">
-            {% if (post.group) %}
+            {% if (post.relatedGroup) %}
                 <div class="ml-4 my-4">
-                    <a href="{{ path('group_show', {'groupId': post.group.id}) }}">
-                        <img src="{{ post.group.groupImageUrl }}">
+                    <a href="{{ path('group_show', {'groupId': post.relatedGroup.id}) }}">
+                        <img src="{{ post.relatedGroup.groupImageUrl }}">
                     </a>
                 </div>
                 <div class="ml-4 my-4 col-span-6">
-                    <a href="{{ path('group_show', {'groupId': post.group.id}) }}">
-                        <div class="text-2xl">{{ post.group.title }}</div>
+                    <a href="{{ path('group_show', {'groupId': post.relatedGroup.id}) }}">
+                        <div class="text-2xl">{{ post.relatedGroup.title }}</div>
                     </a>
                 </div>
             {% else %}
@@ -25,11 +25,13 @@
                     </a>
                 </div>
             {% endif %}
-            {% if (app.user and post.canBeDeleted(app.user)) %}
+            {% if app.user and post.isActionAllowed(app.user.profile) %}
                 <div class="mr-4 my-4 cols-span-1 col-start-8 text-right">
                     {% include('components/buttons/post/delete.html.twig') %}
                 </div>
             {% endif %}
+
+
         </div>
     </div>
 

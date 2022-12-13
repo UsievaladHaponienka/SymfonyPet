@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Traits\Likeable;
+use App\Entity\Traits\ProfileOwned;
 use App\Repository\CommentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Comment
 {
     use Likeable;
+    use ProfileOwned;
 
     public const POST_TYPE = 'post';
     public const DISCUSSION_TYPE = 'discussion';
@@ -141,5 +143,31 @@ class Comment
         }
 
         return $this;
+    }
+
+    public function isActionAllowed(Profile $profile): bool
+    {
+        /*
+         * Discussion comments can be deleted either by comment author or by group admin
+         */
+        if ($this->getType() == Comment::DISCUSSION_TYPE) {
+            return $this->getProfile()->getId() == $profile->getId() ||
+                $this->getDiscussion()->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
+        } else {
+            /*
+             * Comments to group posts can be deleted either by comment author or by group admin
+             */
+            if ($this->getPost()->getType() == Post::GROUP_POST_TYPE) {
+                return $this->getProfile()->getId() == $profile->getId() ||
+                    $this->getPost()->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
+            }
+            /*
+             * Comments to user posts can be deleted either by comment author or by post author
+             */
+            else {
+                return $this->getProfile()->getId() == $profile->getId() ||
+                    $this->getPost()->getProfile()->getId() == $profile->getId();
+            }
+        }
     }
 }

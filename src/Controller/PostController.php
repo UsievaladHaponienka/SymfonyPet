@@ -55,7 +55,7 @@ class PostController extends AbstractController
 
         if ($group && $user->getProfile()->getId() == $group->getAdmin()->getId()) {
             $post = new Post();
-            $post->setGroup($group);
+            $post->setRelatedGroup($group);
             $post->setType(Post::GROUP_POST_TYPE);
             return $this->create($request, $post);
         }
@@ -78,7 +78,7 @@ class PostController extends AbstractController
                 $photo = new Photo();
                 $postsAlbum = $post->getType() == Post::USER_POST_TYPE ?
                     $post->getProfile()->getDefaultAlbum() :
-                    $post->getGroup()->getDefaultAlbum();
+                    $post->getRelatedGroup()->getDefaultAlbum();
 
                 $photo->setAlbum($postsAlbum);
                 $photo->setPost($post);
@@ -108,9 +108,11 @@ class PostController extends AbstractController
     #[Route('/post/delete/{postId}', name: 'post_delete')]
     public function delete(int $postId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $post = $this->postRepository->find($postId);
 
-        if ($post && $this->isActionAllowed($post)) {
+        if ($post && $post->isActionAllowed($user->getProfile())) {
             $this->postRepository->remove($post, true);
 
             return new JsonResponse();
@@ -119,22 +121,10 @@ class PostController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    protected function isActionAllowed(Post $post): bool
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        if ($post->getType() == Post::USER_POST_TYPE) {
-            return $user->getProfile()->getId() == $post->getProfile()->getId();
-        } else {
-            return $user->getProfile()->getId() == $post->getGroup()->getAdmin()->getId();
-        }
-    }
-
     protected function getRedirect(Post $post): Response
     {
         return $post->getType() == Post::USER_POST_TYPE ?
             $this->redirectToRoute('profile_index', ['profileId' => $post->getProfile()->getId()]) :
-            $this->redirectToRoute('group_show', ['groupId' => $post->getGroup()->getId()]);
+            $this->redirectToRoute('group_show', ['groupId' => $post->getRelatedGroup()->getId()]);
     }
 }

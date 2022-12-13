@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\GroupOwned;
 use App\Entity\Traits\Likeable;
+use App\Entity\Traits\ProfileOwned;
 use App\Repository\PostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Post
 {
     use Likeable;
+    use ProfileOwned;
+    use GroupOwned;
 
     public const USER_POST_TYPE = 'user';
     public const GROUP_POST_TYPE = 'group';
@@ -29,7 +33,7 @@ class Post
     private ?Profile $profile = null;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
-    private ?Group $group = null;
+    private ?Group $relatedGroup = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $content = null;
@@ -84,14 +88,14 @@ class Post
         return $this;
     }
 
-    public function getGroup(): ?Group
+    public function getRelatedGroup(): ?Group
     {
-        return $this->group;
+        return $this->relatedGroup;
     }
 
-    public function setGroup(?Group $group): self
+    public function setRelatedGroup(?Group $relatedGroup): self
     {
-        $this->group = $group;
+        $this->relatedGroup = $relatedGroup;
 
         return $this;
     }
@@ -215,17 +219,21 @@ class Post
     }
 
     /**
-     * Check if this post can be deleted by current user.
-     *
-     * @param User $user
+     * @param Profile $profile
      * @return bool
      */
-    public function canBeDeleted(User $user): bool
+    public function isActionAllowed(Profile $profile): bool
     {
-        if($this->getGroup()) {
-            return $this->getGroup()->getAdmin()->getId() == $user->getProfile()->getId();
+        if($this->getRelatedGroup()) {
+            /*
+             * Group posts can be deleted by group admin
+             */
+            return $this->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
         } else {
-            return $this->getProfile()->getId() == $user->getProfile()->getId();
+            /*
+             * User posts can be deleted by post author
+             */
+            return $this->getProfile()->getId() == $profile->getId();
         }
     }
 }

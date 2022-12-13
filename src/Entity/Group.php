@@ -36,10 +36,10 @@ class Group
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\OneToMany(mappedBy: 'group', targetEntity: Album::class, cascade: ['remove', 'persist'])]
+    #[ORM\OneToMany(mappedBy: 'relatedGroup', targetEntity: Album::class, cascade: ['remove', 'persist'])]
     private Collection $albums;
 
-    #[ORM\OneToMany(mappedBy: 'group', targetEntity: Post::class, cascade: ['remove', 'persist'])]
+    #[ORM\OneToMany(mappedBy: 'relatedGroup', targetEntity: Post::class, cascade: ['remove', 'persist'])]
     #[ORM\OrderBy(['created_at' => 'DESC'])]
     private Collection $posts;
 
@@ -146,7 +146,7 @@ class Group
     {
         if (!$this->albums->contains($album)) {
             $this->albums->add($album);
-            $album->setGroup($this);
+            $album->setRelatedGroup($this);
         }
 
         return $this;
@@ -156,8 +156,8 @@ class Group
     {
         if ($this->albums->removeElement($album)) {
             // set the owning side to null (unless already changed)
-            if ($album->getGroup() === $this) {
-                $album->setGroup(null);
+            if ($album->getRelatedGroup() === $this) {
+                $album->setRelatedGroup(null);
             }
         }
 
@@ -176,7 +176,7 @@ class Group
     {
         if (!$this->posts->contains($post)) {
             $this->posts->add($post);
-            $post->setGroup($this);
+            $post->setRelatedGroup($this);
         }
 
         return $this;
@@ -186,8 +186,8 @@ class Group
     {
         if ($this->posts->removeElement($post)) {
             // set the owning side to null (unless already changed)
-            if ($post->getGroup() === $this) {
-                $post->setGroup(null);
+            if ($post->getRelatedGroup() === $this) {
+                $post->setRelatedGroup(null);
             }
         }
 

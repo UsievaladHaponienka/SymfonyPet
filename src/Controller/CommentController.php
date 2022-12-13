@@ -23,6 +23,7 @@ class CommentController extends AbstractController
     {
     }
 
+    //This method and method below can be combined. $post->addComment()/$discussion->addComment should be used
     #[Route('comment/create_post/{postId}', name: 'comment_create_post')]
     public function createForPost(Request $request, int $postId): Response
     {
@@ -76,21 +77,16 @@ class CommentController extends AbstractController
     #[Route('comment/delete/{commentId}', name: 'comment_delete')]
     public function delete(int $commentId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $comment = $this->commentRepository->find($commentId);
 
-        if ($comment && $this->isActionAllowed($comment)) {
+        if ($comment && $comment->isActionAllowed($user->getProfile())) {
             $this->commentRepository->remove($comment, true);
 
             return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
-    }
-
-    protected function isActionAllowed(Comment $comment): bool
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        return $user->getProfile()->getId() == $comment->getProfile()->getId();
     }
 }
