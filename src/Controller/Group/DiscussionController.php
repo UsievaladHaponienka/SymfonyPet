@@ -90,9 +90,11 @@ class DiscussionController extends BaseGroupController
     #[Route('discussion/delete/{discussionId}', name: 'discussion_delete')]
     public function delete(int $discussionId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $discussion = $this->discussionRepository->find($discussionId);
 
-        if($discussion && $this->isAdmin($discussion->getRelatedGroup())) {
+        if($discussion && $discussion->isActionAllowed($user->getProfile())) {
             $this->discussionRepository->remove($discussion, true);
 
             return new JsonResponse();

@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
 class Album
 {
-
     public const USER_DEFAULT_TYPE = 'user_posts';
     public const USER_CUSTOM_TYPE = 'user_custom';
 

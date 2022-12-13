@@ -198,8 +198,11 @@ class AppFixtures extends Fixture
             );
             $group->setGroupImageUrl('/images/group/' . $newGroupImage);
 
-            $album = $group->createDefaultGroupAlbum();
-            $group->addAlbum($album);
+            $defaultGroupAlbum = new Album();
+            $defaultGroupAlbum->setType(Album::GROUP_DEFAULT_TYPE);
+            $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
+
+            $group->addAlbum($defaultGroupAlbum);
 
             foreach ($groupDatum['members_usernames'] as $memberUsername) {
                 $memberProfile = $this->profileRepository->findOneBy([

@@ -2,17 +2,19 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\GroupTrait;
 use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\Request;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
 class Group
 {
+    use GroupTrait;
+
     public const PUBLIC_GROUP_TYPE = 'public';
     public const PRIVATE_GROUP_TYPE = 'private';
 
@@ -86,7 +88,7 @@ class Group
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): string
     {
         return $this->type;
     }
@@ -248,12 +250,12 @@ class Group
         return $this;
     }
 
-    public function getAdmin(): ?Profile
+    public function getAdmin(): Profile
     {
         return $this->admin;
     }
 
-    public function setAdmin(?Profile $admin): self
+    public function setAdmin(Profile $admin): self
     {
         $this->admin = $admin;
 
@@ -320,60 +322,8 @@ class Group
         return $this;
     }
 
-    /**
-     * Check if profile with id = $profileId is already in group
-     *
-     * @param Profile $profile
-     * @return bool
-     */
-    public function isInGroup(Profile $profile): bool
-    {
-        $groupProfiles = $this
-            ->getProfile()
-            ->filter(function ($element) use ($profile){
-                /** @var Profile $element */
-                return $element->getId() == $profile->getId();
-            });
-
-        return (bool) $groupProfiles->count();
-    }
-
-    public function getRequestByProfile(Profile $profile): ?GroupRequest
-    {
-        $requests = $this
-            ->getGroupRequests()
-            ->filter(function ($element) use ($profile){
-                /** @var GroupRequest $element */
-                return $element->getProfile()->getId() == $profile->getId();
-            });
-
-        return $requests->first() ?: null;
-    }
-
     public function isPublic(): bool
     {
         return $this->getType() == self::PUBLIC_GROUP_TYPE;
-    }
-
-    public function createDefaultGroupAlbum(): Album
-    {
-        $defaultGroupAlbum = new Album();
-        $defaultGroupAlbum->setType(Album::GROUP_DEFAULT_TYPE);
-        $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
-
-        return $defaultGroupAlbum;
-    }
-
-    public function getDefaultAlbum(): Album
-    {
-        return $this->albums->filter(function ($album) {
-            /** @var Album $album */
-            return $album->getType() == Album::GROUP_DEFAULT_TYPE;
-        })->first();
-    }
-
-    public function isViewAllowed(Profile $profile): bool
-    {
-        return $this->isPublic() || $this->isInGroup($profile);
     }
 }

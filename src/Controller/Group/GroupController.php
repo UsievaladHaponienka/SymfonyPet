@@ -2,6 +2,7 @@
 
 namespace App\Controller\Group;
 
+use App\Entity\Album;
 use App\Entity\Group;
 use App\Entity\User;
 use App\Form\GroupFormType;
@@ -166,8 +167,11 @@ class GroupController extends BaseGroupController
             $group->setGroupImageUrl('/images/group/' . $newFileName);
         }
 
-        $album = $group->createDefaultGroupAlbum();
-        $group->addAlbum($album);
+        $defaultGroupAlbum = new Album();
+        $defaultGroupAlbum->setType(Album::GROUP_DEFAULT_TYPE);
+        $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
+
+        $group->addAlbum($defaultGroupAlbum);
 
         $this->groupRepository->save($group, true);
     }

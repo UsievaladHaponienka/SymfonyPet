@@ -16,7 +16,7 @@
                         <a href="{{ path('album_index') }}">{{ 'Back' }}</a>
                     </button>
                 </div>
-                {% if(app.user.profile.id == profile.id and album.type != constant('USER_DEFAULT_TYPE', album)) %}
+                {% if(album.isActionAllowed(app.user.profile)) %}
                     <div class="text-right col-span-1 col-start-12 inline">
                         {% include('components/buttons/album/delete.html.twig') %}
                     </div>
@@ -28,7 +28,7 @@
             <div class="text-center mt-6">
                 {{ album.description }}
             </div>
-            {% if(app.user.profile.id == profile.id and album.type != constant('USER_DEFAULT_TYPE', album)) %}
+            {% if(album.isActionAllowed(app.user.profile)) %}
                 <div class="text-center my-6">
                     <a class="mx-2" href="{{ path('photo_create', {'albumId': album.id}) }}">
                         <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">

@@ -6,14 +6,19 @@ use App\Entity\Like;
 use App\Entity\Profile;
 use Doctrine\Common\Collections\Collection;
 
+/**
+ * This trait contains custom methods for likeable entities - Comment and Post
+ */
 trait Likeable
 {
     abstract public function getLikes(): Collection;
 
-    abstract public function addLike(Like $like): self;
-
-    abstract public function removeLike(Like $like): self;
-
+    /**
+     * Returns Like created by $profile OR false if such like does not exist
+     *
+     * @param Profile $profile
+     * @return Like|false
+     */
     public function getLikeIfExists(Profile $profile): Like|false
     {
         return $this->getLikes()

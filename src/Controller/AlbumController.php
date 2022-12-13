@@ -107,13 +107,9 @@ class AlbumController extends AbstractController
     public function show(int $albumId): Response
     {
         $album = $this->albumRepository->find($albumId);
-
         if ($album) {
-            $profile = $album->getProfile();
-
             return $this->render('album/show.html.twig', [
                 'album' => $album,
-                'profile' => $profile
             ]);
         }
 

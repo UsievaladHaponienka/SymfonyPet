@@ -68,9 +68,11 @@
                                 </div>
                             </a>
                         </div>
-                        <div class="mr-2">
-                            {% include('components/buttons/discussion/delete.html.twig') %}
-                        </div>
+                        {% if discussion.isActionAllowed(app.user.profile) %}
+                            <div class="mr-2">
+                                {% include('components/buttons/discussion/delete.html.twig') %}
+                            </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>
