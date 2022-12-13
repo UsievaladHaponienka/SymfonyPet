@@ -17,7 +17,12 @@
     </div>
     {% if app.user.profile.id == comment.profile.id %}
         <div class="col-span-1 text-right mr-4">
-            {% include('components/buttons/post/comment/delete.html.twig') %}
+            <div>
+                {% include('components/buttons/post/comment/delete.html.twig') %}
+            </div>
+            <div>
+                {{ component('like-button', {entityId: comment.id, type: 'comment'}) }}
+            </div>
         </div>
     {% endif %}
 </div>

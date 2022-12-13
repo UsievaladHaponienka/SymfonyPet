@@ -2,10 +2,12 @@
     const likedStyle = 'bg-sky-500 hover:bg-sky-400';
     const notLikedStyle = 'bg-sky-900 hover:bg-sky-800';
 
-    function like(postId) {
-        axios.post('/like/' + postId).then(
+    function like(entityId, type) {
+        let params = new URLSearchParams();
+        params.append('type', type);
+        axios.post('/like/' + entityId, params).then(
             response => {
-                let btn = document.getElementById('like-button-' + postId);
+                let btn = document.getElementById('like-button-' + type + '-' + entityId);
                 if (response.data.like_added) {
                     btn.className = btn.className.replace(notLikedStyle, likedStyle);
                 } else {

@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\EntityInterface\LikeableInterface;
 use App\Repository\CommentRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
-class Comment
+class Comment implements LikeableInterface
 {
     public const POST_TYPE = 'post';
     public const DISCUSSION_TYPE = 'discussion';
@@ -34,6 +37,14 @@ class Comment
 
     #[ORM\Column(length: 255)]
     private ?string $type = null;
+
+    #[ORM\OneToMany(mappedBy: 'comment', targetEntity: Like::class, cascade: ['remove', 'persist'])]
+    private Collection $likes;
+
+    public function __construct()
+    {
+        $this->likes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -98,5 +109,45 @@ class Comment
         $this->type = $type;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Like>
+     */
+    public function getLikes(): Collection
+    {
+        return $this->likes;
+    }
+
+    public function addLike(Like $like): self
+    {
+        if (!$this->likes->contains($like)) {
+            $this->likes->add($like);
+            $like->setComment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLike(Like $like): self
+    {
+        if ($this->likes->removeElement($like)) {
+            // set the owning side to null (unless already changed)
+            if ($like->getComment() === $this) {
+                $like->setComment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isLikedBy(Profile $profile): bool
+    {
+        $likes = $this->getLikes()->filter(function ($element) use ($profile) {
+            /** @var Like $element */
+            return $element->getProfile()->getId() == $profile->getId();
+        });
+
+        return (bool) $likes->count();
     }
 }

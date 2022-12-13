@@ -7,66 +7,68 @@ use App\Entity\Like;
 use App\Entity\Post;
 use App\Entity\Profile;
 use App\Entity\User;
+use App\EntityInterface\LikeableInterface;
+use App\Repository\CommentRepository;
 use App\Repository\LikeRepository;
 use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class LikeController extends AbstractController
 {
     public function __construct(
-        private readonly PostRepository $postRepository,
-        private readonly LikeRepository $likeRepository
+        private readonly PostRepository    $postRepository,
+        private readonly CommentRepository $commentRepository
     )
     {
     }
 
-    #[Route('like/{postId}', name: 'like')]
-    public function like(int $postId): Response
+    #[Route('like/{entityId}', name: 'like')]
+    public function like(Request $request, int $entityId): Response
     {
-        $post = $this->postRepository->find($postId);
+        $likeType = $request->request->get('type');
+        $entityRepository = $likeType == Like::POST_TYPE ? $this->postRepository : $this->commentRepository;
 
-        if ($post) {
+        /** @var LikeableInterface $entity */
+        $entity = $entityRepository->find($entityId);
+
+        if ($entity) {
             /** @var User $user */
             $user = $this->getUser();
 
-            return $post->isLikedBy($user->getProfile()) ?
-                $this->removeLike($post, $user->getProfile()) :
-                $this->addLike($post, $user->getProfile());
+            if ($entity->isLikedBy($user->getProfile())) {
+                $like = $entity
+                    ->getLikes()
+                    ->filter(function ($element) use ($user) {
+                        /** @var Like $element */
+                        return $element->getProfile()->getId() == $user->getProfile()->getId();
+                    })->first();
+
+                $entity->removeLike($like);
+                $entityRepository->save($entity, true);
+
+                return new JsonResponse([
+                    'like_added' => false,
+                    'button_text' => 'Like (' . $entity->getLikes()->count() . ')'
+                ]);
+            } else {
+                $like = new Like();
+                $like->setType($likeType);
+                $like->setProfile($user->getProfile());
+
+                $entity->addLike($like);
+                $entityRepository->save($entity, true);
+
+                return new JsonResponse([
+                    'like_added' => true,
+                    'button_text' => 'Liked (' . $entity->getLikes()->count() . ')'
+                ]);
+            }
         }
 
         throw $this->createNotFoundException();
-    }
-
-    protected function addLike(Post $post, Profile $profile): Response
-    {
-        $like = new Like();
-        $like->setProfile($profile);
-        $post->addLike($like);
-
-        $this->postRepository->save($post, true);
-
-        return new JsonResponse([
-            'like_added' => true,
-            'button_text' => 'Liked (' . $post->getLikes()->count() . ')'
-        ]);
-    }
-
-    protected function removeLike(Post $post, Profile $profile): Response
-    {
-        $like = $post
-            ->getLikes()
-            ->filter(function ($element) use ($profile) {
-                /** @var Like $element */
-                return $element->getProfile()->getId() == $profile->getId();
-            })->first();
-        $this->likeRepository->remove($like, true);
-
-        return new JsonResponse([
-            'like_added' => false,
-            'button_text' => 'Like (' . $post->getLikes()->count() . ')'
-        ]);
     }
 }

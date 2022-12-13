@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\EntityInterface\LikeableInterface;
 use App\Repository\PostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,13 +10,10 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
-class Post
+class Post implements LikeableInterface
 {
     public const USER_POST_TYPE = 'user';
     public const GROUP_POST_TYPE = 'group';
-
-    public const LIKED_BUTTON_STYLE = 'bg-sky-500 hover:bg-sky-400';
-    public const NOT_LIKED_BUTTON_STYLE = 'bg-sky-900 hover:bg-sky-800';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -237,18 +235,5 @@ class Post
         });
 
         return (bool) $likes->count();
-    }
-
-    public function getLikeButtonStyle(Profile $profile): string
-    {
-        return $this->isLikedBy($profile) ? self::LIKED_BUTTON_STYLE : self::NOT_LIKED_BUTTON_STYLE;
-    }
-
-    public function getLikeButtonText(Profile $profile): string
-    {
-        if ($this->isLikedBy($profile)) {
-            return 'Liked (' .  $this->getLikes()->count() . ')';
-        }
-        return 'Like (' .  $this->getLikes()->count() . ')';
     }
 }
