@@ -40,9 +40,11 @@ class PhotoController extends AbstractController
     #[Route('album/{albumId}/photo/create', name: 'photo_create')]
     public function create(Request $request, int $albumId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        if ($album && $this->isActionAllowed($album)) {
+        if ($album && $album->isActionAllowed($user->getProfile())) {
             $photo = new Photo();
             $form = $this->createForm(PhotoFormType::class, $photo);
 
@@ -83,9 +85,11 @@ class PhotoController extends AbstractController
     #[Route('photo/delete/{photoId}', name: 'photo_delete')]
     public function delete(int $photoId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $photo = $this->photoRepository->find($photoId);
 
-        if ($photo && $this->isActionAllowed($photo->getAlbum())) {
+        if ($photo && $photo->isActionAllowed($user->getProfile())) {
             $albumId = $photo->getAlbum()->getId();
             $this->photoRepository->remove($photo, true);
 
@@ -93,13 +97,5 @@ class PhotoController extends AbstractController
         }
 
         throw $this->createNotFoundException();
-    }
-
-    protected function isActionAllowed(Album $album): bool
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        return $album->getProfile()->getUser()->getId() == $user->getId();
     }
 }

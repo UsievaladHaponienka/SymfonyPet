@@ -94,4 +94,19 @@ class Photo
 
         return $this;
     }
+
+    public function isActionAllowed(Profile $profile): bool
+    {
+        if ($this->getAlbum()->getType() == Album::GROUP_CUSTOM_TYPE) {
+            /*
+             * Photos from custom group albums can be deleted by group admin
+             */
+            return $this->getAlbum()->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
+        } else {
+            /*
+             * Photos from custom user albums can be deleted by album owner
+             */
+            return $this->getAlbum()->getProfile()->getId() == $profile->getId();
+        }
+    }
 }
