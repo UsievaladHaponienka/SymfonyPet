@@ -6,7 +6,7 @@
                 let toUpdate = document.getElementsByClassName('create-friendship-request-button-' + profileId);
                 for(i = 0; i < toUpdate.length; i++) {
                     toUpdate[i].innerHTML =
-                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '<div class="text-center justify-center flex bg-indigo-200 my-4 p-2 rounded">' +
                         '{{ "Friendship request sent" }}' + '</div>';
                 }
             }
@@ -20,7 +20,7 @@
                 let toUpdate = document.getElementsByClassName('delete-friendship-request-button-' + profileId);
                 for(i = 0; i < toUpdate.length; i++) {
                     toUpdate[i].innerHTML =
-                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '<div class="text-center justify-center flex bg-indigo-200 my-4 p-2 rounded">' +
                         '{{ "You canceled friendship request" }}' + '</div>';
                 }
             }
@@ -34,7 +34,7 @@
                 let toUpdate = document.getElementsByClassName('create-friendship-button-' + profileId);
                 for(i = 0; i < toUpdate.length; i++) {
                     toUpdate[i].innerHTML =
-                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '<div class="text-center justify-center flex bg-indigo-200 my-4 p-2 rounded">' +
                         '{{ "You added " }}' + response.data.username + '{{ " to friends" }}' + '</div>';
                 }
             }
@@ -48,7 +48,7 @@
                 let toUpdate = document.getElementsByClassName('delete-friendship-button-' + profileId);
                 for(i = 0; i < toUpdate.length; i++) {
                     toUpdate[i].innerHTML =
-                        '<div class="text-center justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
+                        '<div class="text-center justify-center flex bg-indigo-200 my-4 p-2 rounded">' +
                         '{{ "You removed " }}' + response.data.username + '{{ " from friends" }}' + '</div>';
                 }
             }

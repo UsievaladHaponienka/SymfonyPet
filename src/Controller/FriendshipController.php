@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Friendship;
 use App\Entity\FriendshipRequest;
+use App\Entity\PrivacySettings;
 use App\Entity\User;
 use App\Form\SearchFormType;
 use App\Repository\FriendshipRepository;
@@ -27,28 +28,36 @@ class FriendshipController extends AbstractController
     {
     }
 
-    #[Route('friends', name: 'friends_index')]
-    public function index(Request $request): Response
+    #[Route('friends/{profileId}', name: 'friends_index')]
+    public function index(Request $request, int $profileId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-        $profile = $user->getProfile();
 
-        $profileSearchForm = $this->createForm(SearchFormType::class);
-        $profileSearchForm->handleRequest($request);
 
-        $profileSearchResult = null;
-        if ($profileSearchForm->isSubmitted() && $profileSearchForm->isValid()) {
-            $profileSearchResult = $this->searchService->searchProfiles(
-                $profileSearchForm->get('search_string')->getData()
-            );
+        $profile = $this->profileRepository->find($profileId);
+        if ($profile && $profile->getPrivacySettings()->isAccessAllowed(
+                PrivacySettings::FRIEND_LIST_CODE, $user->getProfile()
+            )) {
+
+            $profileSearchForm = $this->createForm(SearchFormType::class);
+            $profileSearchForm->handleRequest($request);
+
+            $profileSearchResult = null;
+            if ($profileSearchForm->isSubmitted() && $profileSearchForm->isValid()) {
+                $profileSearchResult = $this->searchService->searchProfiles(
+                    $profileSearchForm->get('search_string')->getData()
+                );
+            }
+
+            return $this->render('friendship/index.html.twig', [
+                'profile' => $profile,
+                'searchForm' => $profileSearchForm->createView(),
+                'profileSearchResult' => $profileSearchResult
+            ]);
         }
 
-        return $this->render('friendship/index.html.twig', [
-            'profile' => $profile,
-            'searchForm' => $profileSearchForm->createView(),
-            'profileSearchResult' => $profileSearchResult
-        ]);
+        throw $this->createNotFoundException();
     }
 
     #[Route('friendship-request/create/{profileId}', name: 'friendship_request_create')]

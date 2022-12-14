@@ -37,8 +37,7 @@ class GroupController extends BaseGroupController
     {
     }
 
-    #[
-        Route('groups/{profileId}', name: 'group_index')]
+    #[Route('groups/{profileId}', name: 'group_index')]
     public function index(Request $request, int $profileId): Response
     {
         /** @var User $user */
