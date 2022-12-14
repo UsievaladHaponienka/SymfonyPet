@@ -12,14 +12,10 @@ use Doctrine\Common\Collections\Collection;
  */
 trait GroupTrait
 {
-    abstract public function getAdmin(): Profile;
-
     abstract public function getProfile(): Collection;
-
+    abstract public function getAdmin(): Profile;
     abstract public function getType(): string;
-
     abstract public function getGroupRequests(): Collection;
-
     abstract public function getAlbums(): Collection;
 
     //TODO:: This method should be implemented inside the trait using group type constants
@@ -86,5 +82,10 @@ trait GroupTrait
     public function isViewAllowed(Profile $profile): bool
     {
         return $this->isPublic() || $this->isInGroup($profile);
+    }
+
+    public function isListViewAllowed(Profile $profile): bool
+    {
+        //TODO: Profile privacy settings here
     }
 }

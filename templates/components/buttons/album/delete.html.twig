@@ -11,7 +11,7 @@
             axios.post('/album/delete/' + albumId).then(
                 response => {
                     alert(albumTitle + ' was deleted.');
-                    window.location.href = '{{ path('album_index') }}';
+                    window.location.href = response.data.redirectUrl
                 }
             )
         }

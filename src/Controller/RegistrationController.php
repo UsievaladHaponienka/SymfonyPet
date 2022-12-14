@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Album;
+use App\Entity\PrivacySettings;
 use App\Entity\Profile;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
@@ -54,6 +55,10 @@ class RegistrationController extends AbstractController
             $entityManager->persist($profile);
 
             $entityManager->persist($defaultUserAlbum);
+
+            $profilePrivacySettings = new PrivacySettings();
+            $profilePrivacySettings->setProfile($profile);
+            $entityManager->persist($profilePrivacySettings);
 
             //TODO Check if profile is added to album
             $entityManager->flush();

@@ -28,6 +28,7 @@ class PhotoController extends AbstractController
     public function index(int $photoId): Response
     {
         $photo = $this->photoRepository->find($photoId);
+        //TODO: Add Profile privacy settings here
         if ($photo) {
             return $this->render('photo/index.html.twig', [
                 'photo' => $photo

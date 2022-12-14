@@ -6,6 +6,7 @@ use App\Entity\Album;
 use App\Entity\Group;
 use App\Entity\Photo;
 use App\Entity\Post;
+use App\Entity\PrivacySettings;
 use App\Entity\Profile;
 use App\Entity\User;
 use App\Repository\GroupRepository;
@@ -166,6 +167,10 @@ class AppFixtures extends Fixture
             $defaultUserAlbum->setProfile($profile);
             $defaultUserAlbum->setType(Album::USER_DEFAULT_TYPE);
             $defaultUserAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
+
+            $profilePrivacySettings = new PrivacySettings();
+            $profilePrivacySettings->setProfile($profile);
+            $this->entityManager->persist($profilePrivacySettings);
 
             $this->entityManager->persist($defaultUserAlbum);
         }

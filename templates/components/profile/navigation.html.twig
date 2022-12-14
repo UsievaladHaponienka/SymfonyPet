@@ -9,7 +9,7 @@
         <a href="{{ path('friends_index') }}">{{ 'My Friends' }}</a>
     </div>
     <div class="my-2 ml-4">
-        <a href="{{ path('album_index')}}">{{ 'My Albums' }}</a>
+        <a href="{{ path('album_index', { 'profileId': app.user.profile.id })}}">{{ 'My Albums' }}</a>
     </div>
     <div class="my-2 ml-4">
         <a href="{{ path('group_index') }}">{{ 'My Groups' }}</a>

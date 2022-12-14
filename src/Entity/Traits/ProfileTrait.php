@@ -13,17 +13,12 @@ use Doctrine\Common\Collections\Collection;
  */
 trait ProfileTrait
 {
-    abstract public function getFriendships(): Collection;
-
-    abstract public function getRequestsMadeToProfile(): Collection;
-
-    abstract public function getRequestsMadeByProfile(): Collection;
-
-    abstract public function getGroups(): Collection;
-
-    abstract public function getInvites(): Collection;
-
     abstract public function getAlbums(): Collection;
+    abstract public function getRequestsMadeByProfile(): Collection;
+    abstract public function getRequestsMadeToProfile(): Collection;
+    abstract public function getFriendships(): Collection;
+    abstract public function getGroups(): Collection;
+    abstract public function getInvites(): Collection;
 
     /**
      * Check if profile with id = $friendId is a friend of current user

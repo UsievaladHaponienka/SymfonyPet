@@ -32,7 +32,7 @@ class Profile
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Album::class)]
+    #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Album::class, cascade: ['persist', 'remove'])]
     private Collection $albums;
 
     #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Post::class)]
@@ -59,6 +59,9 @@ class Profile
 
     #[ORM\OneToMany(mappedBy: 'profile', targetEntity: Invite::class)]
     private Collection $invites;
+
+    #[ORM\OneToOne(mappedBy: 'profile', cascade: ['persist', 'remove'])]
+    private ?PrivacySettings $privacySettings = null;
 
     public function __construct()
     {
@@ -389,6 +392,23 @@ class Profile
                 $invite->setProfile(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPrivacySettings(): ?PrivacySettings
+    {
+        return $this->privacySettings;
+    }
+
+    public function setPrivacySettings(PrivacySettings $privacySettings): self
+    {
+        // set the owning side of the relation if necessary
+        if ($privacySettings->getProfile() !== $this) {
+            $privacySettings->setProfile($this);
+        }
+
+        $this->privacySettings = $privacySettings;
 
         return $this;
     }

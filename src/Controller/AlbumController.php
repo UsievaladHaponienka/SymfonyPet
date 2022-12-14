@@ -6,6 +6,7 @@ use App\Entity\Album;
 use App\Entity\User;
 use App\Form\AlbumFormType;
 use App\Repository\AlbumRepository;
+use App\Repository\ProfileRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,24 +16,21 @@ use Symfony\Component\Routing\Annotation\Route;
 class AlbumController extends AbstractController
 {
     public function __construct(
-        private readonly AlbumRepository   $albumRepository
+        private readonly AlbumRepository   $albumRepository,
+        private readonly ProfileRepository $profileRepository
     )
     {
     }
 
-    #[Route('albums', name: 'album_index')]
-    public function index(): Response
+    #[Route('/albums/{profileId}', name: 'album_index')]
+    public function index(int $profileId): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        $profile = $user->getProfile();
+        $profile = $this->profileRepository->find($profileId);
 
+        //TODO: Add Profile privacy settings here
         if ($profile) {
-            $albums = $this->albumRepository->findBy(['profile' => $profile->getId()]);
-
             return $this->render('album/index.html.twig', [
-                'profile' => $profile,
-                'albums' => $albums
+                'profile' => $profile
             ]);
         }
 
@@ -107,6 +105,7 @@ class AlbumController extends AbstractController
     public function show(int $albumId): Response
     {
         $album = $this->albumRepository->find($albumId);
+        //TODO: Add Profile privacy settings here
         if ($album) {
             return $this->render('album/show.html.twig', [
                 'album' => $album,
@@ -126,7 +125,9 @@ class AlbumController extends AbstractController
         if ($album && $album->isActionAllowed($user->getProfile())) {
             $this->albumRepository->remove($album, true);
 
-            return new JsonResponse();
+            return new JsonResponse([
+                'redirectUrl' => $this->generateUrl('album_index', ['profileId' => $album->getProfile()->getId()])
+            ]);
         }
 
         throw $this->createNotFoundException();
