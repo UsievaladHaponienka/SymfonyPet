@@ -16,33 +16,37 @@
                         <a href="{{ path('album_index') }}">{{ 'Back' }}</a>
                     </button>
                 </div>
+                <div class="col-span-10">
+                    <div class="grid grid-rows">
+                        <div class="text-2xl text-center mt-6">
+                            {{ album.title }}
+                        </div>
+                        <div class="text-center mt-6">
+                            {{ album.description }}
+                        </div>
+                        {% if(album.isActionAllowed(app.user.profile)) %}
+                            <div class="text-center my-6">
+                                <a class="mx-2" href="{{ path('photo_create', {'albumId': album.id}) }}">
+                                    <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
+                                        {{ 'Add photo' }}
+                                    </button>
+                                </a>
+                                <a class="mx-2" href="{{ path('album_edit', {'albumId': album.id}) }}">
+                                    <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
+                                        {{ 'Edit album' }}
+                                    </button>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
                 {% if(album.isActionAllowed(app.user.profile)) %}
                     <div class="text-right col-span-1 col-start-12 inline">
                         {% include('components/buttons/album/delete.html.twig') %}
                     </div>
                 {% endif %}
             </div>
-            <div class="text-2xl text-center mt-6">
-                {{ album.title }}
-            </div>
-            <div class="text-center mt-6">
-                {{ album.description }}
-            </div>
-            {% if(album.isActionAllowed(app.user.profile)) %}
-                <div class="text-center my-6">
-                    <a class="mx-2" href="{{ path('photo_create', {'albumId': album.id}) }}">
-                        <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
-                            {{ 'Add photo' }}
-                        </button>
-                    </a>
-                    <a class="mx-2" href="{{ path('album_edit', {'albumId': album.id}) }}">
-                        <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
-                            {{ 'Edit album' }}
-                        </button>
-                    </a>
-                </div>
 
-            {% endif %}
             <div class="grid grid-cols-4">
                 {% for photo in album.photos %}
                     <div class="m-6">

@@ -18,10 +18,12 @@
                         </button>
                     </div>
                     <div class="text-right col-span-1 col-start-12 inline">
-                        {% include('components/buttons/button-red.html.twig') with {
-                            'url': path('photo_delete', {'photoId': photo.id}),
-                            'title': 'Delete'
-                        } %}
+                        {% if(photo.actionAllowed(app.user.profile)) %}
+                            {% include('components/buttons/button-red.html.twig') with {
+                                'url': path('photo_delete', {'photoId': photo.id}),
+                                'title': 'Delete'
+                            } %}
+                        {% endif %}
                     </div>
                 </div>
             </div>

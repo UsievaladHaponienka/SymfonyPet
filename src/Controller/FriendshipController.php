@@ -27,7 +27,6 @@ class FriendshipController extends AbstractController
     {
     }
 
-
     #[Route('friends', name: 'friends_index')]
     public function index(Request $request): Response
     {
@@ -121,7 +120,6 @@ class FriendshipController extends AbstractController
                 'requester' => $friendProfile->getId(),
                 'requestee' => $profile->getId()
             ]);
-
 
             $this->friendshipRequestRepository->remove($request, true);
 
