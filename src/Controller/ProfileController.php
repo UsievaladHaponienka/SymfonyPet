@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\PrivacySettings;
 use App\Entity\Profile;
 use App\Entity\User;
 use App\Form\PostFormType;
@@ -107,10 +108,10 @@ class ProfileController extends AbstractController
     {
         $settings = $profile->getPrivacySettings();
 
-        $settings->setFriendList($privacySettingForm->get('friendList')->getData());
-        $settings->setGroupList($privacySettingForm->get('groupList')->getData());
-        $settings->setAlbums($privacySettingForm->get('friendList')->getData());
-        $settings->setPosts($privacySettingForm->get('posts')->getData());
+        $settings->setFriendList($privacySettingForm->get(PrivacySettings::FRIEND_LIST_CODE)->getData());
+        $settings->setGroupList($privacySettingForm->get(PrivacySettings::GROUPS_LIST_CODE)->getData());
+        $settings->setAlbums($privacySettingForm->get(PrivacySettings::ALBUMS_CODE)->getData());
+        $settings->setPosts($privacySettingForm->get(PrivacySettings::POSTS_CODE)->getData());
 
         $this->privacySettingsRepository->save($settings, true);
 

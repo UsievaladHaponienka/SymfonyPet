@@ -60,7 +60,6 @@ class RegistrationController extends AbstractController
             $profilePrivacySettings->setProfile($profile);
             $entityManager->persist($profilePrivacySettings);
 
-            //TODO Check if profile is added to album
             $entityManager->flush();
 
             // Log in user after registration

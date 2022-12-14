@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Album;
 use App\Entity\Photo;
+use App\Entity\PrivacySettings;
 use App\Entity\User;
 use App\Form\PhotoFormType;
 use App\Repository\AlbumRepository;
@@ -27,9 +28,13 @@ class PhotoController extends AbstractController
     #[Route('photo/{photoId}', name: 'photo_index')]
     public function index(int $photoId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $photo = $this->photoRepository->find($photoId);
-        //TODO: Add Profile privacy settings here
-        if ($photo) {
+
+        if ($photo && $photo->getAlbum()->getProfile()->getPrivacySettings()->isAccessAllowed(
+            PrivacySettings::ALBUMS_CODE, $user->getProfile()
+            )) {
             return $this->render('photo/index.html.twig', [
                 'photo' => $photo
             ]);

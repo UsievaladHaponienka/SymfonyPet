@@ -16,22 +16,22 @@ class PrivacySettingsFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('friendList', ChoiceType::class, [
+            ->add(PrivacySettings::FRIEND_LIST_CODE, ChoiceType::class, [
                 'choices' => $this->getOptionsArray(),
                 'required' => true,
                 'attr' => ['class' => $this->getTextInputClass()],
                 'label_attr' => ['class' => $this->getLabelClass()]])
-            ->add('groupList', ChoiceType::class, [
+            ->add(PrivacySettings::GROUPS_LIST_CODE, ChoiceType::class, [
                 'choices' => $this->getOptionsArray(),
                 'required' => true,
                 'attr' => ['class' => $this->getTextInputClass()],
                 'label_attr' => ['class' => $this->getLabelClass()]])
-            ->add('albums', ChoiceType::class, [
+            ->add(PrivacySettings::ALBUMS_CODE, ChoiceType::class, [
                 'choices' => $this->getOptionsArray(),
                 'required' => true,
                 'attr' => ['class' => $this->getTextInputClass()],
                 'label_attr' => ['class' => $this->getLabelClass()]])
-            ->add('posts', ChoiceType::class, [
+            ->add(PrivacySettings::POSTS_CODE, ChoiceType::class, [
                 'choices' => $this->getOptionsArray(),
                 'required' => true,
                 'attr' => ['class' => $this->getTextInputClass()],

@@ -8,6 +8,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PrivacySettingsRepository::class)]
 class PrivacySettings
 {
+    const FRIEND_LIST_CODE = 'friendList';
+    const GROUPS_LIST_CODE = 'groupList';
+    const ALBUMS_CODE = 'albums';
+    const POSTS_CODE = 'posts';
+
     const ONLY_ME = 0;
     const ONLY_FRIENDS = 1;
     const EVERYONE = 2;
@@ -100,5 +105,17 @@ class PrivacySettings
         $this->posts = $posts;
 
         return $this;
+    }
+
+    public function isAccessAllowed(string $settingsCode, Profile $profile): bool
+    {
+        $isMine = $this->getProfile()->getId() == $profile->getId();
+        $value = $this->$settingsCode;
+
+        return match ($value) {
+            self::ONLY_ME => $isMine,
+            self::ONLY_FRIENDS => $isMine || $this->getProfile()->isFriend($profile->getId()),
+            default => true,
+        };
     }
 }

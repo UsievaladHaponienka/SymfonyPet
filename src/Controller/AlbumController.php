@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Album;
+use App\Entity\PrivacySettings;
 use App\Entity\User;
 use App\Form\AlbumFormType;
 use App\Repository\AlbumRepository;
@@ -25,10 +26,13 @@ class AlbumController extends AbstractController
     #[Route('/albums/{profileId}', name: 'album_index')]
     public function index(int $profileId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $profile = $this->profileRepository->find($profileId);
 
-        //TODO: Add Profile privacy settings here
-        if ($profile) {
+        if ($profile && $profile->getPrivacySettings()->isAccessAllowed(
+            PrivacySettings::ALBUMS_CODE, $user->getProfile()
+            )) {
             return $this->render('album/index.html.twig', [
                 'profile' => $profile
             ]);
@@ -104,9 +108,14 @@ class AlbumController extends AbstractController
     #[Route('album/{albumId}', name: 'album_show')]
     public function show(int $albumId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
-        //TODO: Add Profile privacy settings here
-        if ($album) {
+
+        //TODO:: implement for group
+        if ($album && $album->getProfile()->getPrivacySettings()->isAccessAllowed(
+                PrivacySettings::ALBUMS_CODE, $user->getProfile()
+            )) {
             return $this->render('album/show.html.twig', [
                 'album' => $album,
             ]);
