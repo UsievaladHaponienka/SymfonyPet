@@ -2,12 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\Profile;
 use App\Entity\User;
 use App\Form\PostFormType;
+use App\Form\PrivacySettingsFormType;
 use App\Form\ProfileFormType;
+use App\Repository\PrivacySettingsRepository;
 use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,58 +19,46 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProfileController extends AbstractController
 {
     public function __construct(
-        private readonly ProfileRepository    $profileRepository,
-        private readonly ImageProcessor       $imageProcessor,
+        private readonly ProfileRepository         $profileRepository,
+        private readonly PrivacySettingsRepository $privacySettingsRepository,
+        private readonly ImageProcessor            $imageProcessor,
     )
     {
     }
 
-    #[Route('/profile/edit', name: 'profile_edit')]
+    #[
+        Route('/profile/edit', name: 'profile_edit')]
     public function edit(Request $request): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $profile = $user->getProfile();
 
-        $form = $this->createForm(ProfileFormType::class, $profile);
-        $form->handleRequest($request);
+        $profileEditForm = $this->createForm(ProfileFormType::class, $profile);
+        $profileEditForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('username')->getData()) {
-                $profile->setUsername($form->get('username')->getData());
-            }
+        $privacySettingForm = $this->createForm(PrivacySettingsFormType::class, $profile->getPrivacySettings());
+        $privacySettingForm->handleRequest($request);
 
-            if ($form->get('description')->getData()) {
-                $profile->setDescription($form->get('description')->getData());
-            }
+        if ($profileEditForm->isSubmitted() && $profileEditForm->isValid()) {
+            return $this->editProfile($profileEditForm, $profile);
 
-            $image = $form->get('profile_image_url')->getData();
-            if ($image) {
-                $newFileName = $this->imageProcessor->saveImage(
-                    $image,
-                    ImageProcessor::PROFILE_IMAGE_TYPE,
-                    '/public/images/profile/'
-                );
-                $profile->setProfileImageUrl('/images/profile/' . $newFileName);
-            }
+        }
 
-            $this->profileRepository->save($profile, true);
-            return $this->redirectToRoute('profile_index', [
-                'profileId' => $profile->getId()
-            ]);
+        if ($privacySettingForm->isSubmitted() && $privacySettingForm->isValid()) {
+            return $this->editPrivacySettings($privacySettingForm, $profile);
         }
 
         return $this->render('profile/edit.html.twig', [
-            'profileEditForm' => $form->createView(),
+            'profileEditForm' => $profileEditForm->createView(),
+            'privacySettingsForm' => $privacySettingForm->createView(),
             'profile' => $profile
         ]);
     }
 
     #[Route('/profile/{profileId}', name: 'profile_index')]
-    public function index(Request $request, int $profileId): Response
+    public function index(int $profileId): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
         $profile = $this->profileRepository->find($profileId);
 
         if ($profile) {
@@ -83,5 +75,47 @@ class ProfileController extends AbstractController
         }
 
         throw $this->createNotFoundException();
+    }
+
+    protected function editProfile(FormInterface $profileEditForm, Profile $profile): Response
+    {
+        if ($profileEditForm->get('username')->getData()) {
+            $profile->setUsername($profileEditForm->get('username')->getData());
+        }
+
+        if ($profileEditForm->get('description')->getData()) {
+            $profile->setDescription($profileEditForm->get('description')->getData());
+        }
+
+        $image = $profileEditForm->get('profile_image_url')->getData();
+        if ($image) {
+            $newFileName = $this->imageProcessor->saveImage(
+                $image,
+                ImageProcessor::PROFILE_IMAGE_TYPE,
+                '/public/images/profile/'
+            );
+            $profile->setProfileImageUrl('/images/profile/' . $newFileName);
+        }
+
+        $this->profileRepository->save($profile, true);
+
+        $this->addFlash('profile-edit', 'Profile updated');
+        return $this->redirectToRoute('profile_edit');
+    }
+
+    protected function editPrivacySettings(FormInterface $privacySettingForm, Profile $profile): Response
+    {
+        $settings = $profile->getPrivacySettings();
+
+        $settings->setFriendList($privacySettingForm->get('friendList')->getData());
+        $settings->setGroupList($privacySettingForm->get('groupList')->getData());
+        $settings->setAlbums($privacySettingForm->get('friendList')->getData());
+        $settings->setPosts($privacySettingForm->get('posts')->getData());
+
+        $this->privacySettingsRepository->save($settings, true);
+
+        $this->addFlash('profile-edit', 'Privacy settings updated');
+
+        return $this->redirectToRoute('profile_edit');
     }
 }

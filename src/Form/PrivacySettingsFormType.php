@@ -2,20 +2,16 @@
 
 namespace App\Form;
 
-use App\Entity\Group;
 use App\Entity\PrivacySettings;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PrivacySettingsFormType extends AbstractType
 {
     use FormStyle;
-
-    const ONLY_ME = 0;
-    const ONLY_FRIENDS = 1;
-    const EVERYONE = 2;
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -39,7 +35,11 @@ class PrivacySettingsFormType extends AbstractType
                 'choices' => $this->getOptionsArray(),
                 'required' => true,
                 'attr' => ['class' => $this->getTextInputClass()],
-                'label_attr' => ['class' => $this->getLabelClass()]]);
+                'label_attr' => ['class' => $this->getLabelClass()]])
+            ->add('submit', SubmitType::class, [
+                'label' => 'Submit changes',
+                'attr' => ['class' => $this->getSubmitButtonClass()]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -53,9 +53,9 @@ class PrivacySettingsFormType extends AbstractType
     protected function getOptionsArray(): array
     {
         return [
-            'Only Me' => self::ONLY_ME,
-            'Only my friends' => self::ONLY_FRIENDS,
-            'Everyone' => self::EVERYONE
+            'Only Me' => PrivacySettings::ONLY_ME,
+            'Only my friends' => PrivacySettings::ONLY_FRIENDS,
+            'Everyone' => PrivacySettings::EVERYONE
         ];
     }
 }

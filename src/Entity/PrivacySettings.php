@@ -8,6 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PrivacySettingsRepository::class)]
 class PrivacySettings
 {
+    const ONLY_ME = 0;
+    const ONLY_FRIENDS = 1;
+    const EVERYONE = 2;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

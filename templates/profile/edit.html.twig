@@ -3,23 +3,51 @@
 {% block title %}Edit profile{% endblock %}
 
 {% block body %}
-
     <div class="grid grid-cols-12 gap-4">
         {% if(app.user) %}
-        <div class="col-span-2 col-start-2">
-            {% include 'components/profile/navigation.html.twig' %}
-        </div>
+            <div class="col-span-2 col-start-2">
+                {% include 'components/profile/navigation.html.twig' %}
+            </div>
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded">
-            <div class="flex flex-col items-center py-6">
-                <div class="max-w-xl items-center flex">
-                    {{ form_start(profileEditForm) }}
-                    <h1 class="text-2xl text-center">Edit profile</h1>
-                    {{ form_row(profileEditForm.username) }}
-                    {{ form_row(profileEditForm.description) }}
-                    {{ form_end(profileEditForm) }}
+            {% for message in app.flashes('profile-edit') %}
+                <div class="flash-notice bg-amber-300 rounded p-4 m-4 text-center">
+                        {{ message }}
+                </div>
+            {% endfor %}
+            <div class="grid grid-cols-4">
+                <div class="col-span-1 col-start-2">
+                    {% include('components/tabs/tab-button.html.twig') with {
+                        id: 'edit-profile', tabType: 'profile-edit', title: 'Edit Profile', isActive: true } %}
+                </div>
+                <div class="col-span-1 col-start-3">
+                    {% include('components/tabs/tab-button.html.twig') with {
+                        id: 'profile-privacy-settings', tabType: 'profile-edit', title: 'Privacy settings', isActive: true } %}
+                </div>
+            </div>
+
+            <!-- Edit Profile -->
+            <div class="tab-content" id="edit-profile" style="display: block">
+                <div class="flex flex-col items-center py-6">
+                    <div class="max-w-xl items-center flex">
+                        {{ form_start(profileEditForm) }}
+                        <h1 class="text-2xl text-center">Edit profile</h1>
+                        {{ form_end(profileEditForm) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile privacy settings -->
+            <div class="tab-content" id="profile-privacy-settings" style="display: none">
+                <div class="flex flex-col items-center py-6">
+                    <div class="max-w-xl items-center flex">
+                        {{ form_start(privacySettingsForm) }}
+                        <h1 class="text-2xl text-center">Privacy settings</h1>
+                        {{ form_end(privacySettingsForm) }}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    {% include ('components/tabs/tab-script.html.twig') with {'tabType': 'profile-edit'} %}
 {% endblock %}
