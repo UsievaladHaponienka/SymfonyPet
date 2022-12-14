@@ -4,11 +4,13 @@ namespace App\Controller\Group;
 
 use App\Entity\Album;
 use App\Entity\Group;
+use App\Entity\PrivacySettings;
 use App\Entity\User;
 use App\Form\GroupFormType;
 use App\Form\PostFormType;
 use App\Form\SearchFormType;
 use App\Repository\GroupRepository;
+use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
 use App\Service\SearchService;
 use DateTimeImmutable;
@@ -22,45 +24,50 @@ class GroupController extends BaseGroupController
 {
     /**
      * @param GroupRepository $groupRepository
+     * @param ProfileRepository $profileRepository
      * @param ImageProcessor $imageProcessor
      * @param SearchService $searchService
      */
     public function __construct(
-        private readonly GroupRepository      $groupRepository,
-        private readonly ImageProcessor       $imageProcessor,
-        private readonly SearchService        $searchService
+        private readonly GroupRepository   $groupRepository,
+        private readonly ProfileRepository $profileRepository,
+        private readonly ImageProcessor    $imageProcessor,
+        private readonly SearchService     $searchService
     )
     {
     }
 
-    #[Route('groups', name: 'group_index')]
-    public function index(Request $request): Response
+    #[
+        Route('groups/{profileId}', name: 'group_index')]
+    public function index(Request $request, int $profileId): Response
     {
-        $group = new Group();
-        $form = $this->createForm(GroupFormType::class, $group);
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->createGroup($form, $group);
-
-            return $this->redirectToRoute('group_index');
-        }
-
-        $searchForm = $this->createForm(SearchFormType::class);
-        $searchForm->handleRequest($request);
-        $groupSearchResult = null;
-
-        if ($searchForm->isSubmitted() && $searchForm->isValid()) {
-            $groupSearchResult = $this->searchService->searchGroups(
-                $searchForm->get('search_string')->getData()
-            );
-        }
-
         /** @var User $user */
         $user = $this->getUser();
-        $profile = $user->getProfile();
 
-        if ($profile) {
+        $profile = $this->profileRepository->find($profileId);
+
+        if ($profile && $profile->getPrivacySettings()->isAccessAllowed(
+                PrivacySettings::GROUPS_LIST_CODE, $user->getProfile()
+            )) {
+
+            $group = new Group();
+            $form = $this->createForm(GroupFormType::class, $group);
+
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->createGroup($form, $group);
+            }
+
+            $searchForm = $this->createForm(SearchFormType::class);
+            $searchForm->handleRequest($request);
+            $groupSearchResult = null;
+
+            if ($searchForm->isSubmitted() && $searchForm->isValid()) {
+                $groupSearchResult = $this->searchService->searchGroups(
+                    $searchForm->get('search_string')->getData()
+                );
+            }
+
             return $this->render('group/index.html.twig', [
                 'profile' => $profile,
                 'groupSearchResult' => $groupSearchResult,
@@ -135,16 +142,19 @@ class GroupController extends BaseGroupController
         $group = $this->groupRepository->find($groupId);
 
         if ($group && $this->isAdmin($group)) {
-            $groupTitle = $group->getTitle();
             $this->groupRepository->remove($group, true);
 
-            return new JsonResponse(['groupTitle' => $groupTitle]);
+            return new JsonResponse([
+                'redirectUrl' => $this->generateUrl('group_index', [
+                    'profileId' => $group->getAdmin()->getId()
+                    ])
+            ]);
         }
 
         throw $this->createNotFoundException();
     }
 
-    protected function createGroup($form, Group $group): void
+    protected function createGroup(FormInterface $form, Group $group): void
     {
         /** @var User $user */
         $user = $this->getUser();

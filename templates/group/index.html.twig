@@ -10,6 +10,8 @@
             </div>
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
+            {% if (profile.id == app.user.profile.id) %}
+            <div class="text-2xl text-center m-4">{{ 'My Groups' }}</div>
             <div class="grid grid-cols-6 m-4">
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'groups', tabType: 'groups', title: 'My Groups', isActive: true } %}
@@ -24,43 +26,8 @@
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'search-groups', tabType: 'groups', title: 'Search Groups', isActive: false} %}
             </div>
-            <!-- My Groups -->
-            <div class="tab-content" id="groups" style="display: block">
-                <div class="grid grid-cols-4">
-                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
-                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
-                    <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
-                    <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
-                    {% for group in profile.groups %}
-                        <div class="col-span-1 pb-4 flex justify-center">
-                            <a href="{{ path('group_show', {'groupId': group.id}) }}">
-                                <img src="{{ group.groupImageUrl }}">
-                            </a>
-                        </div>
-                        <div class="col-span-1 pb-4 text-center">
-                            <a href="{{ path('group_show', {'groupId': group.id}) }}">
-                                {{ group.title }}
-                            </a>
-                        </div>
-                        <div class="col-span-1 pb-4 text-center">
-                            {{ group.description }}
-                        </div>
-                        <div class="col-span-1 pb-4 text-center">
-                            {% if (app.user.profile.id == group.admin.id) %}
-                                <div>
-                                    <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
-                                        <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
-                                    </button>
-                                </div>
-                            {% else %}
-                                {% include('components/buttons/group/membership/leave.html.twig') %}
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
 
-            <!-- Requested Groups-->
+        <!-- Requested Groups-->
             <div class="tab-content" id="requested-groups" style="display: none">
                 <div class="grid grid-cols-4">
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
@@ -88,7 +55,7 @@
                 </div>
             </div>
 
-            <!-- Group Invites -->
+        <!-- Group Invites -->
             <div class="tab-content" id="group-invites" style="display: none">
                 <div class="grid grid-cols-4">
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
@@ -113,7 +80,7 @@
                             <div class="grid grid-rows">
                                 {% include('components/buttons/group/invite/accept.html.twig') with {
                                     inviteId: invite.id
-                                }%}
+                                } %}
                                 {% include('components/buttons/group/invite/delete.html.twig') with {
                                     inviteId: invite.id
                                 } %}
@@ -123,7 +90,7 @@
                 </div>
             </div>
 
-            <!-- Administrated Groups -->
+        <!-- Administrated Groups -->
             <div class="tab-content" id="administrated-groups" style="display: none">
                 <div class="grid grid-cols-4">
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
@@ -153,7 +120,7 @@
                 </div>
             </div>
 
-            <!-- Create Group -->
+        <!-- Create Group -->
             <div class="tab-content" id="create-group" style="display: none">
                 <div class="flex flex-col items-center py-4">
                     <div class="max-w-xl">
@@ -164,7 +131,7 @@
                 </div>
             </div>
 
-            <!-- Search Groups -->
+        <!-- Search Groups -->
             <div class="tab-content" id="search-groups" style="display: none">
                 <div class="flex flex-col items-center py-4">
                     <div class="max-w-xl">
@@ -200,6 +167,53 @@
                     </div>
                 {% endif %}
             </div>
+
+        <!-- My Groups -->
+            <div class="tab-content" id="groups" style="display: block">
+                {% endif %}
+                {% if(profile.privacySettings.accessAllowed(
+                    constant('GROUPS_LIST_CODE', profile.privacySettings), app.user.profile
+                )) %}
+                    {% if(profile.id != app.user.profile.id) %}
+                        <div class="text-2xl text-center m-4">{{ 'Groups of ' }} {{ profile.username }}</div>
+                    {% endif %}
+                    <div class="grid grid-cols-4">
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group image' }}</div>
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group Title' }}</div>
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Group description' }}</div>
+                        <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
+                        {% for group in profile.groups %}
+                            <div class="col-span-1 pb-4 flex justify-center">
+                                <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                    <img src="{{ group.groupImageUrl }}">
+                                </a>
+                            </div>
+                            <div class="col-span-1 pb-4 text-center">
+                                <a href="{{ path('group_show', {'groupId': group.id}) }}">
+                                    {{ group.title }}
+                                </a>
+                            </div>
+                            <div class="col-span-1 pb-4 text-center">
+                                {{ group.description }}
+                            </div>
+                            <div class="col-span-1 pb-4 text-center">
+                                {% if (app.user.profile.id == group.admin.id) %}
+                                    <div>
+                                        <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+                                            <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    {% include('components/buttons/group/membership/complex-interaction.html.twig') %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if (profile.id == app.user.profile.id) %}
+            </div>
+            {% endif %}
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'groups'} %}
