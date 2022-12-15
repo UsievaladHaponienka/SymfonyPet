@@ -173,7 +173,7 @@ class Album
         if ($this->getType() == Album::GROUP_CUSTOM_TYPE || $this->getType() == Album::GROUP_DEFAULT_TYPE) {
             return $this->getRelatedGroup()->isPublic() || $this->getRelatedGroup()->isInGroup($profile);
         } else {
-            return $this->getProfile()->getPrivacySettings()->isAccessAllowed(
+            return $this->getProfile()->getPrivacySettings()->isViewAllowed(
                 PrivacySettings::ALBUMS_CODE, $profile
             );
         }

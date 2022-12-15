@@ -107,7 +107,14 @@ class PrivacySettings
         return $this;
     }
 
-    public function isAccessAllowed(string $settingsCode, Profile $profile): bool
+    /**
+     * Check if some part of user data  - friend list, group list, albums, posts - can be viewed by $profile
+     *
+     * @param string $settingsCode
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isViewAllowed(string $settingsCode, Profile $profile): bool
     {
         $isMine = $this->getProfile()->getId() == $profile->getId();
         $value = $this->$settingsCode;

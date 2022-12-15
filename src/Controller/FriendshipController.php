@@ -28,15 +28,14 @@ class FriendshipController extends AbstractController
     {
     }
 
-    #[Route('friends/{profileId}', name: 'friends_index')]
+    #[Route('friends/{profileId}', name: 'friends_index', methods: ['GET'])]
     public function index(Request $request, int $profileId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
 
-
         $profile = $this->profileRepository->find($profileId);
-        if ($profile && $profile->getPrivacySettings()->isAccessAllowed(
+        if ($profile && $profile->getPrivacySettings()->isViewAllowed(
                 PrivacySettings::FRIEND_LIST_CODE, $user->getProfile()
             )) {
 
@@ -60,7 +59,7 @@ class FriendshipController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('friendship-request/create/{profileId}', name: 'friendship_request_create')]
+    #[Route('friendship-request/create/{profileId}', name: 'friendship_request_create', methods: ['POST'])]
     public function createRequest(int $profileId): Response
     {
         /** @var User $user */
@@ -82,7 +81,7 @@ class FriendshipController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('friendship-request/delete/{profileId}', name: 'friendship_request_delete')]
+    #[Route('friendship-request/delete/{profileId}', name: 'friendship_request_delete', methods: ['DELETE'])]
     public function deleteRequest(int $profileId): Response
     {
         /** @var User $user */
@@ -102,7 +101,7 @@ class FriendshipController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('friendship/create/{profileId}', name: 'friendship_create')]
+    #[Route('friendship/create/{profileId}', name: 'friendship_create', methods: ['POST'])]
     public function createFriendship(int $profileId): Response
     {
         /** @var User $user */
@@ -138,7 +137,7 @@ class FriendshipController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('friendship/delete/{profileId}', name: 'friendship_delete')]
+    #[Route('friendship/delete/{profileId}', name: 'friendship_delete',methods: ['DELETE'])]
     public function deleteFriendship(int $profileId): Response
     {
         /** @var User $user */

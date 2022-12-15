@@ -38,24 +38,22 @@ class GroupController extends AbstractController
     {
     }
 
-    #[Route('groups/{profileId}', name: 'group_index')]
+    #[Route('groups/{profileId}', name: 'group_index', methods: ['GET'])]
     public function index(Request $request, int $profileId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-
         $profile = $this->profileRepository->find($profileId);
 
-        if ($profile && $profile->getPrivacySettings()->isAccessAllowed(
+        if ($profile && $profile->getPrivacySettings()->isViewAllowed(
                 PrivacySettings::GROUPS_LIST_CODE, $user->getProfile()
             )) {
 
-            $group = new Group();
-            $form = $this->createForm(GroupFormType::class, $group);
+            $createGroupForm = $this->createForm(GroupFormType::class);
+            $createGroupForm->handleRequest($request);
 
-            $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $this->createGroup($form, $group);
+            if ($createGroupForm->isSubmitted() && $createGroupForm->isValid()) {
+                $this->saveGroup($createGroupForm);
             }
 
             $searchForm = $this->createForm(SearchFormType::class);
@@ -71,7 +69,7 @@ class GroupController extends AbstractController
             return $this->render('group/index.html.twig', [
                 'profile' => $profile,
                 'groupSearchResult' => $groupSearchResult,
-                'groupForm' => $form->createView(),
+                'groupForm' => $createGroupForm->createView(),
                 'searchForm' => $searchForm->createView()
             ]);
         }
@@ -79,7 +77,7 @@ class GroupController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('group/{groupId}', name: 'group_show')]
+    #[Route('group/{groupId}', name: 'group_show',methods: ['GET'])]
     public function show(int $groupId): Response
     {
         $group = $this->groupRepository->find($groupId);
@@ -87,8 +85,7 @@ class GroupController extends AbstractController
         if ($group) {
             $postForm = $this->createForm(
                 PostFormType::class, null, [
-                'action' => $this->generateUrl('post_create_group', ['groupId' => $groupId]),
-                'method' => 'POST'
+                'action' => $this->generateUrl('post_create_group', ['groupId' => $groupId])
             ]);
 
             return $this->render('group/show.html.twig', [
@@ -100,7 +97,7 @@ class GroupController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('group/edit/{groupId}', name: 'group_edit')]
+    #[Route('group/edit/{groupId}', name: 'group_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, int $groupId): Response
     {
         /** @var User $user */
@@ -112,15 +109,14 @@ class GroupController extends AbstractController
             $groupEditForm->handleRequest($request);
 
             if ($groupEditForm->isSubmitted() && $groupEditForm->isValid()) {
-                $this->editGroup($group, $groupEditForm);
-
+                $this->saveGroup($groupEditForm, $group);
                 return $this->redirectToRoute('group_show', ['groupId' => $group->getId()]);
             }
 
             $profileSearchForm = $this->createForm(SearchFormType::class);
             $profileSearchForm->handleRequest($request);
-
             $profileSearchResult = null;
+
             if ($profileSearchForm->isSubmitted() && $profileSearchForm->isValid()) {
                 $profileSearchResult = $this->searchService->searchProfiles(
                     $profileSearchForm->get('search_string')->getData()
@@ -158,45 +154,38 @@ class GroupController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    protected function createGroup(FormInterface $form, Group $group): void
+    /**
+     * If group is passed, update group using data from $form.
+     * If no group is passed, create new $group using data from $form.
+     *
+     * @param FormInterface $form
+     * @param Group|null $group
+     * @return void
+     */
+    protected function saveGroup(FormInterface $form, Group $group = null): void
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        $adminProfile = $user->getProfile();
+        if (!$group) {
+            /** @var User $user */
+            $user = $this->getUser();
+            $adminProfile = $user->getProfile();
 
-        $group->setTitle($form->get('title')->getData());
-        $group->setType($form->get('type')->getData());
-        $group->setDescription($form->get('description')->getData());
-        $group->setAdmin($adminProfile);
-        $group->addProfile($adminProfile);
-        $group->setCreatedAt(new DateTimeImmutable());
+            $group = new Group();
+            $group->setAdmin($adminProfile);
+            $group->addProfile($adminProfile);
+            $group->setCreatedAt(new DateTimeImmutable());
 
-        $image = $form->get('group_image_url')->getData();
-        if ($image) {
-            $newFileName = $this->imageProcessor->saveImage(
-                $image,
-                ImageProcessor::PROFILE_IMAGE_TYPE,
-                '/public/images/group/'
-            );
-            $group->setGroupImageUrl('/images/group/' . $newFileName);
+            $defaultGroupAlbum = new Album();
+            $defaultGroupAlbum->setType(Album::GROUP_DEFAULT_TYPE);
+            $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
+
+            $group->addAlbum($defaultGroupAlbum);
         }
 
-        $defaultGroupAlbum = new Album();
-        $defaultGroupAlbum->setType(Album::GROUP_DEFAULT_TYPE);
-        $defaultGroupAlbum->setTitle(Album::DEFAULT_ALBUM_TITLE);
+        $group->setTitle($form->get('title')->getData());
+        $group->setDescription($form->get('description')->getData());
+        $group->setType($form->get('type')->getData());
 
-        $group->addAlbum($defaultGroupAlbum);
-
-        $this->groupRepository->save($group, true);
-    }
-
-    protected function editGroup(Group $group, FormInterface $groupEditForm): void
-    {
-        $group->setTitle($groupEditForm->get('title')->getData());
-        $group->setDescription($groupEditForm->get('description')->getData());
-        $group->setType($groupEditForm->get('type')->getData());
-
-        $image = $groupEditForm->get('group_image_url')->getData();
+        $image = $form->get('group_image_url')->getData();
         if ($image) {
             $newFileName = $this->imageProcessor->saveImage(
                 $image,

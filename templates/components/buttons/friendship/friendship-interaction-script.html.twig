@@ -14,7 +14,7 @@
     }
 
     function deleteFriendshipRequest(profileId) {
-        axios.post('/friendship-request/delete/' + profileId).then(
+        axios.delete('/friendship-request/delete/' + profileId).then(
             response => {
                 let i;
                 let toUpdate = document.getElementsByClassName('delete-friendship-request-button-' + profileId);
@@ -42,7 +42,7 @@
     }
 
     function deleteFriendship(profileId) {
-        axios.post('/friendship/delete/' + profileId).then(
+        axios.delete('/friendship/delete/' + profileId).then(
             response => {
                 let i;
                 let toUpdate = document.getElementsByClassName('delete-friendship-button-' + profileId);

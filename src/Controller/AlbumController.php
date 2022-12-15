@@ -33,7 +33,7 @@ class AlbumController extends AbstractController
         $user = $this->getUser();
         $profile = $this->profileRepository->find($profileId);
 
-        if ($profile && $profile->getPrivacySettings()->isAccessAllowed(
+        if ($profile && $profile->getPrivacySettings()->isViewAllowed(
                 PrivacySettings::ALBUMS_CODE, $user->getProfile()
             )) {
             return $this->render('album/index.html.twig', [
