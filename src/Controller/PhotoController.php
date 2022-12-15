@@ -25,14 +25,14 @@ class PhotoController extends AbstractController
     {
     }
 
-    #[Route('photo/{photoId}', name: 'photo_index')]
-    public function index(int $photoId): Response
+    #[Route('photo/{photoId}', name: 'photo_index', methods: ['GET'])]
+    public function show(int $photoId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $photo = $this->photoRepository->find($photoId);
 
-        if ($photo && $photo->getAlbum()->isViewAllowed($user->getProfile())) {
+        if ($photo && $photo->isViewAllowed($user->getProfile())) {
             return $this->render('photo/index.html.twig', [
                 'photo' => $photo
             ]);
@@ -41,7 +41,7 @@ class PhotoController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('album/{albumId}/photo/create', name: 'photo_create')]
+    #[Route('album/{albumId}/photo/create', name: 'photo_create', methods: ['GET', 'POST'])]
     public function create(Request $request, int $albumId): Response
     {
         /** @var User $user */
@@ -87,6 +87,7 @@ class PhotoController extends AbstractController
     }
 
     //TODO: Probably this action is also should be used with axios
+    //TODO: Add HTTP methods
     #[Route('photo/delete/{photoId}', name: 'photo_delete')]
     public function delete(int $photoId): Response
     {

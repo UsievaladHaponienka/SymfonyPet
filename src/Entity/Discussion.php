@@ -104,4 +104,28 @@ class Discussion
 
         return $this;
     }
+
+    /**
+     * Check if discussion action is allowed for $profile.
+     * Discussion action are allowed for group admin
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isActionAllowed(Profile $profile): bool
+    {
+        return $this->getRelatedGroup()->isAdmin($profile);
+    }
+
+    /**
+     * Check if discussion can be viewed by $profile.
+     * View riles are the same as for group
+     * @see Group::isViewAllowed()
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isViewAllowed(Profile $profile): bool
+    {
+        return $this->getRelatedGroup()->isViewAllowed($profile);
+    }
 }

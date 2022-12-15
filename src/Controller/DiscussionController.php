@@ -17,28 +17,28 @@ class DiscussionController extends AbstractController
 {
     public function __construct(
         private readonly DiscussionRepository $discussionRepository,
-        private readonly GroupRepository $groupRepository
+        private readonly GroupRepository      $groupRepository
     )
     {
     }
 
-    #[Route('/discussions/{groupId}', name: 'discussion_index')]
+    #[Route('/discussions/{groupId}', name: 'discussion_index', methods: ['GET'])]
     public function index(int $groupId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-         if($group && $group->isViewAllowed($user->getProfile())) {
-             return $this->render('discussion/index.html.twig', [
-                 'group' => $group,
-             ]);
-         }
+        if ($group && $group->isViewAllowed($user->getProfile())) {
+            return $this->render('discussion/index.html.twig', [
+                'group' => $group,
+            ]);
+        }
 
-         throw $this->createNotFoundException();
+        throw $this->createNotFoundException();
     }
 
-    #[Route('discussion/create/{groupId}', name: 'discussion_create')]
+    #[Route('discussion/create/{groupId}', name: 'discussion_create', methods: ['GET', 'POST'])]
     public function create(Request $request, int $groupId): Response
     {
         /** @var User $user */
@@ -47,7 +47,7 @@ class DiscussionController extends AbstractController
         $discussionForm->handleRequest($request);
 
         $group = $this->groupRepository->find($groupId);
-        if($group && $group->isAdmin($user->getProfile())) {
+        if ($group && $group->isAdmin($user->getProfile())) {
             if ($discussionForm->isSubmitted() && $discussionForm->isValid()) {
 
                 $discussion = new Discussion();
@@ -69,37 +69,28 @@ class DiscussionController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('discussion/{discussionId}', name: 'discussion_show')]
+    #[Route('discussion/{discussionId}', name: 'discussion_show', methods: ['GET'])]
     public function show(int $discussionId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $discussion = $this->discussionRepository->find($discussionId);
 
-        if ($discussion) {
-            /** @var User $user */
-            $user = $this->getUser();
-            $group = $discussion->getRelatedGroup();
-
-            if ($group->isViewAllowed($user->getProfile())) {
-                return $this->render('discussion/show.html.twig', [
-                    'group' => $group,
-                    'discussion' => $discussion
-                ]);
-            }
-
-            throw $this->createNotFoundException();
+        if ($discussion && $discussion->isViewAllowed($user->getProfile())) {
+            return $this->render('discussion/show.html.twig', ['discussion' => $discussion]);
         }
 
         throw $this->createNotFoundException();
     }
 
-    #[Route('discussion/delete/{discussionId}', name: 'discussion_delete')]
+    #[Route('discussion/delete/{discussionId}', name: 'discussion_delete', methods: ['DELETE'])]
     public function delete(int $discussionId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $discussion = $this->discussionRepository->find($discussionId);
 
-        if($discussion && $discussion->getRelatedGroup()->isAdmin($user->getProfile())) {
+        if ($discussion && $discussion->isActionAllowed($user->getProfile())) {
             $this->discussionRepository->remove($discussion, true);
 
             return new JsonResponse();

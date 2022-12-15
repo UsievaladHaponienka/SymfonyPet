@@ -154,9 +154,6 @@ class Album
         if ($this->getType() == Album::USER_CUSTOM_TYPE) {
             return $this->getProfile()->getId() == $profile->getId();
         } elseif ($this->getType() == Album::GROUP_CUSTOM_TYPE) {
-            /*
-             * Group custom albums can be deleted or edited by group admin
-             */
             return $this->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
         }
 

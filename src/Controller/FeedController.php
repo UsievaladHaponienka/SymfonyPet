@@ -19,7 +19,7 @@ class FeedController extends AbstractController
         $this->postRepository = $postRepository;
     }
 
-    #[Route('/feed', name: 'feed_index')]
+    #[Route('/feed', name: 'feed_index', methods: ['GET'])]
     public function index(): Response
     {
         /** @var User $user */
@@ -39,6 +39,12 @@ class FeedController extends AbstractController
 
     }
 
+    /**
+     * Collect posts - group posts and friend posts - for $profile to be displayed in feed.
+     *
+     * @param Profile $profile
+     * @return array
+     */
     protected function collectPosts(Profile $profile): array
     {
         $groupIds = [];

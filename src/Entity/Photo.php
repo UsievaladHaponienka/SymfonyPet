@@ -95,20 +95,27 @@ class Photo
         return $this;
     }
 
+    /**
+     * Check if photo action is allowed for profile.
+     * Action rules are the same as for album
+     *
+     * @param Profile $profile
+     * @return bool
+     */
     public function isActionAllowed(Profile $profile): bool
     {
-        if ($this->getAlbum()->getType() == Album::USER_CUSTOM_TYPE) {
-            /*
-             * Photos from custom user albums can be deleted by album owner
-             */
-            return $this->getAlbum()->getProfile()->getId() == $profile->getId();
-        } elseif ($this->getAlbum()->getType() == Album::GROUP_CUSTOM_TYPE) {
-            /*
-             * Photos from custom group albums can be deleted by group admin
-             */
-            return $this->getAlbum()->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
-        }
+        return $this->getAlbum()->isActionAllowed($profile);
+    }
 
-        return false;
+    /**
+     * Check if photo can be viewed by $profile.
+     * View riles are the same as for album
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isViewAllowed(Profile $profile): bool
+    {
+        return $this->getAlbum()->isViewAllowed($profile);
     }
 }

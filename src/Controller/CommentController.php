@@ -77,6 +77,13 @@ class CommentController extends AbstractController
         throw $this->createNotFoundException();
     }
 
+    /**
+     * Create post or discussion comment
+     *
+     * @param Request $request
+     * @param Comment $comment
+     * @return Response
+     */
     protected function createComment(Request $request, Comment $comment): Response
     {
         /** @var User $user */

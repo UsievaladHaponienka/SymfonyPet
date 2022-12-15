@@ -377,19 +377,6 @@ class Group
     }
 
     /**
-     * View is allowed if:
-     * 1. Group is public
-     * 2. User is in group
-     *
-     * @param Profile $profile
-     * @return bool
-     */
-    public function isViewAllowed(Profile $profile): bool
-    {
-        return $this->isPublic() || $this->isInGroup($profile);
-    }
-
-    /**
      * Get default group album
      *
      * @return Album
@@ -400,5 +387,18 @@ class Group
             /** @var Album $album */
             return $album->getType() == Album::GROUP_DEFAULT_TYPE;
         })->first();
+    }
+
+
+    /**
+     * Check if group can be viewed by $profile.
+     * Group can be viewed either if group is public or if user is member of the group.
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isViewAllowed(Profile $profile): bool
+    {
+        return $this->isPublic() || $this->isInGroup($profile);
     }
 }

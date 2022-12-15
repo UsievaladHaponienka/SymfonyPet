@@ -83,7 +83,6 @@ class AlbumController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-
         $group = $this->groupRepository->find($groupId);
 
         if ($group && $group->isAdmin($user->getProfile())) {

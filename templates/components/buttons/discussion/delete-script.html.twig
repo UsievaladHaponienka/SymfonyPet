@@ -2,7 +2,7 @@
     function deleteDiscussion(discussionId) {
         let confirmation = confirm('Are you sure you wish to delete discussion? All comments will also be deleted');
         if (confirmation) {
-            axios.post('/discussion/delete/' + discussionId).then(
+            axios.delete('/discussion/delete/' + discussionId).then(
                 response => {
                     document.getElementById('discussion-' + discussionId).innerHTML =
                         '<div class="col-span-8 text-center text-xl justify-center flex bg-indigo-200 m-4 p-2 rounded">' +
