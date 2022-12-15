@@ -147,7 +147,6 @@ class Profile
     public function removeAlbum(Album $album): self
     {
         if ($this->albums->removeElement($album)) {
-            // set the owning side to null (unless already changed)
             if ($album->getProfile() === $this) {
                 $album->setProfile(null);
             }
@@ -177,7 +176,6 @@ class Profile
     public function removePost(Post $post): self
     {
         if ($this->posts->removeElement($post)) {
-            // set the owning side to null (unless already changed)
             if ($post->getProfile() === $this) {
                 $post->setProfile(null);
             }
@@ -207,7 +205,6 @@ class Profile
     public function removeComment(Comment $comment): self
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getProfile() === $this) {
                 $comment->setProfile(null);
             }
@@ -264,7 +261,6 @@ class Profile
     public function removeRequester(FriendshipRequest $requester): self
     {
         if ($this->requester->removeElement($requester)) {
-            // set the owning side to null (unless already changed)
             if ($requester->getRequester() === $this) {
                 $requester->setRequester(null);
             }
@@ -354,7 +350,6 @@ class Profile
     public function removeGroupRequest(GroupRequest $groupRequest): self
     {
         if ($this->groupRequests->removeElement($groupRequest)) {
-            // set the owning side to null (unless already changed)
             if ($groupRequest->getProfile() === $this) {
                 $groupRequest->setProfile(null);
             }
@@ -384,7 +379,6 @@ class Profile
     public function removeInvite(Invite $invite): self
     {
         if ($this->invites->removeElement($invite)) {
-            // set the owning side to null (unless already changed)
             if ($invite->getProfile() === $this) {
                 $invite->setProfile(null);
             }

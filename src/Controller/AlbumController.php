@@ -26,7 +26,7 @@ class AlbumController extends AbstractController
     {
     }
 
-    #[Route('/albums/profile/{profileId}', name: 'album_profile_index')]
+    #[Route('/albums/profile/{profileId}', name: 'album_profile_index', methods: ['GET'])]
     public function indexProfile(int $profileId): Response
     {
         /** @var User $user */
@@ -45,12 +45,11 @@ class AlbumController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('/albums/group/{groupId}', name: 'album_group_index')]
+    #[Route('/albums/group/{groupId}', name: 'album_group_index', methods: ['GET'])]
     public function indexGroup(int $groupId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-
         $group = $this->groupRepository->find($groupId);
 
         if ($group && $group->isViewAllowed($user->getProfile())) {
@@ -63,7 +62,7 @@ class AlbumController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('/album/profile/create', name: 'album_profile_create')]
+    #[Route('/album/profile/create', name: 'album_profile_create', methods: ['GET', 'POST'])]
     public function createForProfile(Request $request): Response
     {
         /** @var User $user */
@@ -79,7 +78,7 @@ class AlbumController extends AbstractController
         return $this->create($form, $album);
     }
 
-    #[Route('/album/group/create/{groupId}', name: 'album_group_create')]
+    #[Route('/album/group/create/{groupId}', name: 'album_group_create', methods: ['GET', 'POST'])]
     public function createForGroup(Request $request, int $groupId): Response
     {
         /** @var User $user */
@@ -101,26 +100,7 @@ class AlbumController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    protected function create(FormInterface $form, Album $album): Response
-    {
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $album->setTitle($form->get('title')->getData());
-            $album->setDescription($form->get('description')->getData());
-
-            $this->albumRepository->save($album, true);
-
-            return $this->redirectToRoute('album_show', [
-                'albumId' => $album->getId()
-            ]);
-        }
-
-        return $this->render('album/create.html.twig', [
-            'albumForm' => $form->createView()
-        ]);
-    }
-
-    #[Route('/album/edit/{albumId}', name: 'album_edit')]
+    #[Route('/album/edit/{albumId}', name: 'album_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, int $albumId): Response
     {
         /** @var User $user */
@@ -137,9 +117,7 @@ class AlbumController extends AbstractController
 
                 $this->albumRepository->save($album, true);
 
-                return $this->redirectToRoute('album_show', [
-                    'albumId' => $album->getId()
-                ]);
+                return $this->redirectToRoute('album_show', ['albumId' => $album->getId()]);
             }
 
             return $this->render('album/edit.html.twig', [
@@ -151,7 +129,7 @@ class AlbumController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('/album/{albumId}', name: 'album_show')]
+    #[Route('/album/{albumId}', name: 'album_show', methods: ['GET'])]
     public function show(int $albumId): Response
     {
         /** @var User $user */
@@ -168,7 +146,7 @@ class AlbumController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('album/delete/{albumId}', name: 'album_delete')]
+    #[Route('album/delete/{albumId}', name: 'album_delete', methods: ['DELETE'])]
     public function delete(int $albumId): Response
     {
         /** @var User $user */
@@ -179,13 +157,45 @@ class AlbumController extends AbstractController
             $this->albumRepository->remove($album, true);
 
             return new JsonResponse([
-                'redirectUrl' => $this->getBackUrl($album)
+                'backUrl' => $this->getBackUrl($album)
             ]);
         }
 
         throw $this->createNotFoundException();
     }
 
+    /**
+     * Create profile or group album
+     *
+     * @param FormInterface $form
+     * @param Album $album
+     * @return Response
+     */
+    protected function create(FormInterface $form, Album $album): Response
+    {
+        if ($form->isSubmitted() && $form->isValid()) {
+            $album->setTitle($form->get('title')->getData());
+            $album->setDescription($form->get('description')->getData());
+
+            $this->albumRepository->save($album, true);
+
+            return $this->redirectToRoute('album_show', ['albumId' => $album->getId()]);
+        }
+
+        return $this->render('album/create.html.twig', [
+            'albumForm' => $form->createView(),
+            'backUrl' => $this->getBackUrl($album)
+        ]);
+    }
+
+    /**
+     * Get url for `Back` button at album show page.
+     * If album type is group, button should lead to group show page.
+     * If album type is profile, button should lead to profile page.
+     *
+     * @param Album $album
+     * @return string
+     */
     protected function getBackUrl(Album $album): string
     {
         if ($album->getType() == Album::GROUP_DEFAULT_TYPE || $album->getType() == Album::GROUP_CUSTOM_TYPE) {

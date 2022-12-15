@@ -143,26 +143,25 @@ class Comment
         return $this;
     }
 
+    /**
+     * Check if comment action - delete - is allowed for $profile
+     * Discussion comment actions are allowed for comment author and discussion group admin
+     * Group post comment actions are allowed for comment author and group admin
+     * Profile post comment actions are allowed for comment author and post profile.
+     *
+     * @param Profile $profile
+     * @return bool
+     */
     public function isActionAllowed(Profile $profile): bool
     {
-        /*
-         * Discussion comments can be deleted either by comment author or by group admin
-         */
         if ($this->getType() == Comment::DISCUSSION_TYPE) {
             return $this->getProfile()->getId() == $profile->getId() ||
                 $this->getDiscussion()->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
         } else {
-            /*
-             * Comments to group posts can be deleted either by comment author or by group admin
-             */
             if ($this->getPost()->getType() == Post::GROUP_POST_TYPE) {
                 return $this->getProfile()->getId() == $profile->getId() ||
                     $this->getPost()->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
-            }
-            /*
-             * Comments to user posts can be deleted either by comment author or by post author
-             */
-            else {
+            } else {
                 return $this->getProfile()->getId() == $profile->getId() ||
                     $this->getPost()->getProfile()->getId() == $profile->getId();
             }

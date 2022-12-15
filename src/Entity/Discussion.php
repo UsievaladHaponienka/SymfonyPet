@@ -104,9 +104,4 @@ class Discussion
 
         return $this;
     }
-
-    public function isActionAllowed(Profile $profile): bool
-    {
-        return $this->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
-    }
 }

@@ -25,8 +25,11 @@ class DiscussionController extends AbstractController
     #[Route('/discussions/{groupId}', name: 'discussion_index')]
     public function index(int $groupId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
-         if($group) {
+
+         if($group && $group->isViewAllowed($user->getProfile())) {
              return $this->render('discussion/index.html.twig', [
                  'group' => $group,
              ]);
@@ -76,8 +79,7 @@ class DiscussionController extends AbstractController
             $user = $this->getUser();
             $group = $discussion->getRelatedGroup();
 
-            if ($group->isPublic() || $group->isInGroup($user->getProfile())) {
-
+            if ($group->isViewAllowed($user->getProfile())) {
                 return $this->render('discussion/show.html.twig', [
                     'group' => $group,
                     'discussion' => $discussion
@@ -97,7 +99,7 @@ class DiscussionController extends AbstractController
         $user = $this->getUser();
         $discussion = $this->discussionRepository->find($discussionId);
 
-        if($discussion && $discussion->isActionAllowed($user->getProfile())) {
+        if($discussion && $discussion->getRelatedGroup()->isAdmin($user->getProfile())) {
             $this->discussionRepository->remove($discussion, true);
 
             return new JsonResponse();

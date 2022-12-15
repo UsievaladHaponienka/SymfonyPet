@@ -53,7 +53,7 @@ class PostController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $user->getProfile()->getId() == $group->getAdmin()->getId()) {
+        if ($group && $group->isAdmin($user->getProfile())) {
             $post = new Post();
             $post->setRelatedGroup($group);
             $post->setType(Post::GROUP_POST_TYPE);

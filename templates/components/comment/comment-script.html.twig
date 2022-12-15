@@ -2,7 +2,7 @@
     function addComment(entityId, type) {
         let params = new URLSearchParams();
         let commentContent = document.getElementById('new-comment-' + type + '-' + entityId).value;
-        let url = type === 'post' ? '/comment/create_post/' + entityId : '/comment/create_discussion/' + entityId;
+        let url = type === 'post' ? '/comment/create/post/' + entityId : '/comment/create/discussion/' + entityId;
 
         params.append('comment_content', commentContent)
         params.append('comment_type', type)
@@ -20,7 +20,7 @@
     }
 
     function deleteComment(commentId) {
-        axios.post('/comment/delete/' + commentId).then(
+        axios.delete('/comment/delete/' + commentId).then(
             response => {
                 document.getElementById('comment-' + commentId).innerHTML =
                     '<div class="m-4 bg-indigo-200 rounded" id="post-' + commentId + '">' + '{{ "Comment Deleted" }}' +

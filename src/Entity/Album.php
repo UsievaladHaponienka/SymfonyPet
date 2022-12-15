@@ -143,7 +143,7 @@ class Album
 
     /**
      * Check if album action - editing, deleting, adding new photos - is allowed for $profile.
-     * User custom albums actions are allowed for album's owner profile.
+     * User custom albums actions are allowed for albums owner's profile.
      * Group custom albums actions are allowed for group admin.
      *
      * @param Profile $profile
@@ -165,8 +165,8 @@ class Album
 
     /**
      * Check if album can be viewed by $profile.
-     * Profile albums can be viewed if corresponding profile privacy settings requirement is fulfilled
-     * Group albums can be viewed either if group is public or if user is member of the group
+     * Profile albums can be viewed if corresponding profile privacy settings requirement is fulfilled.
+     * Group albums can be viewed either if group is public or if user is member of the group.
      *
      * @param Profile $profile
      * @return bool

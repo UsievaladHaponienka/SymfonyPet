@@ -215,20 +215,18 @@ class Post
     }
 
     /**
+     * Check if post action - delete - is allowed for $profile.
+     * Profile post actions are allowed to post owner's profile
+     * Group post actions are allowed to group admin
+     *
      * @param Profile $profile
      * @return bool
      */
     public function isActionAllowed(Profile $profile): bool
     {
         if($this->getRelatedGroup()) {
-            /*
-             * Group posts can be deleted by group admin
-             */
             return $this->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
         } else {
-            /*
-             * User posts can be deleted by post author
-             */
             return $this->getProfile()->getId() == $profile->getId();
         }
     }

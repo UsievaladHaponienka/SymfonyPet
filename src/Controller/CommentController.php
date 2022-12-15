@@ -23,12 +23,14 @@ class CommentController extends AbstractController
     {
     }
 
-    //This method and method below can be combined. $post->addComment()/$discussion->addComment should be used
-    #[Route('comment/create_post/{postId}', name: 'comment_create_post')]
+    #[Route('comment/create/post/{postId}', name: 'comment_create_post', methods: ['POST'])]
     public function createForPost(Request $request, int $postId): Response
     {
         $post = $this->postRepository->find($postId);
 
+        /*
+         * TODO: Probably additional check should be added here - post can not be commented if they are hidden
+         */
         if ($post) {
             $comment = new Comment();
             $comment->setType(Comment::POST_TYPE);
@@ -38,20 +40,38 @@ class CommentController extends AbstractController
         }
 
         throw $this->createNotFoundException();
-
     }
 
-    #[Route('comment/create_discussion/{discussionId}', name: 'comment_create_discussion')]
+    #[Route('comment/create/discussion/{discussionId}', name: 'comment_create_discussion', methods: ['POST'])]
     public function createForDiscussion(Request $request, int $discussionId): Response
     {
         $discussion = $this->discussionRepository->find($discussionId);
 
+        /*
+         * TODO: Probably additional check should be added here - discussions can not be comment if they are hidden
+         */
         if ($discussion) {
             $comment = new Comment();
             $comment->setType(Comment::DISCUSSION_TYPE);
             $comment->setDiscussion($discussion);
 
             return $this->createComment($request, $comment);
+        }
+
+        throw $this->createNotFoundException();
+    }
+
+    #[Route('comment/delete/{commentId}', name: 'comment_delete', methods: ['DELETE'])]
+    public function delete(int $commentId): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $comment = $this->commentRepository->find($commentId);
+
+        if ($comment && $comment->isActionAllowed($user->getProfile())) {
+            $this->commentRepository->remove($comment, true);
+
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();
@@ -72,21 +92,5 @@ class CommentController extends AbstractController
                 'comment' => $comment
             ])
         ]);
-    }
-
-    #[Route('comment/delete/{commentId}', name: 'comment_delete')]
-    public function delete(int $commentId): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        $comment = $this->commentRepository->find($commentId);
-
-        if ($comment && $comment->isActionAllowed($user->getProfile())) {
-            $this->commentRepository->remove($comment, true);
-
-            return new JsonResponse();
-        }
-
-        throw $this->createNotFoundException();
     }
 }

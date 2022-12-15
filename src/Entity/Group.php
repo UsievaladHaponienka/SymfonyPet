@@ -350,12 +350,12 @@ class Group
     {
         $groupProfiles = $this
             ->getProfile()
-            ->filter(function ($element) use ($profile){
+            ->filter(function ($element) use ($profile) {
                 /** @var Profile $element */
                 return $element->getId() == $profile->getId();
             });
 
-        return (bool) $groupProfiles->count();
+        return (bool)$groupProfiles->count();
     }
 
     /**
@@ -368,20 +368,12 @@ class Group
     {
         $requests = $this
             ->getGroupRequests()
-            ->filter(function ($element) use ($profile){
+            ->filter(function ($element) use ($profile) {
                 /** @var GroupRequest $element */
                 return $element->getProfile()->getId() == $profile->getId();
             });
 
         return $requests->first();
-    }
-
-    public function getDefaultAlbum(): Album
-    {
-        return $this->getAlbums()->filter(function ($album) {
-            /** @var Album $album */
-            return $album->getType() == Album::GROUP_DEFAULT_TYPE;
-        })->first();
     }
 
     /**
@@ -395,5 +387,18 @@ class Group
     public function isViewAllowed(Profile $profile): bool
     {
         return $this->isPublic() || $this->isInGroup($profile);
+    }
+
+    /**
+     * Get default group album
+     *
+     * @return Album
+     */
+    public function getDefaultAlbum(): Album
+    {
+        return $this->getAlbums()->filter(function ($album) {
+            /** @var Album $album */
+            return $album->getType() == Album::GROUP_DEFAULT_TYPE;
+        })->first();
     }
 }

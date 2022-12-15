@@ -8,10 +8,10 @@
             'All photos on this album will also be deleted.');
 
         if (confirmation) {
-            axios.post('/album/delete/' + albumId).then(
+            axios.delete('/album/delete/' + albumId).then(
                 response => {
                     alert(albumTitle + ' was deleted.');
-                    window.location.href = response.data.redirectUrl
+                    window.location.href = response.data.backUrl
                 }
             )
         }

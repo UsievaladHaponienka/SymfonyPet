@@ -86,6 +86,7 @@ class PhotoController extends AbstractController
         throw $this->createNotFoundException();
     }
 
+    //TODO: Probably this action is also should be used with axios
     #[Route('photo/delete/{photoId}', name: 'photo_delete')]
     public function delete(int $photoId): Response
     {
