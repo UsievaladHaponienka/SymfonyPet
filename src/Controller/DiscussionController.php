@@ -22,14 +22,14 @@ class DiscussionController extends AbstractController
     {
     }
 
-    #[Route('/discussions/{groupId}', name: 'discussion_index', methods: ['GET'])]
+    #[Route('discussions/{groupId}', name: 'discussion_index', methods: ['GET'])]
     public function index(int $groupId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $group->isViewAllowed($user->getProfile())) {
+        if ($group && $group->canBeViewed($user->getProfile())) {
             return $this->render('discussion/index.html.twig', [
                 'group' => $group,
             ]);
@@ -76,7 +76,7 @@ class DiscussionController extends AbstractController
         $user = $this->getUser();
         $discussion = $this->discussionRepository->find($discussionId);
 
-        if ($discussion && $discussion->isViewAllowed($user->getProfile())) {
+        if ($discussion && $discussion->canBeViewed($user->getProfile())) {
             return $this->render('discussion/show.html.twig', ['discussion' => $discussion]);
         }
 

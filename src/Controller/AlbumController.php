@@ -26,7 +26,7 @@ class AlbumController extends AbstractController
     {
     }
 
-    #[Route('/albums/profile/{profileId}', name: 'album_profile_index', methods: ['GET'])]
+    #[Route('albums/profile/{profileId}', name: 'album_profile_index', methods: ['GET'])]
     public function indexProfile(int $profileId): Response
     {
         /** @var User $user */
@@ -45,14 +45,14 @@ class AlbumController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('/albums/group/{groupId}', name: 'album_group_index', methods: ['GET'])]
+    #[Route('albums/group/{groupId}', name: 'album_group_index', methods: ['GET'])]
     public function indexGroup(int $groupId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $group->isViewAllowed($user->getProfile())) {
+        if ($group && $group->canBeViewed($user->getProfile())) {
             return $this->render('album/index.html.twig', [
                 'albums' => $group->getAlbums(),
                 'createUrl' => $this->generateUrl('album_group_create', ['groupId' => $group->getId()])
@@ -62,7 +62,7 @@ class AlbumController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('/album/profile/create', name: 'album_profile_create', methods: ['GET', 'POST'])]
+    #[Route('album/profile/create', name: 'album_profile_create', methods: ['GET', 'POST'])]
     public function createForProfile(Request $request): Response
     {
         /** @var User $user */
@@ -78,7 +78,7 @@ class AlbumController extends AbstractController
         return $this->create($form, $album);
     }
 
-    #[Route('/album/group/create/{groupId}', name: 'album_group_create', methods: ['GET', 'POST'])]
+    #[Route('album/group/create/{groupId}', name: 'album_group_create', methods: ['GET', 'POST'])]
     public function createForGroup(Request $request, int $groupId): Response
     {
         /** @var User $user */
@@ -99,7 +99,7 @@ class AlbumController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('/album/edit/{albumId}', name: 'album_edit', methods: ['GET', 'POST'])]
+    #[Route('album/edit/{albumId}', name: 'album_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, int $albumId): Response
     {
         /** @var User $user */
@@ -128,14 +128,14 @@ class AlbumController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('/album/{albumId}', name: 'album_show', methods: ['GET'])]
+    #[Route('album/{albumId}', name: 'album_show', methods: ['GET'])]
     public function show(int $albumId): Response
     {
         /** @var User $user */
         $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        if ($album && $album->isViewAllowed($user->getProfile())) {
+        if ($album && $album->canBeViewed($user->getProfile())) {
             return $this->render('album/show.html.twig', [
                 'album' => $album,
                 'backUrl' => $this->getBackUrl($album)

@@ -49,4 +49,16 @@ class Invite
 
         return $this;
     }
+
+    /**
+     * Check if invite action is allowed for profile.
+     * Action is allowed either for invited profile of for invite group admin
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isActionAllowed(Profile $profile): bool
+    {
+        return $this->getProfile()->getId() == $profile->getId() || $this->getRelatedGroup()->isAdmin($profile);
+    }
 }

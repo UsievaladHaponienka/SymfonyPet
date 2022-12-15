@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\ViewableEntityInterface;
 use App\Repository\PhotoRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PhotoRepository::class)]
-class Photo
+class Photo implements ViewableEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -108,14 +109,11 @@ class Photo
     }
 
     /**
-     * Check if photo can be viewed by $profile.
+     * @inheritDoc
      * View riles are the same as for album
-     *
-     * @param Profile $profile
-     * @return bool
      */
-    public function isViewAllowed(Profile $profile): bool
+    public function canBeViewed(Profile $profile): bool
     {
-        return $this->getAlbum()->isViewAllowed($profile);
+        return $this->getAlbum()->canBeViewed($profile);
     }
 }

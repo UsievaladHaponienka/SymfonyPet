@@ -19,7 +19,7 @@ class FeedController extends AbstractController
         $this->postRepository = $postRepository;
     }
 
-    #[Route('/feed', name: 'feed_index', methods: ['GET'])]
+    #[Route('feed', name: 'feed_index', methods: ['GET'])]
     public function index(): Response
     {
         /** @var User $user */

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\ViewableEntityInterface;
 use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
-class Group
+class Group implements ViewableEntityInterface
 {
     public const PUBLIC_GROUP_TYPE = 'public';
     public const PRIVATE_GROUP_TYPE = 'private';
@@ -391,13 +392,13 @@ class Group
 
 
     /**
-     * Check if group can be viewed by $profile.
+     * @inheritDoc
      * Group can be viewed either if group is public or if user is member of the group.
      *
      * @param Profile $profile
      * @return bool
      */
-    public function isViewAllowed(Profile $profile): bool
+    public function canBeViewed(Profile $profile): bool
     {
         return $this->isPublic() || $this->isInGroup($profile);
     }

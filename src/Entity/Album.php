@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\ViewableEntityInterface;
 use App\Repository\AlbumRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,7 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
-class Album
+class Album implements ViewableEntityInterface
 {
     public const USER_DEFAULT_TYPE = 'user_posts';
     public const USER_CUSTOM_TYPE = 'user_custom';
@@ -161,14 +162,14 @@ class Album
     }
 
     /**
-     * Check if album can be viewed by $profile.
+     * @inheritDoc
      * Profile albums can be viewed if corresponding profile privacy settings requirement is fulfilled.
      * Group albums can be viewed either if group is public or if user is member of the group.
      *
      * @param Profile $profile
      * @return bool
      */
-    public function isViewAllowed(Profile $profile): bool
+    public function canBeViewed(Profile $profile): bool
     {
         if ($this->getType() == Album::GROUP_CUSTOM_TYPE || $this->getType() == Album::GROUP_DEFAULT_TYPE) {
             return $this->getRelatedGroup()->isPublic() || $this->getRelatedGroup()->isInGroup($profile);

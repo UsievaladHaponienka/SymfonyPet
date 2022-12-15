@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\ViewableEntityInterface;
 use App\Repository\DiscussionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,7 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DiscussionRepository::class)]
-class Discussion
+class Discussion implements ViewableEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -117,15 +118,13 @@ class Discussion
     }
 
     /**
-     * Check if discussion can be viewed by $profile.
+     * @inheritDoc
      * View riles are the same as for group
-     * @see Group::isViewAllowed()
+     * @see Group::canBeViewed()
      *
-     * @param Profile $profile
-     * @return bool
      */
-    public function isViewAllowed(Profile $profile): bool
+    public function canBeViewed(Profile $profile): bool
     {
-        return $this->getRelatedGroup()->isViewAllowed($profile);
+        return $this->getRelatedGroup()->canBeViewed($profile);
     }
 }

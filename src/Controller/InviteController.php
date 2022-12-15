@@ -50,9 +50,7 @@ class InviteController extends AbstractController
         $user = $this->getUser();
         $invite = $this->inviteRepository->find($inviteId);
 
-        if ($invite &&
-            ($invite->getProfile()->getId() == $user->getProfile()->getId() ||
-            $invite->getRelatedGroup()->isAdmin($user->getProfile()))) {
+        if ($invite && $invite->isActionAllowed($user->getProfile())){
             $this->inviteRepository->remove($invite, true);
 
             return new JsonResponse();
@@ -69,10 +67,9 @@ class InviteController extends AbstractController
         $invite = $this->inviteRepository->find($inviteId);
 
         if ($invite && $invite->getProfile()->getId() == $user->getProfile()->getId()) {
-            $group = $invite->getRelatedGroup()->addProfile($user->getProfile());
-
+            $invite->getRelatedGroup()->addProfile($user->getProfile());
             $this->inviteRepository->remove($invite);
-            $this->groupRepository->save($group, true);
+            $this->groupRepository->save($invite->getRelatedGroup(), true);
 
             return new JsonResponse();
         }

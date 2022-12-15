@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Album;
 use App\Entity\Photo;
-use App\Entity\PrivacySettings;
 use App\Entity\User;
 use App\Form\PhotoFormType;
 use App\Repository\AlbumRepository;
@@ -32,7 +30,7 @@ class PhotoController extends AbstractController
         $user = $this->getUser();
         $photo = $this->photoRepository->find($photoId);
 
-        if ($photo && $photo->isViewAllowed($user->getProfile())) {
+        if ($photo && $photo->canBeViewed($user->getProfile())) {
             return $this->render('photo/index.html.twig', [
                 'photo' => $photo
             ]);
