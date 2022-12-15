@@ -20,6 +20,20 @@
                                 <img src="{{ group.groupImageUrl }}" alt="{{ 'No group image' }}">
                             </div>
                         </div>
+                        {% if(group.viewAllowed(app.user.profile)) %}
+                            <div class="grid grid-rows">
+                                    <a href="{{ path('discussion_index', {'groupId': group.id}) }}">
+                                        <button class="bg-indigo-500 text-white w-full tab-links hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 rounded">
+                                            {{ 'Discussions' }}
+                                        </button>
+                                    </a>
+                                    <a href="{{ path('album_group_index', {'groupId': group.id}) }}">
+                                        <button class="bg-indigo-500 text-white w-full tab-links hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 rounded">
+                                            {{ 'Albums' }}
+                                        </button>
+                                    </a>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="col-span-6 ml-4">
                         <div class="grid grid-rows">
@@ -56,17 +70,7 @@
                         </div>
                     {% endif %}
                 </div>
-                {% if(group.viewAllowed(app.user.profile)) %}
-                <div class="grid grid-cols-4">
-                    <div class="flex justify-left ">
-                        <a href="{{ path('discussion_index', {'groupId': group.id}) }}">
-                            <button class="bg-indigo-500 text-white w-full tab-links hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 mx-4 rounded">
-                                {{ 'Discussions' }}
-                            </button>
-                        </a>
-                    </div>
-                </div>
-                {% endif %}
+
 
                 {% if (app.user and app.user.profile.id == group.admin.id) %}
                     <div class="m-4">

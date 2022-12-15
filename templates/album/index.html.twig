@@ -11,14 +11,14 @@
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded">
             <div class="text-center mt-6">
-                <a href="{{ path('album_create') }}">
+                <a href="{{ createUrl }}">
                     <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
                         {{ 'Create new album' }}
                     </button>
                 </a>
             </div>
             <div class="grid grid-cols-4">
-                {% for album in profile.albums %}
+                {% for album in albums %}
                     <div class="m-6">
                         <div>
                             <a href="{{ path('album_show', {'albumId': album.id}) }}">

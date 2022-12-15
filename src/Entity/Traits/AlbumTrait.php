@@ -4,12 +4,15 @@ namespace App\Entity\Traits;
 
 use App\Entity\Album;
 use App\Entity\Group;
+use App\Entity\PrivacySettings;
 use App\Entity\Profile;
 
 trait AlbumTrait
 {
     abstract public function getType(): string;
+
     abstract public function getProfile(): ?Profile;
+
     abstract public function getRelatedGroup(): ?Group;
 
     public function isActionAllowed(Profile $profile): bool
@@ -31,6 +34,18 @@ trait AlbumTrait
 
     public function isViewAllowed(Profile $profile): bool
     {
-        //TODO: Profile privacy settings here
+        if ($this->getType() == Album::GROUP_CUSTOM_TYPE || $this->getType() == Album::GROUP_DEFAULT_TYPE) {
+            /*
+             * Group albums can be viewed either if group is public or if user is member of the group
+             */
+            return $this->getRelatedGroup()->isPublic() || $this->getRelatedGroup()->isInGroup($profile);
+        } else {
+            /*
+             * Profile albums can be viewed according to profile privacy settings
+             */
+            return $this->getProfile()->getPrivacySettings()->isAccessAllowed(
+                PrivacySettings::ALBUMS_CODE, $profile
+            );
+        }
     }
 }

@@ -32,9 +32,7 @@ class PhotoController extends AbstractController
         $user = $this->getUser();
         $photo = $this->photoRepository->find($photoId);
 
-        if ($photo && $photo->getAlbum()->getProfile()->getPrivacySettings()->isAccessAllowed(
-            PrivacySettings::ALBUMS_CODE, $user->getProfile()
-            )) {
+        if ($photo && $photo->getAlbum()->isViewAllowed($user->getProfile())) {
             return $this->render('photo/index.html.twig', [
                 'photo' => $photo
             ]);

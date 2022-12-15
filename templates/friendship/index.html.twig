@@ -133,9 +133,7 @@
 
         <!-- My Friends -->
             <div class="tab-content" id="my-friends" style="display: block">
-
                 {% endif %}
-
                 {% if(profile.privacySettings.accessAllowed(
                     constant('FRIEND_LIST_CODE', profile.privacySettings), app.user.profile
                 )) %}
@@ -168,7 +166,6 @@
                 {% if (profile.id == app.user.profile.id) %}
             </div>
             {% endif %}
-
         </div>
     </div>
     {% include('components/tabs/tab-script.html.twig') with {'tabType': 'friends'} %}

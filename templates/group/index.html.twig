@@ -13,7 +13,7 @@
             {% if (profile.id == app.user.profile.id) %}
             <!-- This part is displayed only if user views his/her own groups -->
             <div class="text-2xl text-center m-4">{{ 'My Groups' }}</div>
-            <div class="grid grid-cols-6 m-4">
+            <div class="grid grid-cols-6 my-4">
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'groups', tabType: 'groups', title: 'My Groups', isActive: true } %}
                 {% include('components/tabs/tab-button.html.twig') with {
