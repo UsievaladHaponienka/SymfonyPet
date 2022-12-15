@@ -134,7 +134,7 @@
         <!-- My Friends -->
             <div class="tab-content" id="my-friends" style="display: block">
                 {% endif %}
-                {% if(profile.privacySettings.accessAllowed(
+                {% if(profile.privacySettings.viewAllowed(
                     constant('FRIEND_LIST_CODE', profile.privacySettings), app.user.profile
                 )) %}
                     {% if(profile.id != app.user.profile.id) %}

@@ -52,7 +52,7 @@
                     </div>
                     <div class="col-span-1 mt-4">
                         <div class="grid grid-rows gap-2">
-                            {% if (profile.privacySettings.accessAllowed(
+                            {% if (profile.privacySettings.viewAllowed(
                                 constant('ALBUMS_CODE', profile.privacySettings), app.user.profile)
                                 ) %}
                             <div class="bg-indigo-200 mr-4 p-4 rounded text-center">
@@ -61,7 +61,7 @@
                                 </a>
                             </div>
                             {% endif %}
-                            {% if (profile.privacySettings.accessAllowed(
+                            {% if (profile.privacySettings.viewAllowed(
                                 constant('GROUPS_LIST_CODE', profile.privacySettings), app.user.profile)
                                 ) %}
                             <div class="bg-indigo-200 mr-4 p-4 rounded text-center">
@@ -70,7 +70,7 @@
                                 </a>
                             </div>
                             {% endif %}
-                            {% if (profile.privacySettings.accessAllowed(
+                            {% if (profile.privacySettings.viewAllowed(
                                 constant('FRIEND_LIST_CODE', profile.privacySettings), app.user.profile)
                                 ) %}
                             <div class="bg-indigo-200 mr-4 p-4 rounded text-center">
@@ -88,7 +88,7 @@
                         {{ form_end(postForm) }}
                     </div>
                 {% endif %}
-                {% if (profile.privacySettings.accessAllowed(
+                {% if (profile.privacySettings.viewAllowed(
                     constant('POSTS_CODE', profile.privacySettings), app.user.profile)
                     ) %}
                 <div>

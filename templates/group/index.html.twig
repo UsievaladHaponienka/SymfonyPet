@@ -172,7 +172,7 @@
         <!-- My Groups -->
             <div class="tab-content" id="groups" style="display: block">
                 {% endif %}
-                {% if(profile.privacySettings.accessAllowed(
+                {% if(profile.privacySettings.viewAllowed(
                     constant('GROUPS_LIST_CODE', profile.privacySettings), app.user.profile
                 )) %}
                     <!-- This part is displayed for everyone. If user views groups of another user,
