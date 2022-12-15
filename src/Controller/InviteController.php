@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Controller\Group;
+namespace App\Controller;
 
 use App\Entity\Invite;
 use App\Entity\User;
 use App\Repository\GroupRepository;
 use App\Repository\InviteRepository;
 use App\Repository\ProfileRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class InviteController extends BaseGroupController
+class InviteController extends AbstractController
 {
     public function __construct(
         private readonly ProfileRepository $profileRepository,
@@ -24,10 +25,12 @@ class InviteController extends BaseGroupController
     #[Route('invite/create/{profileId}/{groupId}', name: 'invite_create')]
     public function createInvite(int $profileId, int $groupId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $profile = $this->profileRepository->find($profileId);
         $group = $this->groupRepository->find($groupId);
 
-        if ($profile && $group && $this->isAdmin($group)) {
+        if ($profile && $group && $group->isAdmin($user->getProfile())) {
             $invite = new Invite();
             $invite->setProfile($profile);
             $invite->setRelatedGroup($group);
@@ -47,8 +50,9 @@ class InviteController extends BaseGroupController
         $user = $this->getUser();
         $invite = $this->inviteRepository->find($inviteId);
 
-        if ($invite && ($this->isAdmin($invite->getRelatedGroup()) ||
-                $user->getProfile()->getId() == $invite->getProfile()->getId())) {
+        if ($invite &&
+            ($invite->getProfile()->getId() == $user->getProfile()->getId() ||
+            $invite->getRelatedGroup()->isAdmin($user->getProfile()))) {
             $this->inviteRepository->remove($invite, true);
 
             return new JsonResponse();

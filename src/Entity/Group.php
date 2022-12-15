@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Traits\GroupTrait;
 use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,8 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: '`group`')]
 class Group
 {
-    use GroupTrait;
-
     public const PUBLIC_GROUP_TYPE = 'public';
     public const PRIVATE_GROUP_TYPE = 'private';
 
@@ -322,8 +319,81 @@ class Group
         return $this;
     }
 
+    /**
+     * Check if group type is public
+     *
+     * @return bool
+     */
     public function isPublic(): bool
     {
         return $this->getType() == self::PUBLIC_GROUP_TYPE;
+    }
+
+    /**
+     * Check if $profile is admin of the group
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isAdmin(Profile $profile): bool
+    {
+        return $profile->getId() == $this->getAdmin()->getId();
+    }
+
+    /**
+     * Check if $profile is a member of the group
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isInGroup(Profile $profile): bool
+    {
+        $groupProfiles = $this
+            ->getProfile()
+            ->filter(function ($element) use ($profile){
+                /** @var Profile $element */
+                return $element->getId() == $profile->getId();
+            });
+
+        return (bool) $groupProfiles->count();
+    }
+
+    /**
+     * Returns group request made by $profile OR false if such request does not exist
+     *
+     * @param Profile $profile
+     * @return GroupRequest|false
+     */
+    public function getRequestByProfile(Profile $profile): GroupRequest|false
+    {
+        $requests = $this
+            ->getGroupRequests()
+            ->filter(function ($element) use ($profile){
+                /** @var GroupRequest $element */
+                return $element->getProfile()->getId() == $profile->getId();
+            });
+
+        return $requests->first();
+    }
+
+    public function getDefaultAlbum(): Album
+    {
+        return $this->getAlbums()->filter(function ($album) {
+            /** @var Album $album */
+            return $album->getType() == Album::GROUP_DEFAULT_TYPE;
+        })->first();
+    }
+
+    /**
+     * View is allowed if:
+     * 1. Group is public
+     * 2. User is in group
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isViewAllowed(Profile $profile): bool
+    {
+        return $this->isPublic() || $this->isInGroup($profile);
     }
 }

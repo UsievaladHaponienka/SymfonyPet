@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Group;
+namespace App\Controller;
 
 use App\Entity\Album;
 use App\Entity\Group;
@@ -14,13 +14,14 @@ use App\Repository\ProfileRepository;
 use App\Service\ImageProcessor;
 use App\Service\SearchService;
 use DateTimeImmutable;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class GroupController extends BaseGroupController
+class GroupController extends AbstractController
 {
     /**
      * @param GroupRepository $groupRepository
@@ -102,9 +103,11 @@ class GroupController extends BaseGroupController
     #[Route('group/edit/{groupId}', name: 'group_edit')]
     public function edit(Request $request, int $groupId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $this->isAdmin($group)) {
+        if ($group && $group->isAdmin($user->getProfile())) {
             $groupEditForm = $this->createForm(GroupFormType::class, $group);
             $groupEditForm->handleRequest($request);
 
@@ -138,15 +141,17 @@ class GroupController extends BaseGroupController
     #[Route('group/delete/{groupId}', name: 'group_delete', methods: ['DELETE'])]
     public function delete(int $groupId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $this->isAdmin($group)) {
+        if ($group && $group->isAdmin($user->getProfile())) {
             $this->groupRepository->remove($group, true);
 
             return new JsonResponse([
                 'redirectUrl' => $this->generateUrl('group_index', [
                     'profileId' => $group->getAdmin()->getId()
-                    ])
+                ])
             ]);
         }
 

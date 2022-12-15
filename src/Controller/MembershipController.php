@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Group;
+namespace App\Controller;
 
 use App\Entity\Group;
 use App\Entity\GroupRequest;
@@ -8,11 +8,12 @@ use App\Entity\User;
 use App\Repository\GroupRepository;
 use App\Repository\GroupRequestRepository;
 use App\Repository\ProfileRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class MembershipController extends BaseGroupController
+class MembershipController extends AbstractController
 {
     public function __construct(
         private readonly GroupRepository        $groupRepository,
@@ -86,7 +87,7 @@ class MembershipController extends BaseGroupController
 
         if ($joinRequest && (
                 $joinRequest->getProfile()->getId() == $user->getProfile()->getId() ||
-                $this->isAdmin($joinRequest->getRelatedGroup())
+                $joinRequest->getRelatedGroup()->isAdmin($user->getProfile())
             )) {
             $this->groupRequestRepository->remove($joinRequest, true);
 
@@ -99,12 +100,14 @@ class MembershipController extends BaseGroupController
     #[Route('group/request/accept/{requestId}', name: 'group_request_accept')]
     public function acceptJoinRequest(int $requestId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $joinRequest = $this->groupRequestRepository->find($requestId);
 
         if ($joinRequest) {
             $group = $this->groupRepository->find($joinRequest->getRelatedGroup());
 
-            if ($group && $this->isAdmin($group)) {
+            if ($group && $group->isAdmin($user->getProfile())) {
                 $group->addProfile($joinRequest->getProfile());
                 $this->groupRequestRepository->remove($joinRequest);
 
@@ -123,10 +126,12 @@ class MembershipController extends BaseGroupController
     #[Route('group/remove/{groupId}/{profileId}', name: 'group_remove')]
     public function removeFromGroup(int $groupId, int $profileId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
         $profile = $this->profileRepository->find($profileId);
 
-        if ($group && $profile && $group->isInGroup($profile) && $this->isAdmin($group)) {
+        if ($group && $profile && $group->isInGroup($profile) && $group->isAdmin($user->getProfile())) {
             $group->removeProfile($profile);
             $this->groupRepository->save($group, true);
 

@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Controller\Group;
+namespace App\Controller;
 
 use App\Entity\Discussion;
 use App\Entity\User;
 use App\Form\DiscussionFormType;
 use App\Repository\DiscussionRepository;
 use App\Repository\GroupRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DiscussionController extends BaseGroupController
+class DiscussionController extends AbstractController
 {
     public function __construct(
         private readonly DiscussionRepository $discussionRepository,
@@ -37,11 +38,13 @@ class DiscussionController extends BaseGroupController
     #[Route('discussion/create/{groupId}', name: 'discussion_create')]
     public function create(Request $request, int $groupId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $discussionForm = $this->createForm(DiscussionFormType::class);
         $discussionForm->handleRequest($request);
 
         $group = $this->groupRepository->find($groupId);
-        if($group && $this->isAdmin($group)) {
+        if($group && $group->isAdmin($user->getProfile())) {
             if ($discussionForm->isSubmitted() && $discussionForm->isValid()) {
 
                 $discussion = new Discussion();

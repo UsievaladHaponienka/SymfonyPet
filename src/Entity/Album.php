@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Traits\AlbumTrait;
 use App\Repository\AlbumRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,8 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
 class Album
 {
-    use AlbumTrait;
-
     public const USER_DEFAULT_TYPE = 'user_posts';
     public const USER_CUSTOM_TYPE = 'user_custom';
 
@@ -124,7 +121,6 @@ class Album
     public function removePhoto(Photo $photo): self
     {
         if ($this->photos->removeElement($photo)) {
-            // set the owning side to null (unless already changed)
             if ($photo->getAlbum() === $this) {
                 $photo->setAlbum(null);
             }
@@ -143,5 +139,46 @@ class Album
         $this->description = $description;
 
         return $this;
+    }
+
+    /**
+     * Check if album action - editing, deleting, adding new photos - is allowed for $profile.
+     * User custom albums actions are allowed for album's owner profile.
+     * Group custom albums actions are allowed for group admin.
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isActionAllowed(Profile $profile): bool
+    {
+        if ($this->getType() == Album::USER_CUSTOM_TYPE) {
+            return $this->getProfile()->getId() == $profile->getId();
+        } elseif ($this->getType() == Album::GROUP_CUSTOM_TYPE) {
+            /*
+             * Group custom albums can be deleted or edited by group admin
+             */
+            return $this->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if album can be viewed by $profile.
+     * Profile albums can be viewed if corresponding profile privacy settings requirement is fulfilled
+     * Group albums can be viewed either if group is public or if user is member of the group
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isViewAllowed(Profile $profile): bool
+    {
+        if ($this->getType() == Album::GROUP_CUSTOM_TYPE || $this->getType() == Album::GROUP_DEFAULT_TYPE) {
+            return $this->getRelatedGroup()->isPublic() || $this->getRelatedGroup()->isInGroup($profile);
+        } else {
+            return $this->getProfile()->getPrivacySettings()->isAccessAllowed(
+                PrivacySettings::ALBUMS_CODE, $profile
+            );
+        }
     }
 }
