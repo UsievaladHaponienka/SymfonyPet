@@ -28,7 +28,7 @@ class FriendshipController extends AbstractController
     {
     }
 
-    #[Route('friends/{profileId}', name: 'friends_index', methods: ['GET'])]
+    #[Route('friends/{profileId}', name: 'friends_index', methods: ['GET', 'POST'])]
     public function index(Request $request, int $profileId): Response
     {
         /** @var User $user */

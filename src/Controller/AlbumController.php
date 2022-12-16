@@ -39,7 +39,8 @@ class AlbumController extends AbstractController
             )) {
             return $this->render('album/index.html.twig', [
                 'albums' => $profile->getAlbums(),
-                'createUrl' => $this->generateUrl('album_profile_create')
+                'createUrl' => $this->generateUrl('album_profile_create'),
+                'backUrl' =>  $this->generateUrl('profile_index', ['profileId' => $profileId])
             ]);
         }
 
@@ -56,7 +57,8 @@ class AlbumController extends AbstractController
         if ($group && $group->isActionAllowed($user->getProfile(), IEInterface::VIEW_ACTION_CODE)) {
             return $this->render('album/index.html.twig', [
                 'albums' => $group->getAlbums(),
-                'createUrl' => $this->generateUrl('album_group_create', ['groupId' => $group->getId()])
+                'createUrl' => $this->generateUrl('album_group_create', ['groupId' => $group->getId()]),
+                'backUrl' => $this->generateUrl('group_show', ['groupId' => $groupId])
             ]);
         }
 
@@ -139,7 +141,7 @@ class AlbumController extends AbstractController
         if ($album && $album->isActionAllowed($user->getProfile(), IEInterface::VIEW_ACTION_CODE)) {
             return $this->render('album/show.html.twig', [
                 'album' => $album,
-                'backUrl' => $this->getBackUrl($album)
+                'backUrl' => $this->getAlbumShowBackUrl($album)
             ]);
         }
 
@@ -157,7 +159,7 @@ class AlbumController extends AbstractController
             $this->albumRepository->remove($album, true);
 
             return new JsonResponse([
-                'backUrl' => $this->getBackUrl($album)
+                'backUrl' => $this->getAlbumShowBackUrl($album)
             ]);
         }
 
@@ -184,19 +186,19 @@ class AlbumController extends AbstractController
 
         return $this->render('album/create.html.twig', [
             'albumForm' => $form->createView(),
-            'backUrl' => $this->getBackUrl($album)
+            'backUrl' => $this->getAlbumShowBackUrl($album)
         ]);
     }
 
     /**
      * Get url for `Back` button at album show page.
-     * If album type is group, button should lead to group show page.
-     * If album type is profile, button should lead to profile page.
+     * If album type is group, button should lead to group albums page.
+     * If album type is profile, button should lead to profile albums page.
      *
      * @param Album $album
      * @return string
      */
-    protected function getBackUrl(Album $album): string
+    protected function getAlbumShowBackUrl(Album $album): string
     {
         if ($album->getType() == Album::GROUP_DEFAULT_TYPE || $album->getType() == Album::GROUP_CUSTOM_TYPE) {
             return $this->generateUrl('album_group_index', [

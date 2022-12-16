@@ -38,7 +38,7 @@ class GroupController extends AbstractController
     {
     }
 
-    #[Route('groups/{profileId}', name: 'group_index', methods: ['GET'])]
+    #[Route('groups/{profileId}', name: 'group_index', methods: ['GET', 'POST'])]
     public function index(Request $request, int $profileId): Response
     {
         /** @var User $user */

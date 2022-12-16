@@ -10,12 +10,21 @@
             </div>
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded">
-            <div class="text-center mt-6">
-                <a href="{{ createUrl }}">
-                    <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
-                        {{ 'Create new album' }}
-                    </button>
-                </a>
+            <div class="mx-6 mt-6 grid grid-cols-12 ">
+                <div class="text-left col-span-1 inline">
+                    <a href="{{ backUrl }}">
+                        <button class="bg-indigo-200 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-gray-700 font-bold mt-4 py-2 px-4 rounded">
+                            {{ 'Back' }}
+                        </button>
+                    </a>
+                </div>
+                <div class="text-center col-span-10">
+                    <a href="{{ createUrl }}">
+                        <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 px-4 rounded">
+                            {{ 'Create new album' }}
+                        </button>
+                    </a>
+                </div>
             </div>
             <div class="grid grid-cols-4">
                 {% for album in albums %}
