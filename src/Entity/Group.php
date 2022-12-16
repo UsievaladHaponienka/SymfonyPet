@@ -391,7 +391,7 @@ class Group implements IEInterface
     }
 
     /**
-     * Current group actions available: Add Album, Add Discussion, Edit Group, Delete Group
+     * @inheritDoc
      */
     public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {

@@ -3,16 +3,13 @@
 namespace App\Form;
 
 use App\Entity\PrivacySettings;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class PrivacySettingsFormType extends AbstractType
+class PrivacySettingsFormType extends BaseType
 {
-    use FormStyle;
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder

@@ -17,14 +17,18 @@
                     </button>
                 </a>
             </div>
-            <!-- TODO: remove group requests tab for public group -->
-            <div class="grid grid-cols-5 my-4">
+
+            <div class="grid grid-cols-{{ group.public ? 4 : 5 }} my-4">
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'group-edit', tabType: 'group-edit', title: 'Edit group', isActive: true } %}
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'group-members', tabType: 'group-edit', title: 'Group Members', isActive: false} %}
-                {% include('components/tabs/tab-button.html.twig') with {
-                    id: 'group-requests', tabType: 'group-edit', title: 'Group Requests', isActive: false} %}
+
+                {% if(not group.public) %}
+                    {% include('components/tabs/tab-button.html.twig') with {
+                        id: 'group-requests', tabType: 'group-edit', title: 'Group Requests', isActive: false} %}
+                {% endif %}
+
                 {% include('components/tabs/tab-button.html.twig') with {
                     id: 'invited-users', tabType: 'group-edit', title: 'Invited Users', isActive: false} %}
                 {% include('components/tabs/tab-button.html.twig') with {

@@ -109,14 +109,10 @@ class Photo implements IEInterface
      */
     public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {
-        if ($actionCode == self::VIEW_ACTION_CODE) {
-            return $this->getAlbum()->isActionAllowed($profile, $actionCode);
-        }
-
         if ($this->belongsToAlbumOnly()) {
-            return $this->getAlbum()->isActionAllowed($profile);
+            return $this->getAlbum()->isActionAllowed($profile, $actionCode);
         } else {
-            return $this->getPost()->isActionAllowed($profile);
+            return $this->getPost()->isActionAllowed($profile, $actionCode);
         }
     }
 }

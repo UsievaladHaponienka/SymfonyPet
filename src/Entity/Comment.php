@@ -162,9 +162,9 @@ class Comment implements IEInterface
     public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {
         if ($this->belongsToDiscussion()) {
-            return $this->getDiscussion()->isActionAllowed($profile) || $this->checkProfileRule($profile);
+            return $this->checkProfileRule($profile) || $this->getDiscussion()->isActionAllowed($profile);
         } else {
-            return $this->getPost()->isActionAllowed($profile) || $this->checkProfileRule($profile);
+            return $this->checkProfileRule($profile) || $this->getPost()->isActionAllowed($profile);
         }
     }
 }

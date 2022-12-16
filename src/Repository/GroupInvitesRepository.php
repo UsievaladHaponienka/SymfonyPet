@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\GroupInvites;
+use App\Entity\Invite;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<GroupInvites>
+ * @extends ServiceEntityRepository<Invite>
  *
- * @method GroupInvites|null find($id, $lockMode = null, $lockVersion = null)
- * @method GroupInvites|null findOneBy(array $criteria, array $orderBy = null)
- * @method GroupInvites[]    findAll()
- * @method GroupInvites[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Invite|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Invite|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Invite[]    findAll()
+ * @method Invite[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class GroupInvitesRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, GroupInvites::class);
+        parent::__construct($registry, Invite::class);
     }
 
-    public function save(GroupInvites $entity, bool $flush = false): void
+    public function save(Invite $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class GroupInvitesRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(GroupInvites $entity, bool $flush = false): void
+    public function remove(Invite $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -38,29 +38,4 @@ class GroupInvitesRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
-//    /**
-//     * @return GroupInvites[] Returns an array of GroupInvites objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('g.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?GroupInvites
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

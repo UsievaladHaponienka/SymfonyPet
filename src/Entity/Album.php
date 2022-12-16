@@ -157,6 +157,7 @@ class Album implements IEInterface
      * OTHER ACTIONS:
      * - User custom albums actions are allowed for albums owner's profile.
      * - Group custom albums actions are allowed for group admin.
+     * - Default albums - with type `user_posts` and `group_posts` can't be changed/deleted.
      */
     public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {
