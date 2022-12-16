@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\Interface\ViewableEntityInterface;
+use App\Entity\Traits\Rules\ProfileRule;
+use App\Entity\Traits\Rules\GroupAdminRule;
 use App\Repository\AlbumRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,6 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
 class Album implements ViewableEntityInterface
 {
+    use ProfileRule;
+    use GroupAdminRule;
+
     public const USER_DEFAULT_TYPE = 'user_posts';
     public const USER_CUSTOM_TYPE = 'user_custom';
 
@@ -142,20 +147,32 @@ class Album implements ViewableEntityInterface
         return $this;
     }
 
+    public function belongsToProfile(): bool
+    {
+        return $this->getType() == Album::USER_CUSTOM_TYPE;
+    }
+
+    public function belongsToGroup(): bool
+    {
+        return $this->getType() == Album::GROUP_CUSTOM_TYPE;
+    }
+
     /**
-     * Check if album action - editing, deleting, adding new photos - is allowed for $profile.
+     * Check if album action is allowed for profile
      * User custom albums actions are allowed for albums owner's profile.
      * Group custom albums actions are allowed for group admin.
+     * Current Album actions available: Add Photo, Edit Album, Delete Album
      *
      * @param Profile $profile
+     * @param null $actionCode
      * @return bool
      */
-    public function isActionAllowed(Profile $profile): bool
+    public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {
-        if ($this->getType() == Album::USER_CUSTOM_TYPE) {
-            return $this->getProfile()->getId() == $profile->getId();
-        } elseif ($this->getType() == Album::GROUP_CUSTOM_TYPE) {
-            return $this->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
+        if ($this->belongsToProfile()) {
+            return $this->checkProfileRule($profile);
+        } elseif ($this->belongsToGroup()) {
+            return $this->checkGroupAdminRule($profile);
         }
 
         return false;
@@ -179,4 +196,5 @@ class Album implements ViewableEntityInterface
             );
         }
     }
+
 }

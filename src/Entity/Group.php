@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Interface\ViewableEntityInterface;
+use App\Entity\Traits\Rules\GroupAdminRule;
 use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -401,5 +402,14 @@ class Group implements ViewableEntityInterface
     public function canBeViewed(Profile $profile): bool
     {
         return $this->isPublic() || $this->isInGroup($profile);
+    }
+
+    /**
+     * @inheritDoc
+     * Current group actions available: Add Album, Add Discussion, Edit Group, Delete Group
+     */
+    public function isActionAllowed(Profile $profile, $actionCode = null): bool
+    {
+        // TODO: Implement isActionAllowed() method.
     }
 }

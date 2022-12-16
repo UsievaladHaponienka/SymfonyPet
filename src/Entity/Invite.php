@@ -2,12 +2,20 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\Rules\GroupAdminRule;
+use App\Entity\Traits\Rules\ProfileRule;
 use App\Repository\InviteRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InviteRepository::class)]
 class Invite
 {
+    public const DELETE_ACTION = 'delete';
+    public const ACCEPT_ACTION = 'accept';
+
+    use ProfileRule;
+    use GroupAdminRule;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -55,10 +63,16 @@ class Invite
      * Action is allowed either for invited profile of for invite group admin
      *
      * @param Profile $profile
+     * @param string|null $actionCode
      * @return bool
      */
-    public function isActionAllowed(Profile $profile): bool
+    public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {
-        return $this->getProfile()->getId() == $profile->getId() || $this->getRelatedGroup()->isAdmin($profile);
+        return match ($actionCode) {
+            self::ACCEPT_ACTION => $this->checkProfileRule($profile),
+            default => $this->checkProfileRule($profile) || $this->checkGroupAdminRule($profile)
+        };
     }
+
+
 }

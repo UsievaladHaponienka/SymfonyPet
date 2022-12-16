@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Traits\Likeable;
+use App\Entity\Traits\Rules\ProfileRule;
 use App\Repository\CommentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Comment
 {
     use Likeable;
+    use ProfileRule;
 
     public const POST_TYPE = 'post';
     public const DISCUSSION_TYPE = 'discussion';
@@ -143,28 +145,23 @@ class Comment
         return $this;
     }
 
+    public function belongsToDiscussion(): bool
+    {
+        return $this->getType() == Comment::DISCUSSION_TYPE;
+    }
+
     /**
-     * Check if comment action - delete - is allowed for $profile
      * Discussion comment actions are allowed for comment author and discussion group admin
      * Group post comment actions are allowed for comment author and group admin
      * Profile post comment actions are allowed for comment author and post profile.
-     *
-     * @param Profile $profile
-     * @return bool
+     * Current Comment actions available: Delete comment.
      */
-    public function isActionAllowed(Profile $profile): bool
+    public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {
-        if ($this->getType() == Comment::DISCUSSION_TYPE) {
-            return $this->getProfile()->getId() == $profile->getId() ||
-                $this->getDiscussion()->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
+        if ($this->belongsToDiscussion()) {
+            return $this->getDiscussion()->isActionAllowed($profile) || $this->checkProfileRule($profile);
         } else {
-            if ($this->getPost()->getType() == Post::GROUP_POST_TYPE) {
-                return $this->getProfile()->getId() == $profile->getId() ||
-                    $this->getPost()->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
-            } else {
-                return $this->getProfile()->getId() == $profile->getId() ||
-                    $this->getPost()->getProfile()->getId() == $profile->getId();
-            }
+            return $this->getPost()->isActionAllowed($profile) || $this->checkProfileRule($profile);
         }
     }
 }

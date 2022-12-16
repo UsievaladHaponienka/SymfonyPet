@@ -65,7 +65,7 @@ class MembershipController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $group->getType() == Group::PRIVATE_GROUP_TYPE && !$group->isInGroup($user->getProfile())) {
+        if ($group && !$group->isPublic() && !$group->isInGroup($user->getProfile())) {
             $joinRequest = new GroupRequest();
             $joinRequest->setProfile($user->getProfile());
             $joinRequest->setRelatedGroup($group);
@@ -85,10 +85,7 @@ class MembershipController extends AbstractController
         $user = $this->getUser();
         $joinRequest = $this->groupRequestRepository->find(($requestId));
 
-        if ($joinRequest && (
-                $joinRequest->getProfile()->getId() == $user->getProfile()->getId() ||
-                $joinRequest->getRelatedGroup()->isAdmin($user->getProfile())
-            )) {
+        if ($joinRequest && $joinRequest->isActionAllowed($user->getProfile(), GroupRequest::DELETE_ACTION)) {
             $this->groupRequestRepository->remove($joinRequest, true);
 
             return new JsonResponse();
@@ -104,10 +101,10 @@ class MembershipController extends AbstractController
         $user = $this->getUser();
         $joinRequest = $this->groupRequestRepository->find($requestId);
 
-        if ($joinRequest) {
+        if ($joinRequest && $joinRequest->isActionAllowed($user->getProfile(), GroupRequest::ACCEPT_ACTION)) {
             $group = $this->groupRepository->find($joinRequest->getRelatedGroup());
 
-            if ($group && $group->isAdmin($user->getProfile())) {
+            if ($group) {
                 $group->addProfile($joinRequest->getProfile());
                 $this->groupRequestRepository->remove($joinRequest);
 

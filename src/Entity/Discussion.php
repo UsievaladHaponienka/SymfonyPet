@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Interface\ViewableEntityInterface;
+use App\Entity\Traits\Rules\GroupAdminRule;
 use App\Repository\DiscussionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DiscussionRepository::class)]
 class Discussion implements ViewableEntityInterface
 {
+    use GroupAdminRule;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -107,14 +110,12 @@ class Discussion implements ViewableEntityInterface
     }
 
     /**
-     * Check if discussion action is allowed for $profile.
      * Discussion action are allowed for group admin
-     * @param Profile $profile
-     * @return bool
+     * Current discussion actions available: Delete discussion
      */
     public function isActionAllowed(Profile $profile): bool
     {
-        return $this->getRelatedGroup()->isAdmin($profile);
+        return $this->checkGroupAdminRule($profile);
     }
 
     /**

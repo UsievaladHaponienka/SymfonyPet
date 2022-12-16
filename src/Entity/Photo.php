@@ -96,16 +96,26 @@ class Photo implements ViewableEntityInterface
         return $this;
     }
 
+    public function belongsToAlbumOnly(): bool
+    {
+        return $this->getPost() === null;
+    }
+
     /**
      * Check if photo action is allowed for profile.
-     * Action rules are the same as for album
+     * Action rules are the same as for album.
+     * Current Photo actions: Delete Photo.
      *
      * @param Profile $profile
      * @return bool
      */
     public function isActionAllowed(Profile $profile): bool
     {
-        return $this->getAlbum()->isActionAllowed($profile);
+        if ($this->belongsToAlbumOnly()) {
+            return $this->getAlbum()->isActionAllowed($profile);
+        } else {
+            return $this->getPost()->isActionAllowed($profile);
+        }
     }
 
     /**

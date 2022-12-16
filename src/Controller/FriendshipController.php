@@ -110,6 +110,7 @@ class FriendshipController extends AbstractController
 
         $friendProfile = $this->profileRepository->find($profileId);
 
+        //TODO:: Add additional check. Right now it seems possible to create friendship even if there is no such request
         if ($profile && $friendProfile) {
             $friendshipObjectForFirstUser = new Friendship();
 

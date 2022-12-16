@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\Traits\Likeable;
+use App\Entity\Traits\Rules\ProfileRule;
+use App\Entity\Traits\Rules\GroupAdminRule;
 use App\Repository\PostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,6 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {
+    use ProfileRule;
+    use GroupAdminRule;
     use Likeable;
 
     public const USER_POST_TYPE = 'user';
@@ -214,6 +218,11 @@ class Post
         return $this;
     }
 
+    public function belongsToUser(): bool
+    {
+        return $this->getType() == self::USER_POST_TYPE;
+    }
+
     /**
      * Check if post action - delete - is allowed for $profile.
      * Profile post actions are allowed to post owner's profile
@@ -224,10 +233,10 @@ class Post
      */
     public function isActionAllowed(Profile $profile): bool
     {
-        if($this->getRelatedGroup()) {
-            return $this->getRelatedGroup()->getAdmin()->getId() == $profile->getId();
+        if($this->belongsToUser()) {
+            return $this->checkProfileRule($profile);
         } else {
-            return $this->getProfile()->getId() == $profile->getId();
+            return $this->checkGroupAdminRule($profile);
         }
     }
 }
