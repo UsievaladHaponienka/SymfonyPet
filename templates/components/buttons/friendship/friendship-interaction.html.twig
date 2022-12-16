@@ -15,12 +15,13 @@
         {% include('components/buttons/friendship/delete-request-button.html.twig') %}
     </div>
     <!-- Accept friendship request -->
-{% elseif app.user.profile.hasIncomingRequest(profile.id) %}
-    <div class="create-friendship-button-{{ profile.id }}">
+{% elseif app.user.profile.hasIncomingRequest(profile.id)%}
+    <div class="create-friendship-button-{{ profile.id }} delete-friendship-request-button-{{ profile.id }} ">
         <div class="bg-indigo-200 my-4 p-2 rounded">
             {{ 'Friendship requested' }}
         </div>
         {% include('components/buttons/friendship/create-friendship-button.html.twig') %}
+        {% include('components/buttons/friendship/delete-request-button.html.twig') %}
     </div>
     <!-- Create friendship request -->
 {% elseif (app.user.profile.id != profile.id) %}

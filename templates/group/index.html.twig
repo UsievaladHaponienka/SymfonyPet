@@ -113,9 +113,11 @@
                             {{ group.description }}
                         </div>
                         <div class="col-span-1 pb-4 text-center">
-                            <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
-                                <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
-                            </button>
+                            <a href="{{ path('group_edit', {'groupId': group.id}) }}">
+                                <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+                                    {{ 'Manage group' }}
+                                </button>
+                            </a>
                         </div>
                     {% endfor %}
                 </div>
@@ -202,9 +204,11 @@
                             <div class="col-span-1 pb-4 text-center">
                                 {% if (app.user.profile.id == group.admin.id) %}
                                     <div>
-                                        <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
-                                            <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
-                                        </button>
+                                        <a href="{{ path('group_edit', {'groupId': group.id}) }}">
+                                            <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+                                                {{ 'Manage group' }}
+                                            </button>
+                                        </a>
                                     </div>
                                 {% else %}
                                     {% include('components/buttons/group/membership/complex-interaction.html.twig') %}

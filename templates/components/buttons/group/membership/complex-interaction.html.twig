@@ -1,8 +1,10 @@
 {% if (app.user.profile.id == group.admin.id) %}
     <div>
-        <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
-            <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
-        </button>
+        <a href="{{ path('group_edit', {'groupId': group.id}) }}">
+            <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+                {{ 'Manage group' }}
+            </button>
+        </a>
     </div>
 {% elseif(group.isInGroup(app.user.profile)) %}
     {% include('components/buttons/group/membership/leave.html.twig') %}

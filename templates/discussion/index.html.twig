@@ -42,11 +42,11 @@
                     {% if (group.admin.id == app.user.profile.id) %}
                         <div class="col-span-1">
                             <div class="mr-4 flex justify-right">
-                                <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
-                                    <a href="{{ path('discussion_create', {'groupId': group.id}) }}">
+                                <a href="{{ path('discussion_create', {'groupId': group.id}) }}">
+                                    <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
                                         {{ 'Add new discussion' }}
-                                    </a>
-                                </button>
+                                    </button>
+                                </a>
                             </div>
                         </div>
                     {% endif %}

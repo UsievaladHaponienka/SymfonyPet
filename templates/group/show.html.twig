@@ -13,7 +13,7 @@
         {% endif %}
         <div class="col-span-8 bg-indigo-300 rounded ">
             <div class="grid grid-rows">
-                <div class="grid grid-cols-8 ml-4 my-2">
+                <div class="grid grid-cols-6 ml-4 my-2">
                     <div class="col-span-1">
                         <div>
                             <div class="flex justify-center">
@@ -22,20 +22,20 @@
                         </div>
                         {% if(group.actionAllowed(app.user.profile, 'view')) %}
                             <div class="grid grid-rows">
-                                    <a href="{{ path('discussion_index', {'groupId': group.id}) }}">
-                                        <button class="bg-indigo-500 text-white w-full tab-links hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 rounded">
-                                            {{ 'Discussions' }}
-                                        </button>
-                                    </a>
-                                    <a href="{{ path('album_group_index', {'groupId': group.id}) }}">
-                                        <button class="bg-indigo-500 text-white w-full tab-links hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 rounded">
-                                            {{ 'Albums' }}
-                                        </button>
-                                    </a>
+                                <a href="{{ path('discussion_index', {'groupId': group.id}) }}">
+                                    <button class="bg-indigo-500 text-white w-full tab-links hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 rounded">
+                                        {{ 'Discussions' }}
+                                    </button>
+                                </a>
+                                <a href="{{ path('album_group_index', {'groupId': group.id}) }}">
+                                    <button class="bg-indigo-500 text-white w-full tab-links hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 rounded">
+                                        {{ 'Albums' }}
+                                    </button>
+                                </a>
                             </div>
                         {% endif %}
                     </div>
-                    <div class="col-span-6 ml-4">
+                    <div class="col-span-4 ml-4">
                         <div class="grid grid-rows">
                             <div class="text-2xl">
                                 {{ group.title }}
@@ -53,12 +53,14 @@
                     </div>
                     {% if (group.admin.id == app.user.profile.id) %}
                         <div class="col-span-1">
-                            <div class="mr-4 flex justify-right">
-                                <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
-                                    <a href="{{ path('group_edit', {'groupId': group.id}) }}">{{ 'Manage group' }}</a>
-                                </button>
+                            <div class="mr-4">
+                                <a href="{{ path('group_edit', {'groupId': group.id}) }}">
+                                    <button class="w-full bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+                                        {{ 'Manage group' }}
+                                    </button>
+                                </a>
                             </div>
-                            <div class="mr-4 flex justify-right">
+                            <div class="mr-4">
                                 {% include('components/buttons/group/delete-group-button.html.twig') %}
                             </div>
                         </div>
