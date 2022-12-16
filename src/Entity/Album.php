@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\Interface\ViewableEntityInterface;
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\Traits\Rules\ProfileRule;
 use App\Entity\Traits\Rules\GroupAdminRule;
 use App\Repository\AlbumRepository;
@@ -12,7 +12,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
-class Album implements ViewableEntityInterface
+class Album implements IEInterface
 {
     use ProfileRule;
     use GroupAdminRule;
@@ -147,54 +147,35 @@ class Album implements ViewableEntityInterface
         return $this;
     }
 
-    public function belongsToProfile(): bool
-    {
-        return $this->getType() == Album::USER_CUSTOM_TYPE;
-    }
-
-    public function belongsToGroup(): bool
-    {
-        return $this->getType() == Album::GROUP_CUSTOM_TYPE;
-    }
-
     /**
-     * Check if album action is allowed for profile
-     * User custom albums actions are allowed for albums owner's profile.
-     * Group custom albums actions are allowed for group admin.
-     * Current Album actions available: Add Photo, Edit Album, Delete Album
+     * @inheritDoc
      *
-     * @param Profile $profile
-     * @param null $actionCode
-     * @return bool
+     * VIEW ACTION:
+     * - Albums with type = profile can be viewed if corresponding profile privacy settings requirement is fulfilled.
+     * - Albums with type = group can be viewed either if group is public OR if user is member of the group.
+     *
+     * OTHER ACTIONS:
+     * - User custom albums actions are allowed for albums owner's profile.
+     * - Group custom albums actions are allowed for group admin.
      */
     public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {
-        if ($this->belongsToProfile()) {
+        if ($actionCode == self::VIEW_ACTION_CODE) {
+            if ($this->getType() == Album::GROUP_CUSTOM_TYPE || $this->getType() == Album::GROUP_DEFAULT_TYPE) {
+                return $this->getRelatedGroup()->isPublic() || $this->getRelatedGroup()->isInGroup($profile);
+            } else {
+                return $this->getProfile()->getPrivacySettings()->isViewAllowed(
+                    PrivacySettings::ALBUMS_CODE, $profile
+                );
+            }
+        }
+
+        if ($this->getType() == Album::USER_CUSTOM_TYPE) {
             return $this->checkProfileRule($profile);
-        } elseif ($this->belongsToGroup()) {
+        } elseif ($this->getType() == Album::GROUP_CUSTOM_TYPE) {
             return $this->checkGroupAdminRule($profile);
         }
 
         return false;
     }
-
-    /**
-     * @inheritDoc
-     * Profile albums can be viewed if corresponding profile privacy settings requirement is fulfilled.
-     * Group albums can be viewed either if group is public or if user is member of the group.
-     *
-     * @param Profile $profile
-     * @return bool
-     */
-    public function canBeViewed(Profile $profile): bool
-    {
-        if ($this->getType() == Album::GROUP_CUSTOM_TYPE || $this->getType() == Album::GROUP_DEFAULT_TYPE) {
-            return $this->getRelatedGroup()->isPublic() || $this->getRelatedGroup()->isInGroup($profile);
-        } else {
-            return $this->getProfile()->getPrivacySettings()->isViewAllowed(
-                PrivacySettings::ALBUMS_CODE, $profile
-            );
-        }
-    }
-
 }

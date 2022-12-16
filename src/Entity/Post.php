@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\Traits\Likeable;
 use App\Entity\Traits\Rules\ProfileRule;
 use App\Entity\Traits\Rules\GroupAdminRule;
@@ -12,7 +13,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
-class Post
+class Post implements IEInterface
 {
     use ProfileRule;
     use GroupAdminRule;
@@ -224,14 +225,13 @@ class Post
     }
 
     /**
-     * Check if post action - delete - is allowed for $profile.
-     * Profile post actions are allowed to post owner's profile
-     * Group post actions are allowed to group admin
+     * @inheritDoc
      *
-     * @param Profile $profile
-     * @return bool
+     * ACTIONS:
+     * - For Posts with type = profile actions are allowed to post owner's profile.
+     * - For Posts with type = group actions are allowed to group admin.
      */
-    public function isActionAllowed(Profile $profile): bool
+    public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {
         if($this->belongsToUser()) {
             return $this->checkProfileRule($profile);

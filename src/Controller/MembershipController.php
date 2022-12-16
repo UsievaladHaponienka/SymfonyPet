@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Group;
 use App\Entity\GroupRequest;
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\User;
 use App\Repository\GroupRepository;
 use App\Repository\GroupRequestRepository;
@@ -85,7 +85,8 @@ class MembershipController extends AbstractController
         $user = $this->getUser();
         $joinRequest = $this->groupRequestRepository->find(($requestId));
 
-        if ($joinRequest && $joinRequest->isActionAllowed($user->getProfile(), GroupRequest::DELETE_ACTION)) {
+        if ($joinRequest &&
+            $joinRequest->isActionAllowed($user->getProfile(), IEInterface::DELETE_ACTION_CODE)) {
             $this->groupRequestRepository->remove($joinRequest, true);
 
             return new JsonResponse();
@@ -101,7 +102,8 @@ class MembershipController extends AbstractController
         $user = $this->getUser();
         $joinRequest = $this->groupRequestRepository->find($requestId);
 
-        if ($joinRequest && $joinRequest->isActionAllowed($user->getProfile(), GroupRequest::ACCEPT_ACTION)) {
+        if ($joinRequest &&
+            $joinRequest->isActionAllowed($user->getProfile(), IEInterface::ACCEPT_ACTION_CODE)) {
             $group = $this->groupRepository->find($joinRequest->getRelatedGroup());
 
             if ($group) {

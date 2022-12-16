@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Album;
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\PrivacySettings;
 use App\Entity\User;
 use App\Form\AlbumFormType;
@@ -52,7 +53,7 @@ class AlbumController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $group->canBeViewed($user->getProfile())) {
+        if ($group && $group->isActionAllowed($user->getProfile(), IEInterface::VIEW_ACTION_CODE)) {
             return $this->render('album/index.html.twig', [
                 'albums' => $group->getAlbums(),
                 'createUrl' => $this->generateUrl('album_group_create', ['groupId' => $group->getId()])
@@ -135,7 +136,7 @@ class AlbumController extends AbstractController
         $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        if ($album && $album->canBeViewed($user->getProfile())) {
+        if ($album && $album->isActionAllowed($user->getProfile(), IEInterface::VIEW_ACTION_CODE)) {
             return $this->render('album/show.html.twig', [
                 'album' => $album,
                 'backUrl' => $this->getBackUrl($album)

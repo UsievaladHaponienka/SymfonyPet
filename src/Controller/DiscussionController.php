@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Discussion;
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\User;
 use App\Form\DiscussionFormType;
 use App\Repository\DiscussionRepository;
@@ -29,7 +30,7 @@ class DiscussionController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $group->canBeViewed($user->getProfile())) {
+        if ($group && $group->isActionAllowed($user->getProfile(), IEInterface::VIEW_ACTION_CODE)) {
             return $this->render('discussion/index.html.twig', [
                 'group' => $group,
             ]);
@@ -76,7 +77,8 @@ class DiscussionController extends AbstractController
         $user = $this->getUser();
         $discussion = $this->discussionRepository->find($discussionId);
 
-        if ($discussion && $discussion->canBeViewed($user->getProfile())) {
+        if ($discussion &&
+            $discussion->isActionAllowed($user->getProfile(), IEInterface::VIEW_ACTION_CODE)) {
             return $this->render('discussion/show.html.twig', ['discussion' => $discussion]);
         }
 

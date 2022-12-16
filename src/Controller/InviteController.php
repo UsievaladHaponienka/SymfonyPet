@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\Invite;
 use App\Entity\User;
 use App\Repository\GroupRepository;
@@ -50,7 +51,7 @@ class InviteController extends AbstractController
         $user = $this->getUser();
         $invite = $this->inviteRepository->find($inviteId);
 
-        if ($invite && $invite->isActionAllowed($user->getProfile(), Invite::DELETE_ACTION)){
+        if ($invite && $invite->isActionAllowed($user->getProfile(), IEInterface::DELETE_ACTION_CODE)){
             $this->inviteRepository->remove($invite, true);
 
             return new JsonResponse();
@@ -66,7 +67,7 @@ class InviteController extends AbstractController
         $user = $this->getUser();
         $invite = $this->inviteRepository->find($inviteId);
 
-        if ($invite && $invite->isActionAllowed($user->getProfile(), Invite::ACCEPT_ACTION)) {
+        if ($invite && $invite->isActionAllowed($user->getProfile(), IEInterface::ACCEPT_ACTION_CODE)) {
             $invite->getRelatedGroup()->addProfile($user->getProfile());
             $this->inviteRepository->remove($invite);
             $this->groupRepository->save($invite->getRelatedGroup(), true);

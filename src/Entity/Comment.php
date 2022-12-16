@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\Traits\Likeable;
 use App\Entity\Traits\Rules\ProfileRule;
 use App\Repository\CommentRepository;
@@ -11,7 +12,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
-class Comment
+class Comment implements IEInterface
 {
     use Likeable;
     use ProfileRule;
@@ -151,10 +152,12 @@ class Comment
     }
 
     /**
-     * Discussion comment actions are allowed for comment author and discussion group admin
-     * Group post comment actions are allowed for comment author and group admin
-     * Profile post comment actions are allowed for comment author and post profile.
-     * Current Comment actions available: Delete comment.
+     * @inheritDoc
+     *
+     * ACTIONS:
+     * - Discussion comment actions are allowed for comment author OR discussion group admin.
+     * - Group post comment actions are allowed for comment author and group admin.
+     * - Profile post comment actions are allowed for comment author and post profile.
      */
     public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {

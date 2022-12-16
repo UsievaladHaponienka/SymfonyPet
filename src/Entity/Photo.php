@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Entity\Interface\ViewableEntityInterface;
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Repository\PhotoRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PhotoRepository::class)]
-class Photo implements ViewableEntityInterface
+class Photo implements IEInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -102,28 +102,21 @@ class Photo implements ViewableEntityInterface
     }
 
     /**
-     * Check if photo action is allowed for profile.
-     * Action rules are the same as for album.
-     * Current Photo actions: Delete Photo.
+     * @inheritDoc
      *
-     * @param Profile $profile
-     * @return bool
+     * ACTIONS:
+     *  - Photo action rules are the same as corresponding album/post rule
      */
-    public function isActionAllowed(Profile $profile): bool
+    public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {
+        if ($actionCode == self::VIEW_ACTION_CODE) {
+            return $this->getAlbum()->isActionAllowed($profile, $actionCode);
+        }
+
         if ($this->belongsToAlbumOnly()) {
             return $this->getAlbum()->isActionAllowed($profile);
         } else {
             return $this->getPost()->isActionAllowed($profile);
         }
-    }
-
-    /**
-     * @inheritDoc
-     * View riles are the same as for album
-     */
-    public function canBeViewed(Profile $profile): bool
-    {
-        return $this->getAlbum()->canBeViewed($profile);
     }
 }

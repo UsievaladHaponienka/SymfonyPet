@@ -20,7 +20,7 @@
                                 <img src="{{ group.groupImageUrl }}" alt="{{ 'No group image' }}">
                             </div>
                         </div>
-                        {% if(group.canBeViewed(app.user.profile)) %}
+                        {% if(group.actionAllowed(app.user.profile, 'view')) %}
                             <div class="grid grid-rows">
                                     <a href="{{ path('discussion_index', {'groupId': group.id}) }}">
                                         <button class="bg-indigo-500 text-white w-full tab-links hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold mt-4 py-2 rounded">
@@ -80,7 +80,7 @@
                     </div>
                 {% endif %}
                 <div>
-                    {% if(group.canBeViewed(app.user.profile)) %}
+                    {% if(group.actionAllowed(app.user.profile, 'view')) %}
                         {% for post in group.posts %}
                             {% include('components/post/post.html.twig') %}
                         {% endfor %}

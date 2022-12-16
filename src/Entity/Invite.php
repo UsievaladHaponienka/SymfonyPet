@@ -2,17 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\Traits\Rules\GroupAdminRule;
 use App\Entity\Traits\Rules\ProfileRule;
 use App\Repository\InviteRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InviteRepository::class)]
-class Invite
+class Invite implements IEInterface
 {
-    public const DELETE_ACTION = 'delete';
-    public const ACCEPT_ACTION = 'accept';
-
     use ProfileRule;
     use GroupAdminRule;
 
@@ -59,20 +57,17 @@ class Invite
     }
 
     /**
-     * Check if invite action is allowed for profile.
-     * Action is allowed either for invited profile of for invite group admin
+     * @inheritDoc
      *
-     * @param Profile $profile
-     * @param string|null $actionCode
-     * @return bool
+     * ACTIONS:
+     * - Invite can be accepted by invite receiver profile
+     * - Invite can be deleted either by Invite receiver profile or by invite group admin
      */
     public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {
         return match ($actionCode) {
-            self::ACCEPT_ACTION => $this->checkProfileRule($profile),
+            self::ACCEPT_ACTION_CODE => $this->checkProfileRule($profile),
             default => $this->checkProfileRule($profile) || $this->checkGroupAdminRule($profile)
         };
     }
-
-
 }

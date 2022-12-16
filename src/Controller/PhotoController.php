@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\Photo;
 use App\Entity\User;
 use App\Form\PhotoFormType;
@@ -30,7 +31,7 @@ class PhotoController extends AbstractController
         $user = $this->getUser();
         $photo = $this->photoRepository->find($photoId);
 
-        if ($photo && $photo->canBeViewed($user->getProfile())) {
+        if ($photo && $photo->isActionAllowed($user->getProfile(), IEInterface::VIEW_ACTION_CODE)) {
             return $this->render('photo/index.html.twig', [
                 'photo' => $photo
             ]);

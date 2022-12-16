@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\Interface\ViewableEntityInterface;
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\Traits\Rules\GroupAdminRule;
 use App\Repository\DiscussionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,7 +11,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DiscussionRepository::class)]
-class Discussion implements ViewableEntityInterface
+class Discussion implements IEInterface
 {
     use GroupAdminRule;
 
@@ -110,22 +110,17 @@ class Discussion implements ViewableEntityInterface
     }
 
     /**
-     * Discussion action are allowed for group admin
-     * Current discussion actions available: Delete discussion
-     */
-    public function isActionAllowed(Profile $profile): bool
-    {
-        return $this->checkGroupAdminRule($profile);
-    }
-
-    /**
      * @inheritDoc
-     * View riles are the same as for group
-     * @see Group::canBeViewed()
      *
+     * ACTIONS:
+     * - Discussion action rules are the same as discussion group rule
      */
-    public function canBeViewed(Profile $profile): bool
+    public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {
-        return $this->getRelatedGroup()->canBeViewed($profile);
+        if ($actionCode == self::VIEW_ACTION_CODE) {
+            return $this->getRelatedGroup()->isActionAllowed($profile, $actionCode);
+        }
+
+        return $this->checkGroupAdminRule($profile);
     }
 }

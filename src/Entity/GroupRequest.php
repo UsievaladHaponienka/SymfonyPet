@@ -2,17 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\InteractiveEntityInterface;
 use App\Entity\Traits\Rules\ProfileRule;
 use App\Entity\Traits\Rules\GroupAdminRule;
 use App\Repository\GroupRequestRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GroupRequestRepository::class)]
-class GroupRequest
+class GroupRequest implements InteractiveEntityInterface
 {
-    public const DELETE_ACTION = 'delete';
-    public const ACCEPT_ACTION = 'accept';
-
     use ProfileRule;
     use GroupAdminRule;
 
@@ -59,14 +57,17 @@ class GroupRequest
     }
 
     /**
-     * @param Profile $profile
-     * @param string|null $actionCode
-     * @return bool
+     * @inheritDoc
+     *
+     * ACTIONS:
+     * - Request can be created if group is private and user is not in group.
+     * - Request can be accepted by group admin.
+     * - Request can be deleted either by request group admin or by request creator
      */
     public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {
         return match ($actionCode) {
-            self::ACCEPT_ACTION => $this->checkGroupAdminRule($profile),
+            self::ACCEPT_ACTION_CODE => $this->checkGroupAdminRule($profile),
             default => $this->checkProfileRule($profile) || $this->checkGroupAdminRule($profile),
         };
     }

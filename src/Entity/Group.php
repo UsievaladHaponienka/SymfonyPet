@@ -2,8 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\Interface\ViewableEntityInterface;
-use App\Entity\Traits\Rules\GroupAdminRule;
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
-class Group implements ViewableEntityInterface
+class Group implements IEInterface
 {
     public const PUBLIC_GROUP_TYPE = 'public';
     public const PRIVATE_GROUP_TYPE = 'private';
@@ -391,25 +390,15 @@ class Group implements ViewableEntityInterface
         })->first();
     }
 
-
     /**
-     * @inheritDoc
-     * Group can be viewed either if group is public or if user is member of the group.
-     *
-     * @param Profile $profile
-     * @return bool
-     */
-    public function canBeViewed(Profile $profile): bool
-    {
-        return $this->isPublic() || $this->isInGroup($profile);
-    }
-
-    /**
-     * @inheritDoc
      * Current group actions available: Add Album, Add Discussion, Edit Group, Delete Group
      */
     public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {
-        // TODO: Implement isActionAllowed() method.
+        if ($actionCode == self::VIEW_ACTION_CODE) {
+            return $this->isPublic() || $this->isInGroup($profile);
+        }
+
+        return $this->isAdmin($profile);
     }
 }
