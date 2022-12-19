@@ -72,6 +72,11 @@ class PostController extends AbstractController
             $image = $form->get('photo')->getData();
             $content = $form->get('content')->getData();
 
+            if (!$image && !$content) {
+                $this->addFlash('post-failure', 'Post must contain either image or content');
+                return $this->getRedirect($post);
+            }
+
             if ($image) {
                 $imagePath = $this->imageProcessor->saveImage($image, ImageProcessor::POST_IMAGE_TYPE);
 
@@ -93,13 +98,14 @@ class PostController extends AbstractController
                 $this->albumRepository->save($postsAlbum);
             }
 
-            if ($content || $image) {
+            if ($content) {
                 $post->setContent($content);
-                $post->setCreatedAt(new \DateTimeImmutable());
-                $this->postRepository->save($post, true);
-
-                return $this->getRedirect($post);
             }
+
+            $post->setCreatedAt(new \DateTimeImmutable());
+            $this->postRepository->save($post, true);
+
+            return $this->getRedirect($post);
         }
 
         throw $this->createNotFoundException();
@@ -121,6 +127,14 @@ class PostController extends AbstractController
         throw $this->createNotFoundException();
     }
 
+    /**
+     * Get redirect url which is used after post is created.
+     * If post type = profile, redirects to profile index page.
+     * If post type = group, redirects to group show page.
+     *
+     * @param Post $post
+     * @return Response
+     */
     protected function getRedirect(Post $post): Response
     {
         return $post->getType() == Post::USER_POST_TYPE ?

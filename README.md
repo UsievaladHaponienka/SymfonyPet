@@ -84,36 +84,39 @@ Request`. `Group Request` contains link to `Profile` who made request and `Group
 Similar to friendship, `Group request` can be canceled by `Profile` who made request and also can be declined
 by `Group` admin.
 
-`Group Invite` are like reversed `Group Request` - `Invite` is created by Group admin at `Manage Group`->`Send Invites` 
+`Group Invite` are like reversed `Group Request` - `Invite` is created by Group admin at `Manage Group`->`Send Invites`
 page (And can be canceled by admin at `Manage Group`->`Invited Users` page) and need to be accepted (and also can be
 declined) by invited User at `My Groups`->`Group Invites` page. The main difference between `Invite` and `Group Request`
-is that `Invite` can be created for both Group types - public AND private, while `Group Request` can be created (and 
+is that `Invite` can be created for both Group types - public AND private, while `Group Request` can be created (and
 makes sense) for `private` Groups only.
 
-### Album 
+`Group` membership is stored in `group_profile` table.
+
+### Album
 
 `Album` is an entity which is used to organize `Photo's` (see below). Album has the following fields:
- - Title
- - Description
- - Type
- - Profile id, if album belongs to profile
- - Related group id, if album belongs to group
+
+- Title
+- Description
+- Type
+- Profile id, if album belongs to profile
+- Related group id, if album belongs to group
 
 Though there is only one class which represents Album, multiple album types are used.
 
 #### Default album
 
-Each `Profile` and each `Group` has default `Album`. This album can not be edited, deleted and also new `Photos` can not 
-be added to this album (though existing `Photos` can be deleted). These albums are used to store Post's photos (see below).
-such albums have `type` = `user_posts` (if `Album` belongs to `Profile`) or `group_posts` (if `Album` belongs to
-`Group`). 
+Each `Profile` and each `Group` has default `Album`. This album can not be edited, deleted and also new `Photos` can not
+be added to this album manually (though existing `Photos` can be deleted). These albums are used to store Post's
+photos (see below).
+Such albums have `type` = `user_posts` (if `Album` belongs to `Profile`) or `group_posts` (if `Album` belongs to
+`Group`).
 
-Default album is created right after successful `Profile`/`Group` creation. Both `Profile` and `Group` entities have 
+Default album is created right after successful `Profile`/`Group` creation. Both `Profile` and `Group` entities have
 method `getDefaultAlbum` (see `\App\Entity\Traits\HasDefaultAlbum`).
 
 Note that deleting `Photo` from default `Album` won't delete corresponding `Post`, but deleting `Post` will delete
 `Photo`.
-
 
 #### Custom albums
 
@@ -122,6 +125,56 @@ deleted, edited, filled with `Photos` by `Profile` owner or `Group` admin respec
 
 Note that deleting `Album` will automatically delete all corresponding `Photos`.
 
+### Post
+
+`Post` is one of the main entities at website and main way for Users to create content.
+
+Each `Post` MUST have either image or content and can have both.
+
+Though there is only one class to represent `Post`, there are two different types of `Posts` - `profile` and `group`.
+
+#### Profile post
+
+Profile `Post` is created by Profile using post form at Profile page. It has `Profile` info (Profile image and
+username) and `profile_id` in `post` table. This post can be deleted by related `Profile` owner.
+
+#### Group post
+
+Group `Post` is created by group admin using post form at `Group` page. It has `Group` info (Group image and title) and
+`related_group_id` in `post` table. This post can be deleted by Group admin.
+
+Even if `Post` has image, it doesn't contain image URL. Instead, image is stored as `Photo` entity which relates
+to `Post`. `Post` images can be viewed (and even deleted) in default album (see `Album`).
+
+### Discussion
+
+`Discussion` is a Group-related entity which allows group members to discuss different topics in Group. `Discussion` has
+title and description. `Discussions` can be created/deleted only by Group admin. Each discussion can have `Comments` (
+see `Comment`) left by other users.
+
+`Discussion` view and commenting rules depend on related `Group` type and use similar logic:
+
+- `Discussion` from public `Group` can be viewed and commented by anyone.
+- `Discussion` from private `Group` can be viewed and commented only by `Group` members.
+
+### Photo
+
+`Photo` represents image, which is not used as `Profile` or `Group` image. Each `Photo` belongs to `Album`. `Photos` are
+either added to `Album` (but only if album has `group_custom` or `user_custom` type, see `Album`) by Profile
+owner/Group admin or added automatically to default profile/group album when new `Post` is created. If `Photo` has
+related `Post`, Post `content` also stored as Photo `description`.
+
+All Photos images are automatically resized to 1200x1200 resolution which makes non-square images look wierd, but this
+is Symfony Demo, not Image Resizing one :)
+
+Each `Photo` entity has only one image.
+Each `Photo` entity is related to only one `Album`.
+Each `Post` can have only one `Photo`.
+
+
+
+
+Entities relations are visualized here: https://www.plectica.com/maps/6ZKXDDCD7.
 
 ## Navigation
 
@@ -134,3 +187,5 @@ following links:
 - My Albums
 - My Groups
 - Edit profile
+
+https://www.plectica.com/maps/6ZKXDDCD7

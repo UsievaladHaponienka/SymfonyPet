@@ -77,6 +77,11 @@
                 {% if (app.user and app.user.profile.id == group.admin.id) %}
                     <div class="m-4">
                         {{ form_start(postForm) }}
+                        {% for message in app.flashes('post-failure') %}
+                            <div class="bg-rose-500 text-white text-center p-2 rounded mb-2">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
                         <div class="text-2xl text-center mb-4">{{ 'New Post' }}</div>
                         {{ form_end(postForm) }}
                     </div>
