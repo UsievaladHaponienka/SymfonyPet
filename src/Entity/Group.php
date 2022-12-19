@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
+use App\Entity\Traits\HasDefaultAlbum;
 use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: '`group`')]
 class Group implements IEInterface
 {
+    use HasDefaultAlbum;
+
     public const PUBLIC_GROUP_TYPE = 'public';
     public const PRIVATE_GROUP_TYPE = 'private';
 
@@ -375,18 +378,6 @@ class Group implements IEInterface
         return $requests->first();
     }
 
-    /**
-     * Get default group album
-     *
-     * @return Album
-     */
-    public function getDefaultAlbum(): Album
-    {
-        return $this->getAlbums()->filter(function ($album) {
-            /** @var Album $album */
-            return $album->getType() == Album::GROUP_DEFAULT_TYPE;
-        })->first();
-    }
 
     /**
      * @inheritDoc

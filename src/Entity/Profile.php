@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\HasDefaultAlbum;
 use App\Repository\ProfileRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ProfileRepository::class)]
 class Profile
 {
+    use HasDefaultAlbum;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -494,18 +497,5 @@ class Profile
     public function hasInvite(int $groupId): bool
     {
         return (bool)$this->getInviteByGroup($groupId);
-    }
-
-    /**
-     * Get default profile album
-     *
-     * @return Album
-     */
-    public function getDefaultAlbum(): Album
-    {
-        return $this->getAlbums()->filter(function ($album) {
-            /** @var Album $album */
-            return $album->getType() == Album::USER_DEFAULT_TYPE;
-        })->first();
     }
 }

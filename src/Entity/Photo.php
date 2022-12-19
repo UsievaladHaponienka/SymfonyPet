@@ -28,7 +28,7 @@ class Photo implements IEInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\OneToOne(inversedBy: 'photo', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'photo')]
     private ?Post $post = null;
 
     public function getId(): ?int
