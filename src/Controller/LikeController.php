@@ -34,7 +34,7 @@ class LikeController extends AbstractController
 
         $entity = $entityRepository->find($entityId);
 
-        if ($entity->getLikeIfExists($user->getProfile())) {
+        if ($entity && $entity->getLikeIfExists($user->getProfile())) {
             $entity->removeLike($entity->getLikeIfExists($user->getProfile()));
             $entityRepository->save($entity, true);
 

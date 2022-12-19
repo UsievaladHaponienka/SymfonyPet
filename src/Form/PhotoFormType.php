@@ -14,7 +14,6 @@ class PhotoFormType extends BaseType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            // TODO: Change label value
             ->add('image_url', FileType::class, [
                 'required' => true,
                 'attr' => ['class' => $this->getFileInputClass()],

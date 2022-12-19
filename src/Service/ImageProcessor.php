@@ -35,7 +35,6 @@ class ImageProcessor
 
     public function saveImage(UploadedFile $image, string $imageType, string $storagePath = '/public/images/'): string
     {
-        //TODO: Resize image
         $newFileName = uniqid() . '.' . $image->guessExtension();
         try {
             switch ($imageType) {
