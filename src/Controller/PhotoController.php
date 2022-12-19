@@ -10,6 +10,7 @@ use App\Repository\AlbumRepository;
 use App\Repository\PhotoRepository;
 use App\Service\ImageProcessor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -85,9 +86,7 @@ class PhotoController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    //TODO: Probably this action is also should be used with axios
-    //TODO: Add HTTP methods
-    #[Route('photo/delete/{photoId}', name: 'photo_delete')]
+    #[Route('photo/delete/{photoId}', name: 'photo_delete', methods: ['DELETE'])]
     public function delete(int $photoId): Response
     {
         /** @var User $user */
@@ -98,7 +97,9 @@ class PhotoController extends AbstractController
             $albumId = $photo->getAlbum()->getId();
             $this->photoRepository->remove($photo, true);
 
-            return $this->redirectToRoute('album_show', ['albumId' => $albumId]);
+            return new JsonResponse([
+                'redirectUrl' => $this->generateUrl('album_show', ['albumId' => $albumId])
+            ]);
         }
 
         throw $this->createNotFoundException();

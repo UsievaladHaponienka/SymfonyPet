@@ -101,7 +101,7 @@ class PostController extends AbstractController
                 return $this->getRedirect($post);
             }
         }
-        //TODO: Process exception
+
         throw $this->createNotFoundException();
     }
 

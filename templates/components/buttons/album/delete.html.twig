@@ -11,7 +11,7 @@
             axios.delete('/album/delete/' + albumId).then(
                 response => {
                     alert(albumTitle + ' was deleted.');
-                    window.location.href = response.data.backUrl
+                    window.location.href = response.data.redirectUrl
                 }
             )
         }

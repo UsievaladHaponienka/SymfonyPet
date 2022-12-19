@@ -109,7 +109,7 @@ class AlbumController extends AbstractController
         $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        if ($album && $album->isActionAllowed($user->getProfile())) {
+        if ($album && $album->isActionAllowed($user->getProfile(), IEInterface::EDIT_ACTION_CODE)) {
             $form = $this->createForm(AlbumFormType::class, $album);
             $form->handleRequest($request);
 
@@ -159,7 +159,7 @@ class AlbumController extends AbstractController
             $this->albumRepository->remove($album, true);
 
             return new JsonResponse([
-                'backUrl' => $this->getAlbumShowBackUrl($album)
+                'redirectUrl' => $this->getAlbumShowBackUrl($album)
             ]);
         }
 

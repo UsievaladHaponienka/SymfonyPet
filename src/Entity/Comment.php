@@ -137,7 +137,6 @@ class Comment implements IEInterface
     public function removeLike(Like $like): self
     {
         if ($this->likes->removeElement($like)) {
-            // set the owning side to null (unless already changed)
             if ($like->getComment() === $this) {
                 $like->setComment(null);
             }
@@ -156,8 +155,8 @@ class Comment implements IEInterface
      *
      * ACTIONS:
      * - Discussion comment actions are allowed for comment author OR discussion group admin.
-     * - Group post comment actions are allowed for comment author and group admin.
-     * - Profile post comment actions are allowed for comment author and post profile.
+     * - Group post comment actions are allowed for comment author OR group admin.
+     * - Profile post comment actions are allowed for comment author OR post profile.
      */
     public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {

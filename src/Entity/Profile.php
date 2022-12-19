@@ -320,7 +320,6 @@ class Profile
     public function removeFriendship(Friendship $friendship): self
     {
         if ($this->friendships->removeElement($friendship)) {
-            // set the owning side to null (unless already changed)
             if ($friendship->getProfile() === $this) {
                 $friendship->setProfile(null);
             }
@@ -470,17 +469,6 @@ class Profile
     }
 
     /**
-     * Check if current user has already been invited to group with id = $groupId
-     *
-     * @param int $groupId
-     * @return bool
-     */
-    public function hasInvite(int $groupId): bool
-    {
-        return (bool)$this->getInviteByGroup($groupId);
-    }
-
-    /**
      * Get invite for current user from group with id = $groupId
      *
      * @param int $groupId
@@ -495,6 +483,17 @@ class Profile
                     return $invite->getRelatedGroup()->getId() == $groupId;
                 }
             )->first();
+    }
+
+    /**
+     * Check if current user has already been invited to group with id = $groupId
+     *
+     * @param int $groupId
+     * @return bool
+     */
+    public function hasInvite(int $groupId): bool
+    {
+        return (bool)$this->getInviteByGroup($groupId);
     }
 
     /**

@@ -13,8 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DiscussionRepository::class)]
 class Discussion implements IEInterface
 {
-    use GroupAdminRule;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -76,7 +74,6 @@ class Discussion implements IEInterface
     public function removeComment(Comment $comment): self
     {
         if ($this->comment->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getDiscussion() === $this) {
                 $comment->setDiscussion(null);
             }
@@ -117,10 +114,6 @@ class Discussion implements IEInterface
      */
     public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {
-        if ($actionCode == self::VIEW_ACTION_CODE) {
-            return $this->getRelatedGroup()->isActionAllowed($profile, $actionCode);
-        }
-
-        return $this->checkGroupAdminRule($profile);
+        return $this->getRelatedGroup()->isActionAllowed($profile, $actionCode);
     }
 }

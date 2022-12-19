@@ -96,11 +96,6 @@ class Photo implements IEInterface
         return $this;
     }
 
-    public function belongsToAlbumOnly(): bool
-    {
-        return $this->getPost() === null;
-    }
-
     /**
      * @inheritDoc
      *
@@ -109,7 +104,7 @@ class Photo implements IEInterface
      */
     public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {
-        if ($this->belongsToAlbumOnly()) {
+        if ($this->getPost() === null) {
             return $this->getAlbum()->isActionAllowed($profile, $actionCode);
         } else {
             return $this->getPost()->isActionAllowed($profile, $actionCode);

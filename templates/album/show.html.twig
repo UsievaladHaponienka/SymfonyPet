@@ -58,8 +58,11 @@
                             </div>
                         </a>
                         <div class="text-xl text-center">
-                            {{ photo.description }}
+                            {% if(photo.actionAllowed(app.user.profile)) %}
+                                {{ photo.description }}
+                            {% endif %}
                         </div>
+                        {% include('components/buttons/photo/delete.html.twig') %}
                     </div>
                 {% endfor %}
             </div>

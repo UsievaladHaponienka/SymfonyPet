@@ -20,7 +20,7 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\EventListener\RedirectListener:
+    App\EventListener\LoginRedirectListener:
         tags:
             - {name: kernel.event_listener, event: kernel.request, method: checkLogin}
 

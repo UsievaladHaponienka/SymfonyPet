@@ -1,0 +1,13 @@
+<button onclick="deletePhoto({{ photo.id }})"
+        class="bg-rose-700 hover:bg-rose-600 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">
+    {{ 'Delete photo' }}
+</button>
+<script>
+    function deletePhoto(photoId) {
+        axios.delete('/photo/delete/' + photoId).then(
+            response => {
+                window.location.href = response.data.redirectUrl
+            }
+        )
+    }
+</script>

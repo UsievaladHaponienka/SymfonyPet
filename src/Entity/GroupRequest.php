@@ -60,7 +60,7 @@ class GroupRequest implements InteractiveEntityInterface
      * @inheritDoc
      *
      * ACTIONS:
-     * - Request can be created if group is private and user is not in group.
+     * - Request can be created if group is private AND user is not in group.
      * - Request can be accepted by group admin.
      * - Request can be deleted either by request group admin or by request creator
      */

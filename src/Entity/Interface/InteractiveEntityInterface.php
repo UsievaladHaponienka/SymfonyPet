@@ -4,6 +4,9 @@ namespace App\Entity\Interface;
 
 use App\Entity\Profile;
 
+/**
+ * Entity, which can be changed by user under certain conditions, should implement this interface.
+ */
 interface InteractiveEntityInterface
 {
     public const CREATE_ACTION_CODE = 'create';

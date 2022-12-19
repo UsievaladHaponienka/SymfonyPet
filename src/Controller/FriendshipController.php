@@ -68,7 +68,8 @@ class FriendshipController extends AbstractController
         $requesterProfile = $this->profileRepository->find($user->getProfile()->getId());
         $requesteeProfile = $this->profileRepository->find($profileId);
 
-        if ($requesterProfile && $requesteeProfile) {
+        if ($requesterProfile && $requesteeProfile &&
+            !$this->getFriendshipRequestIfExists($user->getProfile()->getId(), $profileId)) {
             $friendshipRequest = new FriendshipRequest();
             $friendshipRequest->setRequester($requesterProfile);
             $friendshipRequest->setRequestee($requesteeProfile);
@@ -87,10 +88,7 @@ class FriendshipController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $request = $this->friendshipRequestRepository->findOneBy([
-            'requestee' => [$user->getProfile()->getId(), $profileId],
-            'requester' => [$user->getProfile()->getId(), $profileId]
-        ]);
+        $request = $this->getFriendshipRequestIfExists($user->getProfile()->getId(), $profileId);
 
         if ($request) {
             $this->friendshipRequestRepository->remove($request, true);
@@ -106,31 +104,26 @@ class FriendshipController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $profile = $user->getProfile();
 
         $friendProfile = $this->profileRepository->find($profileId);
 
-        //TODO:: Add additional check. Right now it seems possible to create friendship even if there is no such request
-        if ($profile && $friendProfile) {
+        $friendshipRequest = $this->getFriendshipRequestIfExists($user->getProfile()->getId(), $profileId);
+
+        if ($user->getProfile() && $friendProfile && $friendshipRequest) {
             $friendshipObjectForFirstUser = new Friendship();
 
-            $friendshipObjectForFirstUser->setProfile($profile);
+            $friendshipObjectForFirstUser->setProfile($user->getProfile());
             $friendshipObjectForFirstUser->setFriend($friendProfile);
 
             $friendshipObjectForSecondUser = new Friendship();
 
             $friendshipObjectForSecondUser->setProfile($friendProfile);
-            $friendshipObjectForSecondUser->setFriend($profile);
+            $friendshipObjectForSecondUser->setFriend($user->getProfile());
 
             $this->friendshipRepository->save($friendshipObjectForFirstUser);
             $this->friendshipRepository->save($friendshipObjectForSecondUser);
 
-            $request = $this->friendshipRequestRepository->findOneBy([
-                'requester' => $friendProfile->getId(),
-                'requestee' => $profile->getId()
-            ]);
-
-            $this->friendshipRequestRepository->remove($request, true);
+            $this->friendshipRequestRepository->remove($friendshipRequest, true);
 
             return new JsonResponse(['username' => $friendProfile->getUsername()]);
         }
@@ -138,7 +131,7 @@ class FriendshipController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    #[Route('friendship/delete/{profileId}', name: 'friendship_delete',methods: ['DELETE'])]
+    #[Route('friendship/delete/{profileId}', name: 'friendship_delete', methods: ['DELETE'])]
     public function deleteFriendship(int $profileId): Response
     {
         /** @var User $user */
@@ -158,5 +151,21 @@ class FriendshipController extends AbstractController
         }
 
         throw $this->createNotFoundException();
+    }
+
+    /**
+     * Get friendship request made by $firstProfileId to $secondProfileId and vice versa
+     * Return null if such request does not exist
+     *
+     * @param int $firstProfileId
+     * @param int $secondProfileId
+     * @return FriendshipRequest|null
+     */
+    protected function getFriendshipRequestIfExists(int $firstProfileId, int $secondProfileId): ?FriendshipRequest
+    {
+        return $this->friendshipRequestRepository->findOneBy([
+            'requestee' => [$firstProfileId, $secondProfileId],
+            'requester' => [$firstProfileId, $secondProfileId]
+        ]);
     }
 }

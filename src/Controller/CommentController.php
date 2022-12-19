@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\User;
 use App\Repository\CommentRepository;
 use App\Repository\DiscussionRepository;
@@ -26,12 +27,11 @@ class CommentController extends AbstractController
     #[Route('comment/create/post/{postId}', name: 'comment_create_post', methods: ['POST'])]
     public function createForPost(Request $request, int $postId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $post = $this->postRepository->find($postId);
 
-        /*
-         * TODO: Probably additional check should be added here - post can not be commented if they are hidden
-         */
-        if ($post) {
+        if ($post && $post->isActionAllowed($user->getProfile(), IEInterface::VIEW_ACTION_CODE)) {
             $comment = new Comment();
             $comment->setType(Comment::POST_TYPE);
             $comment->setPost($post);
@@ -45,12 +45,11 @@ class CommentController extends AbstractController
     #[Route('comment/create/discussion/{discussionId}', name: 'comment_create_discussion', methods: ['POST'])]
     public function createForDiscussion(Request $request, int $discussionId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $discussion = $this->discussionRepository->find($discussionId);
 
-        /*
-         * TODO: Probably additional check should be added here - discussions can not be comment if they are hidden
-         */
-        if ($discussion) {
+        if ($discussion && $discussion->isActionAllowed($user->getProfile(), IEInterface::VIEW_ACTION_CODE)) {
             $comment = new Comment();
             $comment->setType(Comment::DISCUSSION_TYPE);
             $comment->setDiscussion($discussion);

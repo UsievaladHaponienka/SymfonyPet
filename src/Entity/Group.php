@@ -155,7 +155,6 @@ class Group implements IEInterface
     public function removeAlbum(Album $album): self
     {
         if ($this->albums->removeElement($album)) {
-            // set the owning side to null (unless already changed)
             if ($album->getRelatedGroup() === $this) {
                 $album->setRelatedGroup(null);
             }
@@ -311,7 +310,6 @@ class Group implements IEInterface
     public function removeDiscussion(Discussion $discussion): self
     {
         if ($this->discussions->removeElement($discussion)) {
-            // set the owning side to null (unless already changed)
             if ($discussion->getRelatedGroup() === $this) {
                 $discussion->setRelatedGroup(null);
             }

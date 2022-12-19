@@ -102,21 +102,15 @@ class MembershipController extends AbstractController
         $user = $this->getUser();
         $joinRequest = $this->groupRequestRepository->find($requestId);
 
-        if ($joinRequest &&
+        if ($joinRequest && $joinRequest->getRelatedGroup() &&
             $joinRequest->isActionAllowed($user->getProfile(), IEInterface::ACCEPT_ACTION_CODE)) {
-            $group = $this->groupRepository->find($joinRequest->getRelatedGroup());
 
-            if ($group) {
-                $group->addProfile($joinRequest->getProfile());
-                $this->groupRequestRepository->remove($joinRequest);
+            $joinRequest->getRelatedGroup()->addProfile($joinRequest->getProfile());
+            $this->groupRequestRepository->remove($joinRequest);
 
-                $this->groupRepository->save($group, true);
+            $this->groupRepository->save($joinRequest->getRelatedGroup(), true);
 
-                return new JsonResponse();
-            }
-
-            //TODO: Maybe refactor, I don't like 2 throws in method. Same for method above
-            throw $this->createNotFoundException();
+            return new JsonResponse();
         }
 
         throw $this->createNotFoundException();

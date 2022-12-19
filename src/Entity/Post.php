@@ -158,7 +158,6 @@ class Post implements IEInterface
     public function removeLike(Like $like): self
     {
         if ($this->likes->removeElement($like)) {
-            // set the owning side to null (unless already changed)
             if ($like->getPost() === $this) {
                 $like->setPost(null);
             }
@@ -188,7 +187,6 @@ class Post implements IEInterface
     public function removeComment(Comment $comment): self
     {
         if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
             if ($comment->getPost() === $this) {
                 $comment->setPost(null);
             }
@@ -204,12 +202,10 @@ class Post implements IEInterface
 
     public function setPhoto(?Photo $photo): self
     {
-        // unset the owning side of the relation if necessary
         if ($photo === null && $this->photo !== null) {
             $this->photo->setPost(null);
         }
 
-        // set the owning side of the relation if necessary
         if ($photo !== null && $photo->getPost() !== $this) {
             $photo->setPost($this);
         }
