@@ -84,7 +84,7 @@ Request`. `Group Request` contains link to `Profile` who made request and `Group
 Similar to friendship, `Group request` can be canceled by `Profile` who made request and also can be declined
 by `Group` admin.
 
-`Group Invite` are like reversed `Group Request` - `Invite` is created by Group admin at `Manage Group`->`Send Invites`
+`Group Invite` is like reversed `Group Request` - `Invite` is created by Group admin at `Manage Group`->`Send Invites`
 page (And can be canceled by admin at `Manage Group`->`Invited Users` page) and need to be accepted (and also can be
 declined) by invited User at `My Groups`->`Group Invites` page. The main difference between `Invite` and `Group Request`
 is that `Invite` can be created for both Group types - public AND private, while `Group Request` can be created (and
@@ -171,10 +171,52 @@ Each `Photo` entity has only one image.
 Each `Photo` entity is related to only one `Album`.
 Each `Post` can have only one `Photo`.
 
+### Comment
 
+`Comment` is an entity which allows users to react to `Posts` and participate in `Discussions`. So there are two
+different types of `Comments` - Post comments and discussion comments. Each comment belongs to Profile, it is not
+possible to create comment from Group.
 
+`Comment` can be deleted either by Comment author, or by Post Profile owner, or by Post Group admin (see `Summarized
+entity interaction rules`).
+
+### Like
+
+`Like` is and entity which allows users to react to `Posts` or `Comments` in most simple way. So, there are two types of
+likes - Post likes and Comment likes.
+
+Each `Post`/`Comment` has amount of likes displayed below its content. Pressing button "Like" will create `Like` entity
+related to Profile and `Post`/`Comment`. Pressing this button again will remove corresponding `Like` entity.
+
+Tou always know whether you liked some `Post`/`Comment` or not: If entity wasn't already liked, button title is "Like"
+and button is dark-blue. If entity was already liked, Button title is "Liked" and button color is light-blue.
+
+### Profile Privacy Settings
+
+`Profile Privacy Settings` is a service entity which is used to restrict access to certain parts of `Profile` page. It
+has 4 fields and 3 possible options for each field.
+
+Fields are:
+
+- Who can view my friends
+- Who can view my groups
+- Who can view my albums
+- WHo can view my posts
+
+Options are:
+
+- Only me
+- Only my friends
+- Anyone
+
+Seems like fields and options speak for themselves. The only thing which is worth mentioning here that `Only my friends`
+option actually means `Me + My Friends`. See `Summarized entity interaction rules` for more details.
+
+### Entities relation visualization
 
 Entities relations are visualized here: https://www.plectica.com/maps/6ZKXDDCD7.
+
+## Summarized entity interaction rules
 
 ## Navigation
 
