@@ -243,8 +243,7 @@ Entities relations are visualized here: https://www.plectica.com/maps/6ZKXDDCD7.
 
 - Group can be created by any user. User's Profile becomes Group admin.
 - Group can have only one admin.
-- Group can be edited only by admin.
-- Group can be deleted only by admin.
+- Group can be edited or deleted only by admin.
 
 ### Group Request
 
@@ -300,13 +299,50 @@ Group membership can be deleted:
 - Both types of albums:
     - Group albums list and Group albums Photos view rule are the same as Group view rules - either if `Group` is public
       or User is the member of the `Group`.
-    - Profile albums list and Profile albums Photos view rules are determined by `Profile Privacy Settings`.
+    - Profile albums list and Profile albums Photos view rules are determined by `Profile Privacy Settings` - "Posts".
 
 ### Discussion
 
 - Discussion can be created and deleted only by Group admin.
 - Discussion view and commenting rules are the same as for `Group` - either `Group` is public or User is the member of
   the `Group`.
+
+### Post
+
+- Profile post:
+    - Profile Post is created and can be deleted by Profile owner at Profile page.
+    - Profile Post view, like and comment rules are determined by `Profile Privacy Settings` - "Posts".
+- Group Post:
+    - Group post is created and can be deleted by Group admin at Group page.
+    - Group Post can be view, like and comment rules are the same as for `Group` - either `Group` is public or User is
+      the member of the `Group`.
+
+### Photo
+
+- Photo can be added/deleted to *custom* Profile album by Profile owner and to *custom* Group album by Group admin.
+- Photo view rules are same as for Album:
+    - Photos in Group Album (both *custom* and *default*) can be viewed either if `Group` is public or if User is the
+      member of the `Group`.
+    - Photos in Profile Album (both *custom* and *default*) view rules are determined by `Profile Privacy Settings` - "
+      Albums".
+
+### Comment
+
+- Post comment:
+    - Post Comment view and like rules are the same as for Profile Post.
+    - Post Comment can be deleted either by Comment Profile owner or by Post Profile owner.
+- Discussion Comment:
+    - Discussion Comment view and like rules are the same as Discussion rules.
+    - Discussion Comment can be deleted either by Comment Profile owner or By Discussion Group Admin.
+
+### Like
+
+- Like action is allowed if parent entity (Post or Comment) can be viewed. In other words, User can't add or remove like
+  for something USer can not see - Group Posts in private Groups (and comments to these Posts) if User is not in Group,
+  Profile Posts with
+  corresponding Profile Privacy Settings (and comments to these Posts), Group Discussion Comments in private Groups if
+  user is not in Group.
+- Like can be removed only by Like Profile owner.
 
 ## Navigation
 
