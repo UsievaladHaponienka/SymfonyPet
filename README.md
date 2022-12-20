@@ -50,6 +50,8 @@ Users can become `friends` with each other. Standard friendship creation flow is
    User 2 can also click `Decline request` button. In this case `Friendship Request` will be deleted, `Friendship`
    entity won't be created.
 
+Friendship also can be deleted by any of friends (this action is called "Remove from friends").
+
 ### Group, Group Request and Group Invite
 
 Each user can create multiple groups. Groups allow users with common interests to join together.
@@ -217,6 +219,94 @@ option actually means `Me + My Friends`. See `Summarized entity interaction rule
 Entities relations are visualized here: https://www.plectica.com/maps/6ZKXDDCD7.
 
 ## Summarized entity interaction rules
+
+### Profile
+
+- Profile is created automatically after User creation (i.e. after successful registration).
+- Profile can be edited (both profile data and Profile Privacy Settings) by Profile owner.
+- Profile can not be deleted.
+
+### Friendship request
+
+- Friendship request can be created by ANY Profile to ANY Profile (Of course, if this two profiles are not friends yet
+  and request wasn't already created).
+- Friendship request can be deleted either by request sender (requester) which means "Cancel Request" action or by
+  request receiver (requestee) which corresponds to "Decline Request" action. Friendship is also automatically deleted
+  when `Friendship` is created.
+
+### Friendship
+
+- Friendship is created when Friendship Request requestee accepts request.
+- Friendship can be deleted by any of friends ("Remove from friends" action).
+
+### Group
+
+- Group can be created by any user. User's Profile becomes Group admin.
+- Group can have only one admin.
+- Group can be edited only by admin.
+- Group can be deleted only by admin.
+
+### Group Request
+
+- Group request can be created for private Group.
+- Group request can be created by Profile only if:
+    - Profile isn't already a member of the Group.
+    - Same Request (from the same Profile to the same Group) wasn't already created.
+    - Similar Invite (form the same Group to the same Profile) wasn't already created.
+- Group request can be deleted either by requester (Profile owner), which corresponds to "Cancel request" action, or by
+  requested group admin, which corresponds to "Decline request" action. Group request is automatically deleted when
+  accepted by Group Admin as group membership relation is crated instead.
+- Group requests are deleted automatically when `Group` is deleted.
+
+### Group Invite
+
+- Group invite can be created both for public and private Groups.
+- Group invite can be created by Group admin if:
+    - Invite receiver (Profile) isn't already a member of the Group.
+    - Same Invite (From the same Group to the same Group) wasn't already created.
+    - Similar Request (from the same Profile to the same Group) wasn't already created.
+- Group request can be deleted either by Group admin, which corresponds to "Cancel Invite" action, or by
+  Invite recipient (Profile), which corresponds to "Decline invite" action. Group invite is automatically deleted when
+  accepted by invited User as group membership relation is crated instead.
+- Group invites are deleted automatically when `Group` is deleted.
+
+### Group Membership
+
+Group membership is not a separate entity, it's ManyToMany relation between Group and Profile.
+
+Group membership is created when:
+
+- User uses "Join" button (only fo `public` Groups).
+- Group Request is accepted by Group admin (only for `private` Groups).
+- Group Invite is accepted by invited Profile (for both `public` and `private` Groups).
+
+Group membership can be deleted:
+
+- By Profile, using "Leave group" button.
+- By Group admin using `Manage Group`->`Group Members`->Remove from Group button.
+- Group memberships are deleted automatically when `Group` is deleted.
+
+### Album
+
+- Default album:
+    - Default Profile/Group Album is created automatically after Profile/Group is created. This album can not be edited
+      or deleted, `Photos` can not be added to this album.
+    - However, `Photos` from default Profile/Group Album can be deleted by Profile owner/Group admin respectively. This
+      action doesn't lead to deletion of the corresponding `Post`.
+    - `Photo` from default Album is automatically deleted when corresponding Post is deleted.
+- Custom Album:
+    - Custom Profile/Group Album can be created, edited and deleted by Profile owner/Group admin.
+    - Profile owner/Group admin can add photos to Profile/Group custom album.
+- Both types of albums:
+    - Group albums list and Group albums Photos view rule are the same as Group view rules - either if `Group` is public
+      or User is the member of the `Group`.
+    - Profile albums list and Profile albums Photos view rules are determined by `Profile Privacy Settings`.
+
+### Discussion
+
+- Discussion can be created and deleted only by Group admin.
+- Discussion view and commenting rules are the same as for `Group` - either `Group` is public or User is the member of
+  the `Group`.
 
 ## Navigation
 
