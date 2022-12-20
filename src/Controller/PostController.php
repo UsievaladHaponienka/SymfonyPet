@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\Photo;
 use App\Entity\Post;
 use App\Entity\User;
@@ -118,7 +119,7 @@ class PostController extends AbstractController
         $user = $this->getUser();
         $post = $this->postRepository->find($postId);
 
-        if ($post && $post->isActionAllowed($user->getProfile())) {
+        if ($post && $post->isActionAllowed($user->getProfile(), IEInterface::DELETE_ACTION_CODE)) {
             $this->postRepository->remove($post, true);
 
             return new JsonResponse();

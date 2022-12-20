@@ -68,7 +68,7 @@ class MembershipController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $this->canCreateRequestOrInvite($group, $user->getProfile())) {
+        if ($group && $this->canCreateRequest($group, $user->getProfile())) {
             $joinRequest = new GroupRequest();
             $joinRequest->setProfile($user->getProfile());
             $joinRequest->setRelatedGroup($group);

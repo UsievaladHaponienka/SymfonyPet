@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Entity\Interface\InteractiveEntityInterface;
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\Traits\Rules\ProfileRule;
 use App\Entity\Traits\Rules\GroupAdminRule;
 use App\Repository\GroupRequestRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GroupRequestRepository::class)]
-class GroupRequest implements InteractiveEntityInterface
+class GroupRequest implements IEInterface
 {
     use ProfileRule;
     use GroupAdminRule;

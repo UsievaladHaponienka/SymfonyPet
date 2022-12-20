@@ -155,7 +155,7 @@ class AlbumController extends AbstractController
         $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        if ($album && $album->isActionAllowed($user->getProfile())) {
+        if ($album && $album->isActionAllowed($user->getProfile(), IEInterface::DELETE_ACTION_CODE)) {
             $this->albumRepository->remove($album, true);
 
             return new JsonResponse([

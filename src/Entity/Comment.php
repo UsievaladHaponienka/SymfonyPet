@@ -154,6 +154,11 @@ class Comment implements IEInterface
      * @inheritDoc
      *
      * ACTIONS:
+     * VIEW ACTION:
+     * - Discussion comments view rules are the same as Discussion view rules, @see Discussion::isActionAllowed
+     * - Post comments view rules are the same as Post view rules, @see Post::isActionAllowed
+     *
+     * OTHER ACTIONS:
      * - Discussion comment actions are allowed for comment author OR discussion group admin.
      * - Group post comment actions are allowed for comment author OR group admin.
      * - Profile post comment actions are allowed for comment author OR post profile.
@@ -161,9 +166,9 @@ class Comment implements IEInterface
     public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {
         if ($this->belongsToDiscussion()) {
-            return $this->checkProfileRule($profile) || $this->getDiscussion()->isActionAllowed($profile);
+            return $this->checkProfileRule($profile) || $this->getDiscussion()->isActionAllowed($profile, $actionCode);
         } else {
-            return $this->checkProfileRule($profile) || $this->getPost()->isActionAllowed($profile);
+            return $this->checkProfileRule($profile) || $this->getPost()->isActionAllowed($profile, $actionCode);
         }
     }
 }

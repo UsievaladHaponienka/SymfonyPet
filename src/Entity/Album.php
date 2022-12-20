@@ -162,12 +162,12 @@ class Album implements IEInterface
     public function isActionAllowed(Profile $profile, $actionCode = null): bool
     {
         if ($actionCode == self::VIEW_ACTION_CODE) {
-            if ($this->getType() == Album::GROUP_CUSTOM_TYPE || $this->getType() == Album::GROUP_DEFAULT_TYPE) {
-                return $this->getRelatedGroup()->isPublic() || $this->getRelatedGroup()->isInGroup($profile);
-            } else {
+            if ($this->getType() == Album::USER_CUSTOM_TYPE || $this->getType() == Album::USER_DEFAULT_TYPE) {
                 return $this->getProfile()->getPrivacySettings()->isViewAllowed(
                     PrivacySettings::ALBUMS_CODE, $profile
                 );
+            } else {
+                return $this->getRelatedGroup()->isActionAllowed($profile, $actionCode);
             }
         }
 

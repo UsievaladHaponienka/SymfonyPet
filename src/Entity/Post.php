@@ -224,11 +224,26 @@ class Post implements IEInterface
      * @inheritDoc
      *
      * ACTIONS:
+     *
+     * VIEW ACTION:
+     * - Posts with type = profile can be viewed if corresponding profile privacy settings requirement is fulfilled.
+     * - Posts with type = group can be viewed either if group is public OR if user is member of the group.
+     *
+     * OTHER ACTIONS:
      * - For Posts with type = profile actions are allowed to post owner's profile.
      * - For Posts with type = group actions are allowed to group admin.
      */
     public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {
+        if ($actionCode == IEInterface::VIEW_ACTION_CODE) {
+            if($this->belongsToUser()) {
+                return $this->getProfile()->getPrivacySettings()->isViewAllowed(
+                    PrivacySettings::POSTS_CODE, $profile);
+            } else {
+                return $this->getRelatedGroup()->isActionAllowed($profile, $actionCode);
+            }
+        }
+
         if($this->belongsToUser()) {
             return $this->checkProfileRule($profile);
         } else {

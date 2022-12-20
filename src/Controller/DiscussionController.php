@@ -92,7 +92,7 @@ class DiscussionController extends AbstractController
         $user = $this->getUser();
         $discussion = $this->discussionRepository->find($discussionId);
 
-        if ($discussion && $discussion->isActionAllowed($user->getProfile())) {
+        if ($discussion && $discussion->isActionAllowed($user->getProfile(), IEInterface::DELETE_ACTION_CODE)) {
             $this->discussionRepository->remove($discussion, true);
 
             return new JsonResponse();

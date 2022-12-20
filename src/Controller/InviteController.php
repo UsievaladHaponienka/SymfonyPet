@@ -37,7 +37,7 @@ class InviteController extends AbstractController
         if ($profile &&
             $group &&
             $group->isAdmin($user->getProfile()) &&
-            $this->canCreateRequestOrInvite($group, $profile)
+            $this->canCreateInvite($group, $profile)
         ) {
             $invite = new Invite();
             $invite->setProfile($profile);

@@ -42,20 +42,37 @@ trait GroupRequestInviteResolver
     }
 
     /**
-     * Check if new Group Request or Invite can be created. The following conditions must be fulfilled:
+     * Check if new Group Request can be created. The following conditions must be fulfilled:
      * - Group type is private.
      * - Profile is NOT already in Group.
-     * - Same Request/Invite does not exist.
-     * - Similar Invite/Request does not exist.
+     * - Same Request does not exist.
+     * - Similar Invite does not exist.
      *
      * @param Group $group
      * @param Profile $profile
      * @return bool
      */
-    protected function canCreateRequestOrInvite(Group $group, Profile $profile): bool
+    protected function canCreateInvite(Group $group, Profile $profile): bool
     {
         return !$group->isPublic() &&
             !$group->isInGroup($profile) &&
+            !$this->getRequestIfExists($group, $profile) &&
+            !$this->getInviteIfExists($group, $profile);
+    }
+
+    /**
+     * Check if new Invite can be created. The following conditions must be fulfilled:
+     * - Profile is NOT already in Group.
+     * - Same Invite does not exist.
+     * - Similar Request does not exist.
+     *
+     * @param Group $group
+     * @param Profile $profile
+     * @return bool
+     */
+    protected function canCreateRequest(Group $group, Profile $profile): bool
+    {
+        return !$group->isInGroup($profile) &&
             !$this->getRequestIfExists($group, $profile) &&
             !$this->getInviteIfExists($group, $profile);
     }

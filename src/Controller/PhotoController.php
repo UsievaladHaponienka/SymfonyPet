@@ -48,7 +48,7 @@ class PhotoController extends AbstractController
         $user = $this->getUser();
         $album = $this->albumRepository->find($albumId);
 
-        if ($album && $album->isActionAllowed($user->getProfile())) {
+        if ($album && $album->isActionAllowed($user->getProfile(), IEInterface::ADD_CHILD_ENTITY_ACTION)) {
             $photo = new Photo();
             $form = $this->createForm(PhotoFormType::class, $photo);
 
@@ -61,7 +61,6 @@ class PhotoController extends AbstractController
                 $imagePath = $this->imageProcessor->saveImage(
                     $image,
                     ImageProcessor::PHOTO_IMAGE_TYPE,
-
                 );
 
                 $photo->setAlbum($album);
@@ -93,7 +92,7 @@ class PhotoController extends AbstractController
         $user = $this->getUser();
         $photo = $this->photoRepository->find($photoId);
 
-        if ($photo && $photo->isActionAllowed($user->getProfile())) {
+        if ($photo && $photo->isActionAllowed($user->getProfile(), IEInterface::DELETE_ACTION_CODE)) {
             $albumId = $photo->getAlbum()->getId();
             $this->photoRepository->remove($photo, true);
 

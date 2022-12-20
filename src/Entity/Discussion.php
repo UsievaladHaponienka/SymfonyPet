@@ -110,7 +110,7 @@ class Discussion implements IEInterface
      * @inheritDoc
      *
      * ACTIONS:
-     * - Discussion action rules are the same as discussion group rule
+     * - Discussion action rules are the same as discussion group rule, @see Group::isActionAllowed
      */
     public function isActionAllowed(Profile $profile, string $actionCode = null): bool
     {

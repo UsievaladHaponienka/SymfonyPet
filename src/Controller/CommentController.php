@@ -67,7 +67,7 @@ class CommentController extends AbstractController
         $user = $this->getUser();
         $comment = $this->commentRepository->find($commentId);
 
-        if ($comment && $comment->isActionAllowed($user->getProfile())) {
+        if ($comment && $comment->isActionAllowed($user->getProfile(), IEInterface::DELETE_ACTION_CODE)) {
             $this->commentRepository->remove($comment, true);
 
             return new JsonResponse();
