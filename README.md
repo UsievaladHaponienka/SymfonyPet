@@ -184,7 +184,8 @@ entity interaction rules`).
 
 ### Like
 
-`Like` is and entity which allows users to react to `Posts` or `Comments` in most simple way. So, there are two types of
+`Like` is and entity which allows users to react to `Posts` or `Comments` in the simplest way. So, there are two types
+of
 likes - Post likes and Comment likes.
 
 Each `Post`/`Comment` has amount of likes displayed below its content. Pressing button "Like" will create `Like` entity
@@ -231,8 +232,8 @@ Entities relations are visualized here: https://www.plectica.com/maps/6ZKXDDCD7.
 - Friendship request can be created by ANY Profile to ANY Profile (Of course, if this two profiles are not friends yet
   and request wasn't already created).
 - Friendship request can be deleted either by request sender (requester) which means "Cancel Request" action or by
-  request receiver (requestee) which corresponds to "Decline Request" action. Friendship is also automatically deleted
-  when `Friendship` is created.
+  request receiver (requestee) which corresponds to "Decline Request" action. Friendship Request is also automatically
+  deleted when `Friendship` is created.
 
 ### Friendship
 
@@ -325,6 +326,8 @@ Group membership can be deleted:
       member of the `Group`.
     - Photos in Profile Album (both *custom* and *default*) view rules are determined by `Profile Privacy Settings` - "
       Albums".
+- Image, added to `Post`, is stored as new `Photo` entity. Such `Photo` has link to `Post` and belongs to default
+  Profile/Group `Album` (depends on `Post` type).
 
 ### Comment
 
@@ -338,7 +341,7 @@ Group membership can be deleted:
 ### Like
 
 - Like action is allowed if parent entity (Post or Comment) can be viewed. In other words, User can't add or remove like
-  for something USer can not see - Group Posts in private Groups (and comments to these Posts) if User is not in Group,
+  for something User can not see - Group Posts in private Groups (and comments to these Posts) if User is not in Group,
   Profile Posts with
   corresponding Profile Privacy Settings (and comments to these Posts), Group Discussion Comments in private Groups if
   user is not in Group.
