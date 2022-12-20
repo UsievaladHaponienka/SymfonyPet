@@ -163,9 +163,7 @@ class Album implements IEInterface
     {
         if ($actionCode == self::VIEW_ACTION_CODE) {
             if ($this->getType() == Album::USER_CUSTOM_TYPE || $this->getType() == Album::USER_DEFAULT_TYPE) {
-                return $this->getProfile()->getPrivacySettings()->isViewAllowed(
-                    PrivacySettings::ALBUMS_CODE, $profile
-                );
+                return $this->getProfile()->getPrivacySettings()->isAlbumViewAllowed($profile);
             } else {
                 return $this->getRelatedGroup()->isActionAllowed($profile, $actionCode);
             }

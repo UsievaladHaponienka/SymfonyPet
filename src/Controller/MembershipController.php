@@ -29,13 +29,12 @@ class MembershipController extends AbstractController
     #[Route('group/join/{groupId}', name: 'group_join')]
     public function joinGroup(int $groupId): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group) {
-            /** @var User $user */
-            $user = $this->getUser();
+        if ($group && $group->isPublic() && !$group->isInGroup($user->getProfile())) {
             $group->addProfile($user->getProfile());
-
             $this->groupRepository->save($group, true);
 
             return new JsonResponse();
@@ -127,7 +126,11 @@ class MembershipController extends AbstractController
         $group = $this->groupRepository->find($groupId);
         $profile = $this->profileRepository->find($profileId);
 
-        if ($group && $profile && $group->isInGroup($profile) && $group->isAdmin($user->getProfile())) {
+        if ($group &&
+            $profile &&
+            $group->isInGroup($profile) &&
+            $group->isActionAllowed($user->getProfile(), IEInterface::REMOVE_CHILD_ENTITY_CODE)) {
+
             $group->removeProfile($profile);
             $this->groupRepository->save($group, true);
 

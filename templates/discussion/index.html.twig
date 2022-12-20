@@ -39,7 +39,7 @@
                             </div>
                         </div>
                     </div>
-                    {% if (group.admin.id == app.user.profile.id) %}
+                    {% if (group.groupAdmin(app.user.profile)) %}
                         <div class="col-span-1">
                             <div class="mr-4 flex justify-right">
                                 <a href="{{ path('discussion_create', {'groupId': group.id}) }}">

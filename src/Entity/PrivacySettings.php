@@ -110,14 +110,13 @@ class PrivacySettings
     /**
      * Check if some part of user data  - friend list, group list, albums, posts - can be viewed by $profile
      *
-     * @param string $settingsCode
+     * @param int $value
      * @param Profile $profile
      * @return bool
      */
-    public function isViewAllowed(string $settingsCode, Profile $profile): bool
+    protected function isViewAllowed(int $value, Profile $profile): bool
     {
         $isMine = $this->getProfile()->getId() == $profile->getId();
-        $value = $this->$settingsCode;
 
         return match ($value) {
             self::ONLY_ME => $isMine,
@@ -125,4 +124,49 @@ class PrivacySettings
             default => true,
         };
     }
+
+    /**
+     * Check if friend list can be viewed by $profile
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isFriendListViewAllowed(Profile $profile): bool
+    {
+        return $this->isViewAllowed($this->getFriendList(), $profile);
+    }
+
+    /**
+     * Check if group list can be viewed by $profile
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isGroupListViewAllowed(Profile $profile): bool
+    {
+        return $this->isViewAllowed($this->getGroupList(), $profile);
+    }
+
+    /**
+     * Check if albums can be viewed by $profile
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isAlbumViewAllowed(Profile $profile): bool
+    {
+        return $this->isViewAllowed($this->getAlbums(), $profile);
+    }
+
+    /**
+     * Check if post can be viewed bt $profile
+     *
+     * @param Profile $profile
+     * @return bool
+     */
+    public function isPostViewAllowed(Profile $profile): bool
+    {
+        return $this->isViewAllowed($this->getPosts(), $profile);
+    }
+
 }

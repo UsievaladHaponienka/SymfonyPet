@@ -54,7 +54,7 @@ class PostController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $group->isAdmin($user->getProfile())) {
+        if ($group && $group->isActionAllowed($user->getProfile(), IEInterface::ADD_CHILD_ENTITY_ACTION)) {
             $post = new Post();
             $post->setRelatedGroup($group);
             $post->setType(Post::GROUP_POST_TYPE);
@@ -66,16 +66,16 @@ class PostController extends AbstractController
 
     protected function create(Request $request, Post $post): Response
     {
-        $form = $this->createForm(PostFormType::class);
-        $form->handleRequest($request);
+        $postForm = $this->createForm(PostFormType::class);
+        $postForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $image = $form->get('photo')->getData();
-            $content = $form->get('content')->getData();
+        if ($postForm->isSubmitted() && $postForm->isValid()) {
+            $image = $postForm->get('photo')->getData();
+            $content = $postForm->get('content')->getData();
 
             if (!$image && !$content) {
                 $this->addFlash('post-failure', 'Post must contain either image or content');
-                return $this->getRedirect($post);
+                return $this->getRedirectAfterCreate($post);
             }
 
             if ($image) {
@@ -106,7 +106,7 @@ class PostController extends AbstractController
             $post->setCreatedAt(new \DateTimeImmutable());
             $this->postRepository->save($post, true);
 
-            return $this->getRedirect($post);
+            return $this->getRedirectAfterCreate($post);
         }
 
         throw $this->createNotFoundException();
@@ -136,7 +136,7 @@ class PostController extends AbstractController
      * @param Post $post
      * @return Response
      */
-    protected function getRedirect(Post $post): Response
+    protected function getRedirectAfterCreate(Post $post): Response
     {
         return $post->getType() == Post::USER_POST_TYPE ?
             $this->redirectToRoute('profile_index', ['profileId' => $post->getProfile()->getId()]) :

@@ -36,7 +36,7 @@ class InviteController extends AbstractController
 
         if ($profile &&
             $group &&
-            $group->isAdmin($user->getProfile()) &&
+            $group->isActionAllowed($user->getProfile(), IEInterface::ADD_CHILD_ENTITY_ACTION) &&
             $this->canCreateInvite($group, $profile)
         ) {
             $invite = new Invite();

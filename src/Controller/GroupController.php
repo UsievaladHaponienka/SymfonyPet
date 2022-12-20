@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Album;
 use App\Entity\Group;
-use App\Entity\PrivacySettings;
+use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\User;
 use App\Form\GroupFormType;
 use App\Form\PostFormType;
@@ -45,10 +45,7 @@ class GroupController extends AbstractController
         $user = $this->getUser();
         $profile = $this->profileRepository->find($profileId);
 
-        if ($profile && $profile->getPrivacySettings()->isViewAllowed(
-                PrivacySettings::GROUPS_LIST_CODE, $user->getProfile()
-            )) {
-
+        if ($profile && $profile->getPrivacySettings()->isGroupListViewAllowed($user->getProfile())) {
             $createGroupForm = $this->createForm(GroupFormType::class);
             $createGroupForm->handleRequest($request);
 
@@ -104,7 +101,7 @@ class GroupController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $group->isAdmin($user->getProfile())) {
+        if ($group && $group->isActionAllowed($user->getProfile(), IEInterface::EDIT_ACTION_CODE)) {
             $groupEditForm = $this->createForm(GroupFormType::class, $group);
             $groupEditForm->handleRequest($request);
 
@@ -141,7 +138,7 @@ class GroupController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $group->isAdmin($user->getProfile())) {
+        if ($group && $group->isActionAllowed($user->getProfile(), IEInterface::DELETE_ACTION_CODE)) {
             $this->groupRepository->remove($group, true);
 
             return new JsonResponse([

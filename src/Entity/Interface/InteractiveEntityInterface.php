@@ -12,7 +12,10 @@ interface InteractiveEntityInterface
     public const VIEW_ACTION_CODE = 'view';
     public const EDIT_ACTION_CODE = 'edit';
     public const DELETE_ACTION_CODE = 'delete';
+
     public const ADD_CHILD_ENTITY_ACTION = 'add_child';
+    public const REMOVE_CHILD_ENTITY_CODE = 'remove_child';
+
     public const ACCEPT_ACTION_CODE = 'accept';
 
     /**

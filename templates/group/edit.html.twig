@@ -56,7 +56,7 @@
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Profile Username' }}</div>
                     <div class="col-span-1 text-xl text-center my-4">{{ 'Actions' }}</div>
                     {% for profile in group.profile %}
-                        {% if(profile.id != group.admin.id) %}
+                        {% if(not group.groupAdmin(profile)) %}
                             <a href="{{ path('profile_index', {'profileId': profile.id}) }}">
                                 <div class="col-span-1 pb-4 flex justify-center">
                                     <img src="{{ profile.profileImageUrl }}">

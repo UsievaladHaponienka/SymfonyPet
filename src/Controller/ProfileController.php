@@ -27,8 +27,7 @@ class ProfileController extends AbstractController
     {
     }
 
-    #[
-        Route('/profile/edit', name: 'profile_edit')]
+    #[Route('/profile/edit', name: 'profile_edit')]
     public function edit(Request $request): Response
     {
         /** @var User $user */
@@ -43,7 +42,6 @@ class ProfileController extends AbstractController
 
         if ($profileEditForm->isSubmitted() && $profileEditForm->isValid()) {
             return $this->editProfile($profileEditForm, $profile);
-
         }
 
         if ($privacySettingForm->isSubmitted() && $privacySettingForm->isValid()) {
@@ -78,6 +76,13 @@ class ProfileController extends AbstractController
         throw $this->createNotFoundException();
     }
 
+    /**
+     * Process Profile edit form and save changes.
+     *
+     * @param FormInterface $profileEditForm
+     * @param Profile $profile
+     * @return Response
+     */
     protected function editProfile(FormInterface $profileEditForm, Profile $profile): Response
     {
         if ($profileEditForm->get('username')->getData()) {
@@ -104,6 +109,13 @@ class ProfileController extends AbstractController
         return $this->redirectToRoute('profile_edit');
     }
 
+    /**
+     * Process Profile Privacy Settings form and save changes.
+     *
+     * @param FormInterface $privacySettingForm
+     * @param Profile $profile
+     * @return Response
+     */
     protected function editPrivacySettings(FormInterface $privacySettingForm, Profile $profile): Response
     {
         $settings = $profile->getPrivacySettings();

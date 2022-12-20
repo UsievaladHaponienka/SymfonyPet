@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Friendship;
 use App\Entity\FriendshipRequest;
-use App\Entity\PrivacySettings;
 use App\Entity\User;
 use App\Form\SearchFormType;
 use App\Repository\FriendshipRepository;
@@ -35,10 +34,7 @@ class FriendshipController extends AbstractController
         $user = $this->getUser();
 
         $profile = $this->profileRepository->find($profileId);
-        if ($profile && $profile->getPrivacySettings()->isViewAllowed(
-                PrivacySettings::FRIEND_LIST_CODE, $user->getProfile()
-            )) {
-
+        if ($profile && $profile->getPrivacySettings()->isFriendListViewAllowed($user->getProfile())) {
             $profileSearchForm = $this->createForm(SearchFormType::class);
             $profileSearchForm->handleRequest($request);
 
@@ -110,13 +106,12 @@ class FriendshipController extends AbstractController
         $friendshipRequest = $this->getFriendshipRequestIfExists($user->getProfile()->getId(), $profileId);
 
         if ($user->getProfile() && $friendProfile && $friendshipRequest) {
-            $friendshipObjectForFirstUser = new Friendship();
 
+            $friendshipObjectForFirstUser = new Friendship();
             $friendshipObjectForFirstUser->setProfile($user->getProfile());
             $friendshipObjectForFirstUser->setFriend($friendProfile);
 
             $friendshipObjectForSecondUser = new Friendship();
-
             $friendshipObjectForSecondUser->setProfile($friendProfile);
             $friendshipObjectForSecondUser->setFriend($user->getProfile());
 
@@ -142,20 +137,17 @@ class FriendshipController extends AbstractController
             'friend' => [$user->getProfile()->getId(), $profileId]
         ]);
 
-        if ($friendshipObjects) {
-            foreach ($friendshipObjects as $friendship) {
-                $this->friendshipRepository->remove($friendship, true);
-            }
 
-            return new JsonResponse(['username' => $this->profileRepository->find($profileId)->getUsername()]);
+        foreach ($friendshipObjects as $friendship) {
+            $this->friendshipRepository->remove($friendship, true);
         }
 
-        throw $this->createNotFoundException();
+        return new JsonResponse(['username' => $this->profileRepository->find($profileId)->getUsername()]);
     }
 
     /**
-     * Get friendship request made by $firstProfileId to $secondProfileId and vice versa
-     * Return null if such request does not exist
+     * Get friendship request made by $firstProfileId to $secondProfileId or vice versa.
+     * Return null if such request does not exist.
      *
      * @param int $firstProfileId
      * @param int $secondProfileId

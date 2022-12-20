@@ -337,7 +337,7 @@ class Group implements IEInterface
      * @param Profile $profile
      * @return bool
      */
-    public function isAdmin(Profile $profile): bool
+    public function isGroupAdmin(Profile $profile): bool
     {
         return $profile->getId() == $this->getAdmin()->getId();
     }
@@ -388,6 +388,6 @@ class Group implements IEInterface
             return $this->isPublic() || $this->isInGroup($profile);
         }
 
-        return $this->isAdmin($profile);
+        return $this->isGroupAdmin($profile);
     }
 }

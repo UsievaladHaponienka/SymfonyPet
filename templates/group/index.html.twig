@@ -174,9 +174,7 @@
         <!-- My Groups -->
             <div class="tab-content" id="groups" style="display: block">
                 {% endif %}
-                {% if(profile.privacySettings.viewAllowed(
-                    constant('GROUPS_LIST_CODE', profile.privacySettings), app.user.profile
-                )) %}
+                {% if(profile.privacySettings.groupListViewAllowed(app.user.profile)) %}
                     <!-- This part is displayed for everyone. If user views groups of another user,
                     this part MUST be outside `tab-content` element. -->
                     {% if(profile.id != app.user.profile.id) %}
@@ -202,7 +200,7 @@
                                 {{ group.description }}
                             </div>
                             <div class="col-span-1 pb-4 text-center">
-                                {% if (app.user.profile.id == group.admin.id) %}
+                                {% if (group.groupAdmin(app.user.profile)) %}
                                     <div>
                                         <a href="{{ path('group_edit', {'groupId': group.id}) }}">
                                             <button class="bg-indigo-500 hover:bg-indigo-400 focus:shadow-outline focus:outline-none text-white font-bold my-2 py-2 px-4 rounded">

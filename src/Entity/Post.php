@@ -237,8 +237,7 @@ class Post implements IEInterface
     {
         if ($actionCode == IEInterface::VIEW_ACTION_CODE) {
             if($this->belongsToUser()) {
-                return $this->getProfile()->getPrivacySettings()->isViewAllowed(
-                    PrivacySettings::POSTS_CODE, $profile);
+                return $this->getProfile()->getPrivacySettings()->isPostViewAllowed($profile);
             } else {
                 return $this->getRelatedGroup()->isActionAllowed($profile, $actionCode);
             }

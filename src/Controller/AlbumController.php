@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Album;
 use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
-use App\Entity\PrivacySettings;
 use App\Entity\User;
 use App\Form\AlbumFormType;
 use App\Repository\AlbumRepository;
@@ -34,9 +33,7 @@ class AlbumController extends AbstractController
         $user = $this->getUser();
         $profile = $this->profileRepository->find($profileId);
 
-        if ($profile && $profile->getPrivacySettings()->isViewAllowed(
-                PrivacySettings::ALBUMS_CODE, $user->getProfile()
-            )) {
+        if ($profile && $profile->getPrivacySettings()->isAlbumViewAllowed($user->getProfile())) {
             return $this->render('album/index.html.twig', [
                 'albums' => $profile->getAlbums(),
                 'createUrl' => $this->generateUrl('album_profile_create'),
@@ -88,7 +85,7 @@ class AlbumController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && $group->isAdmin($user->getProfile())) {
+        if ($group && $group->isActionAllowed($user->getProfile(), IEInterface::ADD_CHILD_ENTITY_ACTION)) {
             $form = $this->createForm(AlbumFormType::class);
             $form->handleRequest($request);
 

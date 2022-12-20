@@ -51,7 +51,7 @@
                             </div>
                         </div>
                     </div>
-                    {% if (group.admin.id == app.user.profile.id) %}
+                    {% if (group.groupAdmin(app.user.profile)) %}
                         <div class="col-span-1">
                             <div class="mr-4">
                                 <a href="{{ path('group_edit', {'groupId': group.id}) }}">
@@ -66,7 +66,7 @@
                         </div>
                     {% else %}
                         <div class="flex justify-center">
-                            {% if group.admin.id != app.user.profile.id %}
+                            {% if not group.groupAdmin(app.user.profile) %}
                                 {% include('components/buttons/group/membership/complex-interaction.html.twig') %}
                             {% endif %}
                         </div>
@@ -74,7 +74,7 @@
                 </div>
 
 
-                {% if (app.user and app.user.profile.id == group.admin.id) %}
+                {% if (group.groupAdmin(app.user.profile)) %}
                     <div class="m-4">
                         {{ form_start(postForm) }}
                         {% for message in app.flashes('post-failure') %}

@@ -52,27 +52,21 @@
                     </div>
                     <div class="col-span-1 mt-4">
                         <div class="grid grid-rows gap-2">
-                            {% if (profile.privacySettings.viewAllowed(
-                                constant('ALBUMS_CODE', profile.privacySettings), app.user.profile)
-                                ) %}
+                            {% if (profile.privacySettings.albumViewAllowed(app.user.profile)) %}
                                 <div class="bg-indigo-200 mr-4 p-4 rounded text-center">
                                     <a href="{{ path('album_profile_index', {'profileId': profile.id}) }}">
                                         {{ 'Albums' }}
                                     </a>
                                 </div>
                             {% endif %}
-                            {% if (profile.privacySettings.viewAllowed(
-                                constant('GROUPS_LIST_CODE', profile.privacySettings), app.user.profile)
-                                ) %}
+                            {% if (profile.privacySettings.groupListViewAllowed(app.user.profile)) %}
                                 <div class="bg-indigo-200 mr-4 p-4 rounded text-center">
                                     <a href="{{ path('group_index', {'profileId': profile.id}) }}">
                                         {{ 'Groups' }}
                                     </a>
                                 </div>
                             {% endif %}
-                            {% if (profile.privacySettings.viewAllowed(
-                                constant('FRIEND_LIST_CODE', profile.privacySettings), app.user.profile)
-                                ) %}
+                            {% if (profile.privacySettings.friendListViewAllowed(app.user.profile)) %}
                                 <div class="bg-indigo-200 mr-4 p-4 rounded text-center">
                                     <a href="{{ path('friends_index', {'profileId': profile.id}) }}">
                                         {{ 'Friends' }}
@@ -94,9 +88,7 @@
                         {{ form_end(postForm) }}
                     </div>
                 {% endif %}
-                {% if (profile.privacySettings.viewAllowed(
-                    constant('POSTS_CODE', profile.privacySettings), app.user.profile)
-                    ) %}
+                {% if (profile.privacySettings.postViewAllowed(app.user.profile)) %}
                     {% for post in profile.posts %}
                         <div>
                             {% include('components/post/post.html.twig') %}

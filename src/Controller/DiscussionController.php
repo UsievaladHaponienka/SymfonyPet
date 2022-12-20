@@ -48,7 +48,7 @@ class DiscussionController extends AbstractController
         $discussionForm->handleRequest($request);
 
         $group = $this->groupRepository->find($groupId);
-        if ($group && $group->isAdmin($user->getProfile())) {
+        if ($group && $group->isActionAllowed($user->getProfile(), IEInterface::ADD_CHILD_ENTITY_ACTION)) {
             if ($discussionForm->isSubmitted() && $discussionForm->isValid()) {
 
                 $discussion = new Discussion();
