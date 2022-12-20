@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\Traits\GroupRequestInviteResolver;
 use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\Invite;
 use App\Entity\User;
@@ -15,6 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class InviteController extends AbstractController
 {
+    use GroupRequestInviteResolver;
+
     public function __construct(
         private readonly ProfileRepository $profileRepository,
         private readonly GroupRepository   $groupRepository,
@@ -31,7 +34,11 @@ class InviteController extends AbstractController
         $profile = $this->profileRepository->find($profileId);
         $group = $this->groupRepository->find($groupId);
 
-        if ($profile && $group && $group->isAdmin($user->getProfile())) {
+        if ($profile &&
+            $group &&
+            $group->isAdmin($user->getProfile()) &&
+            $this->canCreateRequestOrInvite($group, $profile)
+        ) {
             $invite = new Invite();
             $invite->setProfile($profile);
             $invite->setRelatedGroup($group);
@@ -51,7 +58,7 @@ class InviteController extends AbstractController
         $user = $this->getUser();
         $invite = $this->inviteRepository->find($inviteId);
 
-        if ($invite && $invite->isActionAllowed($user->getProfile(), IEInterface::DELETE_ACTION_CODE)){
+        if ($invite && $invite->isActionAllowed($user->getProfile(), IEInterface::DELETE_ACTION_CODE)) {
             $this->inviteRepository->remove($invite, true);
 
             return new JsonResponse();

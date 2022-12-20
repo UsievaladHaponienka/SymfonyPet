@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\Traits\GroupRequestInviteResolver;
 use App\Entity\GroupRequest;
 use App\Entity\Interface\InteractiveEntityInterface as IEInterface;
 use App\Entity\User;
@@ -15,6 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MembershipController extends AbstractController
 {
+    use GroupRequestInviteResolver;
+
     public function __construct(
         private readonly GroupRepository        $groupRepository,
         private readonly GroupRequestRepository $groupRequestRepository,
@@ -65,7 +68,7 @@ class MembershipController extends AbstractController
         $user = $this->getUser();
         $group = $this->groupRepository->find($groupId);
 
-        if ($group && !$group->isPublic() && !$group->isInGroup($user->getProfile())) {
+        if ($group && $this->canCreateRequestOrInvite($group, $user->getProfile())) {
             $joinRequest = new GroupRequest();
             $joinRequest->setProfile($user->getProfile());
             $joinRequest->setRelatedGroup($group);
