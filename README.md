@@ -347,7 +347,6 @@ Group membership can be deleted:
   user is not in Group.
 - Like can be removed only by Like Profile owner.
 
-
 ## Navigation
 
 Navigation tab is displayed at the left part of each page (except for login and registration pages). It contains the
@@ -373,4 +372,38 @@ Each User has `My Feed` link in navigation panel. Feed is a separate page which 
 Posts look the same as at Profile or Group page, i.e. Posts can be liked, commented or deleted. Posts are displayed in
 chronological order, newer first.
 
-See App\Controller\FeedController for more details/
+See App\Controller\FeedController for more details.
+
+## Comments on traits
+
+- `\App\Controller\Traits\GroupRequestInviteResolver`. Used in Invite Controller and Membership Controller. Though
+  Invite
+  and GroupRequest are two different entities, they are connected - it should NOT be possible and doesn't make sense to
+  create Invite if similar GroupRequest (with same Profile and Group) already exists. So this trait provides methods
+  which allow to determine is it possible to create Invite or GroupRequest.
+- `\App\Entity\Traits\Rules\ProfileRule`. Contains method which checks if Entity Profile and current User Profile are
+  the same. It's used, for example, in `Album::isActionAllowed` method as Album can be deleted by Profile which is the
+  owner this Album. Same logic is necessary for Comments, Profile Posts, etc.
+- `\App\Entity\Traits\Rules\GroupAdminRule`. Same as previous one, but instead of profile it checks if current user is
+  admin of Entity related Group. For example, only Group admin can delete Discussion. Same for Group Posts, Group
+  Albums, etc.
+- `\App\Entity\Traits\HasDefaultAlbum`. Used in entities which have default Album assigned - i.e. for Profile and
+  Group -
+  and allows to get this Album.
+- `\App\Entity\Traits\Likeable`. Used in entities which can be Liked - Post and Comments of all types. Method
+  `getLikeIfExists` is used to determine should Like be created or deleted after "Like" button is clicked.
+
+## Comments on services
+
+- `\App\Service\ImageProcessor`. Used to resize, change names and store Images. Profile image and Group image is resized
+  to 200x200 resolution, other images (Photo and Post images) to 1200x1200. Doesn't crop images or something, so
+  non-square images looks wierd. Probably will fix it later, this is not essential for symfony backend demo.
+- `\App\Service\SearchService`. Used to search entities - Profiles and Groups.
+    - Profile is used in two places:
+        - My Friends->Search Friends
+        - Group->Manage Group->Send invites.
+
+      Searches by both Profile username and Profile description fields (with *OR* condition).
+    - Group search is used in one place - My Groups->Search Groups. Searches by both Group title and Group description
+      fields (with *OR* condition).
+
