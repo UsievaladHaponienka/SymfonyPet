@@ -347,6 +347,7 @@ Group membership can be deleted:
   user is not in Group.
 - Like can be removed only by Like Profile owner.
 
+
 ## Navigation
 
 Navigation tab is displayed at the left part of each page (except for login and registration pages). It contains the
@@ -359,4 +360,17 @@ following links:
 - My Groups
 - Edit profile
 
-https://www.plectica.com/maps/6ZKXDDCD7
+All this links lead to corresponding pages of CURRENT authenticated User's Profile. So if user wants to see friends or
+albums of another profile, links at corresponding Profile page should be used.
+
+## Feed
+
+Each User has `My Feed` link in navigation panel. Feed is a separate page which displays:
+
+- Post from Groups the User is a member of.
+- Post from Profiles the User is a friend with.
+
+Posts look the same as at Profile or Group page, i.e. Posts can be liked, commented or deleted. Posts are displayed in
+chronological order, newer first.
+
+See App\Controller\FeedController for more details/
